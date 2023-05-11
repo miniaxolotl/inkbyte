@@ -18,7 +18,9 @@ export const Link = (props: LinkProps) => {
       {...props}
       weight={600}
       sx={(theme) => ({
-        color: isActive ? "brand-green" : theme.colors["brand-red"][4],
+        color: isActive
+          ? theme.colors["brand-red"][4]
+          : theme.colors["brand-cerulean"][6],
         "&:hover": { textDecoration: "none" },
         ...(props.sx as CSSObject),
       })}
