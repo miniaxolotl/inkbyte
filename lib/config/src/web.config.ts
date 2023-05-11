@@ -2,11 +2,7 @@ import { IBaseConfig, IConfigEnvironment, base_config } from "./base.config";
 
 const env = typeof window === "undefined" ? process.env : import.meta.env;
 
-export type IWebConfig = IBaseConfig & {
-  directus: {
-    public_api_token: string;
-  };
-};
+export type IWebConfig = IBaseConfig;
 
 export const web_config: IWebConfig = {
   ...base_config,
@@ -35,9 +31,5 @@ export const web_config: IWebConfig = {
     endpoint: env.VITE_S3_ENDPOINT ?? base_config.s3.endpoint,
     bucket: env.VITE_S3_BUCKET ?? base_config.s3.bucket,
     region: env.VITE_S3_REGION ?? base_config.s3.region,
-  },
-  /** directus */
-  directus: {
-    public_api_token: env.VITE_DIRECTUS_PUBLIC_TOKEN ?? "",
   },
 };
