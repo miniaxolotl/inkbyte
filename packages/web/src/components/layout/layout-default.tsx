@@ -46,7 +46,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
         </DesktopNavigationItem>
         <DesktopNavigationItem>
           <Title size="h4" order={2}>
-            <Link href="/register">
+            <Link href="/login">
               Login
               <FiLogIn />
             </Link>

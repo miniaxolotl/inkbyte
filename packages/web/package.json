@@ -16,12 +16,12 @@
     "test": "echo 'test @package/web' && yarn test:unit && yarn test:web",
     "test:unit": "echo 'test:unit @package/web' && vitest",
     "test:web": "echo 'test:web @package/web' && playwright test",
-    "watch": "vite",
+    "watch": "ts-node ./src/server.ts",
     "serve": "echo 'serving @package/web' && cross-env ENV=development yarn watch",
     "optimize": "echo 'optimize @package/web:client' && cross-env ENV=production vite optimize",
     "build": "echo 'build @package/web:client' && cross-env ENV=production vite build",
-    "preview": "echo 'preview @package/web' && cross-env ENV=production yarn vite preview",
-    "start": "echo 'starting @package/web' && cross-env ENV=production yarn watch preview"
+    "preview": "echo 'preview @package/web' && cross-env ENV=production yarn watch preview",
+    "start": "echo 'starting @package/web' && cross-env ENV=production yarn watch"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "~1.2.0",
