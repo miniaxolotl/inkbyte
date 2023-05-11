@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="clip-shrymp-1">
+      <rect width="1024" height="1024"/>
+    </clipPath>
+  </defs>
+  <g id="shrymp-1" clip-path="url(#clip-shrymp-1)">
+    <g id="tail" transform="translate(368.46 676.357)">
+      <path id="fin" d="M1.543,114.884C12.353,75.091,64.437,31.61,116.325,9.287s114.782-1.941,118.713,34.94c3.742,35.111-127.95,134.52-161.952,124.232S-9.267,154.677,1.543,114.884Z" transform="matrix(0.978, -0.208, 0.208, 0.978, 0, 48.883)" fill="#ff896d" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+      <path id="bottom" d="M1.543,114.884C12.353,75.091,64.437,31.61,116.325,9.287s114.782-1.941,118.713,34.94c3.742,35.111-127.95,134.52-161.952,124.232S-9.267,154.677,1.543,114.884Z" transform="translate(113.605 86.847) rotate(21)" fill="#ff896d" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+    </g>
+    <g id="body" transform="translate(35.12 360.132)">
+      <path id="body-2" data-name="body" d="M1035.861,504.429c-87.331-37.985-253.65-77.923-416.064-7.1s-233.592,157.8-233.592,290.392c0,90.692,49.273,159.8,112.181,226.492s203.062,61.061,203.062,61.061,116.263,8.7,128.511-27.69-5.064-41.065-65.321-110.761c-21.933-25.369-105.308-13.526-128.93-31.24-39.116-29.334-97.917-97.938-37.921-143.421s214.948-19.916,277.9-38.511S1123.192,542.414,1035.861,504.429Z" transform="translate(-386.205 -458.292)" fill="#ffb19f" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+      <g id="lines" transform="translate(14.911 51.107)">
+        <path id="bottom-2" data-name="bottom" d="M569.219,522.194s-6.568,47.747-37.631,78.1-77.39,36.922-77.39,36.922" transform="translate(-344.857 -130.27)" fill="none" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+        <path id="center" d="M606.6,583.408s-47.216,8.519-94.432-14.911-79.52-65.32-79.52-65.32" transform="translate(-432.644 -299.404)" fill="none" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+        <path id="top" d="M557.373,697.16s-65.321-39.228-90.881-95.141-11.36-128.511-11.36-128.511" transform="translate(-247.811 -473.508)" fill="none" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+      </g>
+      <path id="body-border" d="M1035.861,504.429c-87.331-37.985-253.65-77.923-416.064-7.1s-233.592,157.8-233.592,290.392c0,90.692,49.273,159.8,112.181,226.492s203.062,61.061,203.062,61.061,116.263,8.7,128.511-27.69-5.064-41.065-65.321-110.761c-21.933-25.369-105.308-13.526-128.93-31.24-39.116-29.334-97.917-97.938-37.921-143.421s214.948-19.916,277.9-38.511S1123.192,542.414,1035.861,504.429Z" transform="translate(-386.205 -458.292)" fill="none" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+    </g>
+    <g id="eye" transform="translate(390.165 322.803)">
+      <ellipse id="scalera" cx="81.003" cy="80.323" rx="81.003" ry="80.323" transform="translate(0 0)" fill="#575757" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+      <ellipse id="eye-light" cx="20.421" cy="20.421" rx="20.421" ry="20.421" transform="translate(73.516 39.481)" fill="#fff"/>
+    </g>
+    <path id="Path_1" data-name="Path 1" d="M627.71,650.162S783,729.767,880.715,679.107s162.469-118.685,155.448-251.4S977.7,235.612,873.746,195.074s-204.56,13.54-246.037,76.652S620.9,451.78,680.24,474.88s143.521-.67,183.322-47.17,25.193-113.37-12.865-145.8-111.483-21.535-130.791,10.185-9.649,72.23,16.081,95.949,80.94,0,80.94,0" transform="translate(-47.802 -162.478)" fill="none" stroke="#575757" stroke-linecap="round" stroke-width="12"/>
+  </g>
+</svg>

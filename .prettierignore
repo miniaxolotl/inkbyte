@@ -1,0 +1,19 @@
+/.vscode/
+# /**/ignore_*
+
+.DS_Store
+.env*
+!.env.local
+!.env*.example
+
+node_modules/
+coverage/
+/**/build/
+/**/dist/
+.rollup.cache/
+
+/.yarn/*
+!/.yarn/patches
+!/.yarn/plugins
+!/.yarn/releases
+!/.yarn/sdks

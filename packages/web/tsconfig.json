@@ -1,0 +1,47 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    /* lib options */
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "node",
+
+    /* build options */
+    "jsx": "react",
+
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client", "react"],
+    "paths": {
+      "@assets": ["src/assets"],
+      "@assets/*": ["src/assets/*"],
+      "@components": ["src/components"],
+      "@components/*": ["src/components/*"],
+      "@hooks": ["src/hooks"],
+      "@hooks/*": ["src/hooks/*"],
+      "@pages": ["src/pages"],
+      "@pages/*": ["src/pages/*"],
+      "@renderer": ["src/renderer"],
+      "@renderer/*": ["src/renderer/*"],
+      "@stores": ["src/stores"],
+      "@stores/*": ["src/stores/*"],
+      "@data": ["src/data"],
+      "@data/*": ["src/data/*"]
+    }
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "esm": true,
+    "compilerOptions": {
+      "moduleResolution": "node16"
+    }
+  },
+  "include": [
+    "./src/**/*",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "vite-env.d.ts",
+    "vite.config.ts"
+    // "api/vite-env.d.ts"
+  ]
+}

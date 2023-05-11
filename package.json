@@ -1,0 +1,83 @@
+{
+  "name": "react-directus-template",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "yarn@3.3.1",
+  "license": "GPL-3.0",
+  "author": "Elias Mawa <elias@emawa.io>",
+  "homepage": "https://github.com/celestialstag/react-directus-template#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/celestialstag/react-directus-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/celestialstag/react-directus-template/issues"
+  },
+  "engines": {
+    "node": ">16.14.0 <17.0.0"
+  },
+  "resolutions": {
+    "@emotion/react": "11.10.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "lib/*",
+    "scripts/*"
+  ],
+  "scripts": {
+    "lint": "echo 'linting @package/*' && yarn eslint . --ext .js,.ts,.tsx",
+    "lint:libs": "yarn workspaces foreach -p --from '@lib/*' run lint",
+    "lint:web": "yarn workspace @package/web lint",
+    "prettier": "yarn prettier --write .",
+    "check": "yarn workspaces foreach -pti --from '@lib/*' run check",
+    "check:watch": "yarn workspaces foreach -pti --from '@lib/*' run check:watch",
+    "service:start": "docker-compose up -d",
+    "service:stop": "docker-compose stop",
+    "directus:start": "yarn service:start directus",
+    "directus:stop": "yarn service:stop directus",
+    "services:start": "yarn service:start maria meilisearch directus",
+    "services:stop": "yarn service:stop maria meilisearch directus",
+    "test": "yarn workspaces foreach -pti --from '@lib/*' run test",
+    "test:unit": "yarn workspaces foreach -pti --from '@lib/*' run test:unit",
+    "test:web": "yarn workspace @package/web run test",
+    "watch": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run watch",
+    "watch:libs": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run watch",
+    "serve:web": "yarn workspace @package/web run serve",
+    "serve:cms": "yarn workspace @package/cms run develop",
+    "serve:keystone": "yarn workspace @package/keystone run serve",
+    "rollup": "yarn workspaces foreach -ti --from '{@lib/*,@package/*}' run rollup",
+    "rollup:watch": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run rollup:watch",
+    "optimize:web": "yarn workspace @package/web optimize",
+    "build": "yarn workspaces foreach -ti --from '{@lib/*,@package/*}' run rollup",
+    "build:web": "yarn workspace @package/web build",
+    "preview:web": "yarn workspace @package/web preview",
+    "start": "yarn workspaces foreach -pti --from '{@lib/*}' run start",
+    "start:web": "yarn workspace @package/web start",
+    "script:migrate": "yarn workspace @script/migrate start",
+    "web:build": "docker build -t ghcr.io/celestialstag/react-directus-template:0.0.1 .",
+    "web:start": "yarn service:start web"
+  },
+  "dependencies": {
+    "cross-env": "~7.0.3",
+    "dotenv": "~16.0.3",
+    "dotenv-expand": "~10.0.0",
+    "eslint-plugin-prettier": "~4.2.1",
+    "nodemon": "~2.0.22"
+  },
+  "devDependencies": {
+    "@types/jest": "~29.2.5",
+    "@types/lodash": "~4.14.191",
+    "@types/node": "~16.18.1",
+    "@typescript-eslint/eslint-plugin": "~5.58.0",
+    "@typescript-eslint/parser": "~5.58.0",
+    "eslint": "~8.31.0",
+    "eslint-config-prettier": "~8.6.0",
+    "jest": "~29.3.1",
+    "prettier": "~2.8.7",
+    "ts-jest": "~29.1.0",
+    "ts-node": "~10.9.1",
+    "typescript": "~5.0.4"
+  }
+}
