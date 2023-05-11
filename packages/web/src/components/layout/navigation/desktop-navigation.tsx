@@ -18,8 +18,10 @@ export const DesktopNavigation = ({
     <Box sx={{ ...sx, display: "flex", justifyContent: "space-between" }}>
       <DesktopNavigationList>
         <DesktopNavigationItem>
-          <Title size="h4" order={1} color="brand-red">
-            <Link color="brand-red">{title}</Link>
+          <Title size="h4" order={1}>
+            <Link href="/">
+              <Link color="brand-red">{title}</Link>
+            </Link>
           </Title>
         </DesktopNavigationItem>
       </DesktopNavigationList>
