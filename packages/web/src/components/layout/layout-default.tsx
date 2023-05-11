@@ -32,7 +32,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
           <Title size="h4" order={2}>
             <Link href="/history">
               <FiClock />
-              history
+              History
             </Link>
           </Title>
         </DesktopNavigationItem>
