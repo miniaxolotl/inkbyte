@@ -55,7 +55,7 @@ export const render = async (pageContext: PageContextServer) => {
 				<meta property="og:image" content="https://${web_config.host}/logo.svg">
 
 				<!-- Twitter -->
-				<meta property="twitter:card" content="summary_large_image">
+				<meta property="twitter:card" content="summary_small_image">
 				<meta property="twitter:url" content="https://${web_config.web_host}">
 				<meta property="twitter:title" content="${web_config.app_title}">
 				<meta property="twitter:description" content="${web_config.app_description}">
