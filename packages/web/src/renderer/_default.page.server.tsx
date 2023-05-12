@@ -52,14 +52,18 @@ export const render = async (pageContext: PageContextServer) => {
 				<meta property="og:url" content="https://${web_config.web_host}">
 				<meta property="og:title" content="${web_config.app_title}">
 				<meta property="og:description" content="${web_config.app_description}">
-				<meta property="og:image" content="https://${web_config.host}/logo.svg">
+				<meta property="og:image" content="https://${
+          web_config.host
+        }/assets/logo/default.svg">
 
 				<!-- Twitter -->
 				<meta property="twitter:card" content="summary">
 				<meta property="twitter:url" content="https://${web_config.web_host}">
 				<meta property="twitter:title" content="${web_config.app_title}">
 				<meta property="twitter:description" content="${web_config.app_description}">
-				<meta property="twitter:image" content="https://${web_config.host}/logo.svg">
+				<meta property="twitter:image" content="https://${
+          web_config.host
+        }/assets/logo/default.svg">
 
 				<!-- Styles -->
 				${dangerouslySkipEscape(styles)}
