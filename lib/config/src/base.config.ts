@@ -1,7 +1,10 @@
 const env = typeof window === "undefined" ? process.env : import.meta.env;
 
 export type IConfigEnvironment =
-  "development" | "production" | "staging" | "test";
+  | "development"
+  | "production"
+  | "staging"
+  | "test";
 export type IConfigLogErrors = false | true;
 
 export type IBaseConfig = {
@@ -20,9 +23,9 @@ export type IBaseConfig = {
   /** web config */
   web_port: number;
   web_host: string;
-  /** cms config */
-  cms_port: number;
-  cms_host: string;
+  /** dashboard config */
+  dashboard_port: number;
+  dashboard_host: string;
   /** data */
   data_dir: string;
   max_bytes: number;
@@ -52,8 +55,8 @@ export const base_config: IBaseConfig = {
   web_port: parseInt(env.WEB_PORT ?? "3001"),
   web_host: env.WEB_HOST ?? "localhost",
   /** cms config */
-  cms_port: parseInt(env.CMS_PORT ?? "3002"),
-  cms_host: env.CMS_HOST ?? "localhost",
+  dashboard_port: parseInt(env.DASHBOARD_PORT ?? "3002"),
+  dashboard_host: env.DASHBOARD_HOST ?? "localhost",
   /** data */
   data_dir: env.DATA_DIR ?? "data",
   max_bytes: parseInt(env.MAX_BYTES || `${(2 << 22) * 250}`),
