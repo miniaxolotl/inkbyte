@@ -19,13 +19,26 @@ export const FooterDefault = ({ children, sx }: FooterDefaultProps) => {
         {children && <FooterList>{children}</FooterList>}
         <FooterListItem>
           Made with <FiHeart size={14} />
-          by <Link href="https://mawa.dev">Elias Mawa</Link>
+          by
+          <Link href="https://mawa.dev" sx={{ color: "palevioletred" }}>
+            Elias Mawa
+          </Link>
         </FooterListItem>
       </FooterList>
       <FooterList>
         <FooterListItem sx={{ fontSize: 14 }}>
           <MdCopyright />
           {web_config.app_title} {new Date().getFullYear()}
+        </FooterListItem>
+        <FooterListItem sx={{ fontSize: 14 }}>
+          <Link href="/sitemap" sx={{ color: "white" }}>
+            sitemap
+          </Link>
+        </FooterListItem>
+        <FooterListItem sx={{ fontSize: 14 }}>
+          <Link href="/help" sx={{ color: "white" }}>
+            help
+          </Link>
         </FooterListItem>
       </FooterList>
     </Box>
