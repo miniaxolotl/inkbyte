@@ -1,1 +1,1 @@
-export const DomainList = ["shyrmp.co", "shrymp.one", "prwn.one"];
+export const DomainList = ["inkbyte.app", "inkbyte.co"];
