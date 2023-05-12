@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ActionIcon, Box, Drawer, Modal, Title } from "@mantine/core";
+import { ActionIcon, Box, Drawer, Title } from "@mantine/core";
 import { FiMenu } from "react-icons/fi/index.js";
 import { useDisclosure } from "@mantine/hooks";
 
