@@ -16,11 +16,11 @@ export const Link = (props: LinkProps) => {
   return (
     <Anchor
       {...props}
-      // weight={600}
+      weight={600}
       sx={(theme) => ({
         color: isActive
           ? theme.colors["brand-red"][4]
-          : theme.colors["brand-green"][4],
+          : theme.colors["brand-green"][6],
         fontFamily: "inherit",
         "&:hover": {
           color: theme.colors["brand-cerulean"][4],
