@@ -20,7 +20,7 @@
     "serve": "echo 'serving @package/web' && cross-env ENV=development yarn watch",
     "optimize": "echo 'optimize @package/web:client' && cross-env ENV=production vite optimize",
     "build": "echo 'build @package/web:client' && cross-env ENV=production vite build",
-    "preview": "echo 'preview @package/web' && cross-env ENV=production yarn vite preview",
+    "preview": "echo 'preview @package/web' && cross-env ENV=production yarn watch preview",
     "start": "echo 'starting @package/web' && cross-env ENV=production yarn watch preview"
   },
   "dependencies": {

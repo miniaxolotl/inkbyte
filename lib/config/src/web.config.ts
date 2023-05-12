@@ -21,8 +21,10 @@ export const web_config: IWebConfig = {
   web_port: parseInt(env.VITE_WEB_PORT ?? `${base_config.web_port}`),
   web_host: env.VITE_WEB_HOST ?? base_config.web_host,
   /** cms config */
-  cms_port: parseInt(env.VITE_CMS_PORT ?? `${base_config.cms_port}`),
-  cms_host: env.VITE_CMS_HOST ?? base_config.cms_host,
+  dashboard_port: parseInt(
+    env.VITE_DASHBOARD_PORT ?? `${base_config.dashboard_port}`,
+  ),
+  dashboard_host: env.VITE_DASHBOARD_HOST ?? base_config.dashboard_host,
   /** data */
   data_dir: env.VITE_DATA_DIR ?? base_config.data_dir,
   max_bytes: parseInt(env.VITE_MAX_BYTES || `${base_config.max_bytes}`),

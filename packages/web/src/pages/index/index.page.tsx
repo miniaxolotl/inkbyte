@@ -19,7 +19,7 @@ export const Page = ({}: PageProps) => {
         <Center>
           <Link href="/">
             <Image
-              src="/logo.svg"
+              src="/assets/logo/default.svg"
               alt="Logo"
               height={112}
               width={112}

@@ -4,45 +4,47 @@ import { Box, BoxProps, List, ListProps, Title } from "@mantine/core";
 
 import { Link } from "@components/core";
 
-export type DesktopNavigationProps = BoxProps & {
+export type MobileNavigationProps = BoxProps & {
   children?: React.ReactNode;
   title: string;
 };
 
-export const DesktopNavigation = ({
+export const MobileNavigation = ({
   children,
   sx,
   title,
-}: DesktopNavigationProps) => {
+}: MobileNavigationProps) => {
   return (
     <Box
       sx={{
         ...sx,
         display: "flex",
         justifyContent: "space-between",
+        display: "none",
+        visibility: "hidden",
         "@media (max-width: 680px)": {
-          display: "none",
-          visibility: "hidden",
+          display: "flex",
+          visibility: "visible",
         },
       }}
     >
-      <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem>
+      <MobileNavigationList sx={{ flex: 1 }}>
+        <MobileNavigationItem>
           <Title size="h2" order={1}>
             <Link href="/">{title}</Link>
           </Title>
-        </DesktopNavigationItem>
-      </DesktopNavigationList>
-      <DesktopNavigationList
+        </MobileNavigationItem>
+      </MobileNavigationList>
+      <MobileNavigationList
         sx={{ display: "flex", justifyContent: "flex-end", flex: 1 }}
       >
         {children}
-      </DesktopNavigationList>
+      </MobileNavigationList>
     </Box>
   );
 };
 
-const DesktopNavigationList = ({ sx, children }: ListProps) => (
+const MobileNavigationList = ({ sx, children }: ListProps) => (
   <List
     sx={{
       ...sx,
@@ -65,7 +67,7 @@ const DesktopNavigationList = ({ sx, children }: ListProps) => (
   </List>
 );
 
-export const DesktopNavigationItem = ({
+export const MobileNavigationItem = ({
   children,
 }: {
   children?: React.ReactNode;
