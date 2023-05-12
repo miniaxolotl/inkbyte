@@ -10,7 +10,7 @@ import {
   TextInput,
   TextInputProps,
 } from "@mantine/core";
-import { FiSettings } from "react-icons/fi/index.js";
+import { FiClock, FiSettings } from "react-icons/fi/index.js";
 
 export type FormCreateLinkProps = BoxProps & {
   children?: React.ReactNode;
@@ -26,7 +26,7 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
         maxWidth: 680,
         display: "flex",
         flexDirection: "column",
-        gap: 16,
+        gap: 8,
         "@media (max-width: 980px)": {
           maxWidth: 480,
         },
@@ -69,9 +69,14 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
           defaultChecked={false}
         />
       </Box>
-      <Button sx={{}} color="brand-peach" fullWidth>
-        CREATE LINK
-      </Button>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Button color="brand-peach" size="xs">
+          <FiClock />
+        </Button>
+        <Button color="brand-green" size="xs" fullWidth>
+          CREATE LINK
+        </Button>
+      </Box>
     </Box>
   );
 };
