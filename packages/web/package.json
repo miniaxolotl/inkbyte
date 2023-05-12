@@ -29,6 +29,7 @@
     "@emotion/server": "~11.10.0",
     "@emotion/styled": "~11.10.5",
     "@lib/config": "~0.0.1",
+    "@lib/data": "~0.0.1",
     "@lib/shared": "~0.0.1",
     "@lib/stande": "~0.0.1",
     "@lib/stores": "~0.0.1",
