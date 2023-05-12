@@ -1,10 +1,12 @@
 /.vscode/
 /**/ignore_*
+/packages/web/api/
 
 .DS_Store
 .env*
 !.env.local
 !.env*.example
+playwright.config.ts
 
 node_modules/
 coverage/
