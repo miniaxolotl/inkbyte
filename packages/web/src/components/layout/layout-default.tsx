@@ -8,6 +8,7 @@ import { web_config } from "@lib/config";
 import {
   DesktopNavigation,
   DesktopNavigationItem,
+  DesktopNavigationItemDropdown,
   MobileNavigation,
   MobileNavigationItem,
   MobileNavigationList,
@@ -33,13 +34,35 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       <DesktopNavigation title={web_config.app_title} sx={{ padding: 24 }}>
-        <DesktopNavigationItem>
-          <Link href={`/features/${featureList[0].slug}`}>Features</Link>
-        </DesktopNavigationItem>
+        <DesktopNavigationItemDropdown
+          items={featureList.map((feature) => ({
+            label: feature.title,
+            href: `/features/${feature.slug}`,
+          }))}
+        >
+          {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
+          <Link href={`/features`}>Features</Link>
+        </DesktopNavigationItemDropdown>
 
-        <DesktopNavigationItem>
-          <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link>
-        </DesktopNavigationItem>
+        <DesktopNavigationItemDropdown
+          items={solutionList.map((solution) => ({
+            label: solution.title,
+            href: `/solutions/${solution.slug}`,
+          }))}
+        >
+          {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
+          <Link href={`/features`}>Features</Link>
+        </DesktopNavigationItemDropdown>
+
+        {/* <DesktopNavigationItem> */}
+        {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
+        {/* <Link href={`/features`}>Features</Link> */}
+        {/* </DesktopNavigationItem> */}
+
+        {/* <DesktopNavigationItem> */}
+        {/* <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link> */}
+        {/* <Link href={`/solutions`}>Solutions</Link> */}
+        {/* </DesktopNavigationItem> */}
 
         {isLoggedIn ? (
           <DesktopNavigationItem>
@@ -49,7 +72,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
           <DesktopNavigationItem>
             <Link href="/login">Login</Link>
             <Box sx={{ "::after": { content: "'/'" } }} />
-            <Link href="/register">Register</Link>
+            <Link href="/create-account">Create Account</Link>
           </DesktopNavigationItem>
         )}
       </DesktopNavigation>
@@ -65,19 +88,37 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
               <MobileNavigationItem>
                 <Link href="/login">Login</Link>
                 <Box sx={{ "::after": { content: "'/'" } }} />
-                <Link href="/register">Register</Link>
+                <Link href="/create-account">Create Account</Link>
               </MobileNavigationItem>
             </>
           )}
         </MobileNavigationList>
-        <MobileNavigationList title="Help">
-          <MobileNavigationItem>
-            <Link href={`/features/${featureList[0].slug}`}>Features</Link>
-          </MobileNavigationItem>
-          <MobileNavigationItem>
-            <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link>
-          </MobileNavigationItem>
+
+        <MobileNavigationList title="Features">
+          {featureList.map(({ title, slug }) => (
+            <MobileNavigationItem>
+              <Link href={`/features/${slug}`}>{title}</Link>
+            </MobileNavigationItem>
+          ))}
         </MobileNavigationList>
+
+        <MobileNavigationList title="Solutions">
+          {solutionList.map(({ title, slug }) => (
+            <MobileNavigationItem>
+              <Link href={`/solutions/${slug}`}>{title}</Link>
+            </MobileNavigationItem>
+          ))}
+        </MobileNavigationList>
+
+        {/* <MobileNavigationItem> */}
+        {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
+        {/* <Link href={`/features`}>Features</Link> */}
+        {/* </MobileNavigationItem> */}
+
+        {/* <MobileNavigationItem> */}
+        {/* <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link> */}
+        {/* <Link href={`/solutions}`}>Solutions</Link> */}
+        {/* </MobileNavigationItem> */}
       </MobileNavigation>
 
       <Box sx={{ flex: 1, flexGrow: 1, padding: "16px 0" }}>{children}</Box>
