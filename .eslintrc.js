@@ -19,7 +19,7 @@ module.exports = {
   ignorePatterns: [".eslintrc.js", "jest.config.ts"],
   rules: {
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/sort-type-constituents": "error",
+    // "@typescript-eslint/sort-type-constituents": "error",
     "@typescript-eslint/prefer-ts-expect-error": "error",
     "sort-imports": [
       "error",

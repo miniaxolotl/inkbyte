@@ -18,7 +18,7 @@ module.exports = {
   ],
   rules: {
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/sort-type-constituents": "error",
+    // "@typescript-eslint/sort-type-constituents": "error",
     "sort-imports": ["error"],
   },
   settings: {

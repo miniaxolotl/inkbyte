@@ -133,9 +133,42 @@ export const MobileNavigationItem = ({
     <Title
       order={order ?? 3}
       size={size ?? "h3"}
-      sx={{ display: "flex", alignItems: "center", gap: 2 }}
+      sx={{ display: "flex", alignItems: "center", gap: 4 }}
     >
       {children}
     </Title>
+  </List.Item>
+);
+
+export const MobileNavigationItemGroup = ({
+  children,
+  size,
+  order,
+  items,
+}: {
+  children?: React.ReactNode;
+  size?: string;
+  order?: TitleOrder;
+  items?: { label: string; href: string }[];
+}) => (
+  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+    <MobileNavigationList>
+      <MobileNavigationItem>
+        <Title
+          order={order ?? 3}
+          size={size ?? "h4"}
+          sx={{ display: "flex", alignItems: "center", gap: 4 }}
+        >
+          {children}
+        </Title>
+      </MobileNavigationItem>
+
+      {items &&
+        items.map(({ label, href }) => (
+          <MobileNavigationItem>
+            <Link href={href}>{label}</Link>
+          </MobileNavigationItem>
+        ))}
+    </MobileNavigationList>
   </List.Item>
 );

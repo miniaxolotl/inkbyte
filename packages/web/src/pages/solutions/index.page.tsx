@@ -1,9 +1,11 @@
 import React from "react";
 
 import { Box, Container, Title } from "@mantine/core";
-import { FiTool } from "react-icons/fi/index.js";
+
+import { solutionList } from "@lib/data";
 
 import { LayoutDefault } from "@components/layout";
+import { Link } from "@components/core";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type PageProps = {};
@@ -14,17 +16,19 @@ export const Page = ({}: PageProps) => {
     <>
       <Container>
         <Title size="h2" order={2} color="brand-blue">
-          Register
+          Solutions
         </Title>
         <Box>
-          <Title
-            size="h3"
-            order={3}
-            sx={{ display: "flex", alignItems: "center", gap: 4 }}
-          >
-            TODO
-            <FiTool />
-          </Title>
+          {solutionList.map(({ slug, title }) => (
+            <Title
+              order={3}
+              size="h3"
+              key={slug}
+              sx={{ display: "flex", gap: 12 }}
+            >
+              <Link href={`/solutions/${slug}`}>{title}</Link>
+            </Title>
+          ))}
         </Box>
       </Container>
     </>

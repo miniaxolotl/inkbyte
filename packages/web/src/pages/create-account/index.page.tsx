@@ -4,7 +4,7 @@ import { ActionIcon, Box, Container, Text, Title } from "@mantine/core";
 import { IoLogoApple, IoLogoGoogle } from "react-icons/io/index.js";
 
 import { Link, TextDivider } from "@components/core";
-import { FormLogin } from "@components/forms";
+import { FormRegister } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -25,15 +25,15 @@ export const Page = ({}: PageProps) => {
             alignItems: "center",
           }}
         >
-          Login
+          Create Account
         </Title>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <Text sx={{ textAlign: "center" }}>
-            Don't have an account? <Link href="/login">Create Account</Link>
+            Already have an account? <Link href="/login">Login</Link>
           </Text>
           <Box>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <FormLogin />
+              <FormRegister />
             </Box>
             <TextDivider sx={{ maxWidth: 680 }}>OR</TextDivider>
             <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>

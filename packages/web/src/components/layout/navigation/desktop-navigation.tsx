@@ -5,6 +5,7 @@ import {
   BoxProps,
   List,
   ListProps,
+  Menu,
   Title,
   TitleOrder,
 } from "@mantine/core";
@@ -83,9 +84,52 @@ export const DesktopNavigationItem = ({
     <Title
       order={order ?? 3}
       size={size ?? "h4"}
-      sx={{ display: "flex", alignItems: "center", gap: 2 }}
+      sx={{ display: "flex", alignItems: "center", gap: 4 }}
     >
       {children}
     </Title>
+  </List.Item>
+);
+
+export const DesktopNavigationItemDropdown = ({
+  children,
+  size,
+  order,
+  items,
+}: {
+  children?: React.ReactNode;
+  size?: string;
+  order?: TitleOrder;
+  items?: { label: string; href: string }[];
+}) => (
+  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+    <Menu trigger="hover" shadow="md" position="bottom-start" keepMounted>
+      <Menu.Target>
+        <Title
+          order={order ?? 3}
+          size={size ?? "h4"}
+          sx={{ display: "flex", alignItems: "center", gap: 4 }}
+        >
+          {children}
+        </Title>
+      </Menu.Target>
+
+      <Menu.Dropdown
+        sx={{
+          border: "1px solid #ccc",
+          borderRadius: 4,
+        }}
+      >
+        {items &&
+          items.map(({ label, href }) => (
+            <Menu.Item
+              sx={{ padding: "4px 8px", borderRadius: 4 }}
+              color="brand-blue"
+            >
+              <Link href={href}>{label}</Link>
+            </Menu.Item>
+          ))}
+      </Menu.Dropdown>
+    </Menu>
   </List.Item>
 );
