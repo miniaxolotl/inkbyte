@@ -7,7 +7,9 @@ import {
   Drawer,
   List,
   ListProps,
+  Text,
   Title,
+  TitleOrder,
 } from "@mantine/core";
 import { FiMenu } from "react-icons/fi/index.js";
 import { useDisclosure } from "@mantine/hooks";
@@ -45,10 +47,8 @@ export const MobileNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem>
-          <Title size="h2" order={1}>
-            <Link href="/">{title}</Link>
-          </Title>
+        <DesktopNavigationItem size="h2" order={2}>
+          <Link href="/">{title}</Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>
 
@@ -83,31 +83,59 @@ export const MobileNavigation = ({
   );
 };
 
-export const MobileNavigationList = ({ sx, children }: ListProps) => (
-  <List
-    sx={{
-      ...sx,
-      display: "flex",
-      flexDirection: "column",
-      gap: 12,
-      li: {
-        listStyle: "none",
+export type MobileNavigationListProps = ListProps & {
+  title?: string;
+};
+
+export const MobileNavigationList = ({
+  sx,
+  children,
+  title,
+}: MobileNavigationListProps) => (
+  <Box>
+    {title && (
+      <Text size="xs" sx={{ fontWeight: 600 }}>
+        {title}
+      </Text>
+    )}
+    <List
+      sx={{
+        ...sx,
         display: "flex",
-        alignItems: "center",
-      },
-      "span, a": {
-        display: "flex",
-        alignItems: "center",
-        gap: 4,
-      },
-    }}
-  >
-    {children}
-  </List>
+        flexDirection: "column",
+        li: {
+          listStyle: "none",
+          display: "flex",
+          alignItems: "center",
+        },
+        "span, a": {
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+        },
+      }}
+    >
+      {children}
+    </List>
+  </Box>
 );
 
 export const MobileNavigationItem = ({
   children,
+  size,
+  order,
 }: {
   children?: React.ReactNode;
-}) => <List.Item>{children}</List.Item>;
+  size?: string;
+  order?: TitleOrder;
+}) => (
+  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+    <Title
+      order={order ?? 3}
+      size={size ?? "h3"}
+      sx={{ display: "flex", alignItems: "center", gap: 2 }}
+    >
+      {children}
+    </Title>
+  </List.Item>
+);

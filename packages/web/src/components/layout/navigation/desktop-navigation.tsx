@@ -1,6 +1,13 @@
 import React from "react";
 
-import { Box, BoxProps, List, ListProps, Title } from "@mantine/core";
+import {
+  Box,
+  BoxProps,
+  List,
+  ListProps,
+  Title,
+  TitleOrder,
+} from "@mantine/core";
 
 import { Link } from "@components/core";
 
@@ -27,10 +34,8 @@ export const DesktopNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem>
-          <Title size="h2" order={1}>
-            <Link href="/">{title}</Link>
-          </Title>
+        <DesktopNavigationItem size="h2" order={2}>
+          <Link href="/">{title}</Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>
       <DesktopNavigationList
@@ -67,6 +72,20 @@ export const DesktopNavigationList = ({ sx, children }: ListProps) => (
 
 export const DesktopNavigationItem = ({
   children,
+  size,
+  order,
 }: {
   children?: React.ReactNode;
-}) => <List.Item>{children}</List.Item>;
+  size?: string;
+  order?: TitleOrder;
+}) => (
+  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+    <Title
+      order={order ?? 3}
+      size={size ?? "h4"}
+      sx={{ display: "flex", alignItems: "center", gap: 2 }}
+    >
+      {children}
+    </Title>
+  </List.Item>
+);
