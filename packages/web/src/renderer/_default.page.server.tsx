@@ -54,7 +54,7 @@ export const render = async (pageContext: PageContextServer) => {
 				<meta property="og:description" content="${web_config.app_description}">
 				<meta property="og:image" content="https://${
           web_config.host
-        }/assets/logo/default.svg">
+        }/assets/logo/default.png">
 
 				<!-- Twitter -->
 				<meta property="twitter:card" content="summary">
@@ -63,7 +63,7 @@ export const render = async (pageContext: PageContextServer) => {
 				<meta property="twitter:description" content="${web_config.app_description}">
 				<meta property="twitter:image" content="https://${
           web_config.host
-        }/assets/logo/default.svg">
+        }/assets/logo/default.png">
 
 				<!-- Styles -->
 				${dangerouslySkipEscape(styles)}
