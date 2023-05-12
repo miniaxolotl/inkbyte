@@ -23,16 +23,29 @@ export const Page = ({ heading }: PageProps) => {
   return (
     <>
       <Container>
-        <Title size="h2" order={2} color="brand-blue">
+        <Title size="h1" order={1} color="brand-blue">
           {heading_text}
         </Title>
-        <Box sx={{ display: "flex", gap: 12 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 12,
+            "@media (max-width: 680px)": {
+              flexDirection: "column",
+            },
+          }}
+        >
           {featureList.map(({ slug, title }, index) => (
             <Box key={slug} sx={{ display: "flex", gap: 12 }}>
               {!!index && (
                 <Box
                   key={`${slug}-divider`}
-                  sx={{ "::after": { content: '"-"' } }}
+                  sx={{
+                    "::after": { content: '"-"' },
+                    "@media (max-width: 680px)": {
+                      display: "none",
+                    },
+                  }}
                 />
               )}
               <Link href={`/features/${slug}`}>{title}</Link>
@@ -41,8 +54,8 @@ export const Page = ({ heading }: PageProps) => {
         </Box>
         <Box>
           <Title
-            size="h3"
-            order={3}
+            size="h2"
+            order={2}
             sx={{ display: "flex", alignItems: "center", gap: 4 }}
           >
             TODO

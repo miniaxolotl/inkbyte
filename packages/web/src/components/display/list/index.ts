@@ -1,2 +1,2 @@
 export * from "./base-list";
-export * from "./featured-list-item";
+export * from "./feature-list-item";

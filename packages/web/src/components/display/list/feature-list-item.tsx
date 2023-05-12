@@ -5,7 +5,7 @@ import { FiCheckCircle } from "react-icons/fi/index.js";
 import type { IconType } from "react-icons/lib";
 import { Link } from "@components/core";
 
-type FeaturedListItemProps = PaperProps & {
+type FeatureListItemProps = PaperProps & {
   item: {
     slug: string;
     title: string;
@@ -15,9 +15,9 @@ type FeaturedListItemProps = PaperProps & {
   };
 };
 
-export const FeaturedListItem = ({
+export const FeatureListItem = ({
   item: { slug, title, description, benefits, Icon },
-}: FeaturedListItemProps) => (
+}: FeatureListItemProps) => (
   <Paper
     shadow="md"
     p="md"
@@ -30,7 +30,7 @@ export const FeaturedListItem = ({
     }}
     withBorder
   >
-    <Link href={`/solutions/${slug}`} color="unset">
+    <Link href={`/features/${slug}`} color="unset">
       <Title
         size="h3"
         order={3}

@@ -55,7 +55,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
       </DesktopNavigation>
 
       <MobileNavigation title={web_config.app_title} sx={{ padding: 24 }}>
-        <MobileNavigationList>
+        <MobileNavigationList title="Account">
           {isLoggedIn ? (
             <MobileNavigationItem>
               <Link href="/dashboard">Dashboard</Link>
@@ -69,9 +69,13 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
               </MobileNavigationItem>
             </>
           )}
-
+        </MobileNavigationList>
+        <MobileNavigationList title="Help">
           <MobileNavigationItem>
-            <Link href="/features">Features</Link>
+            <Link href={`/features/${featureList[0].slug}`}>Features</Link>
+          </MobileNavigationItem>
+          <MobileNavigationItem>
+            <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link>
           </MobileNavigationItem>
         </MobileNavigationList>
       </MobileNavigation>
