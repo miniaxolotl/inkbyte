@@ -14,7 +14,7 @@ export const Page = ({}: PageProps) => {
     <>
       <Container>
         <Title size="h2" order={2} color="brand-blue">
-          Login
+          Help
         </Title>
         <Box>
           <Title

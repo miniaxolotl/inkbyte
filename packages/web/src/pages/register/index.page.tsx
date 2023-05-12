@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Container } from "@mantine/core";
+import { Box, Container, Title } from "@mantine/core";
+import { FiTool } from "react-icons/fi/index.js";
 
 import { LayoutDefault } from "@components/layout";
 
@@ -12,9 +13,19 @@ export const Page = ({}: PageProps) => {
   return (
     <>
       <Container>
-        <Container sx={{ textAlign: "center" }}>
-          <h1>Register</h1>
-        </Container>
+        <Title size="h2" order={2} color="brand-blue">
+          Register
+        </Title>
+        <Box>
+          <Title
+            size="h3"
+            order={3}
+            sx={{ display: "flex", alignItems: "center", gap: 4 }}
+          >
+            TODO
+            <FiTool />
+          </Title>
+        </Box>
       </Container>
     </>
   );
