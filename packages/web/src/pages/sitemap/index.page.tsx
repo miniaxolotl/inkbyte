@@ -2,11 +2,12 @@ import React from "react";
 
 import { Box, Container, List, Text, Title } from "@mantine/core";
 
+import { featureList, solutionList } from "@lib/data";
 import { DomainList } from "@lib/shared";
+import { web_config } from "@lib/config";
 
 import { LayoutDefault } from "@components/layout";
 import { Link } from "@components/core";
-import { web_config } from "@lib/config";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type PageProps = {};
@@ -25,15 +26,27 @@ export const Page = ({}: PageProps) => {
           </Title>
           <Text>
             <List>
-              {["/features", "/login", "/register", "/sitemap", "/help"].map(
-                (path) => (
-                  <List.Item key={path}>
-                    <Link href={`https://${web_config.web_host}${path}`}>
-                      {`https://www.${web_config.web_host}${path}`}
-                    </Link>
-                  </List.Item>
-                ),
-              )}
+              {["/login", "/register", "/sitemap", "/help"].map((path) => (
+                <List.Item key={path}>
+                  <Link href={path}>
+                    {`https://www.${web_config.web_host}${path}`}
+                  </Link>
+                </List.Item>
+              ))}
+              {featureList.map(({ slug }) => (
+                <List.Item key={slug}>
+                  <Link href={`/features/${slug}`}>
+                    {`https://www.${web_config.web_host}/features/${slug}`}
+                  </Link>
+                </List.Item>
+              ))}
+              {solutionList.map(({ slug }) => (
+                <List.Item key={slug}>
+                  <Link href={`/solutions/${slug}`}>
+                    {`https://www.${web_config.web_host}/solutions/${slug}`}
+                  </Link>
+                </List.Item>
+              ))}
               <List.Item>
                 <Link href={`https://${web_config.dashboard_host}`}>
                   {`https://www.${web_config.dashboard_host}`}

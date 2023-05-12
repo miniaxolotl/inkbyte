@@ -1,1 +1,2 @@
-export * from "./waves";
+export * from "./Wave";
+export * from "./list";

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<url>
+	<!-- <url>
 		<loc>https://ssyofcanada.org/</loc>
 		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
 		<priority>1.00</priority>
@@ -54,5 +54,5 @@
 		<loc>https://ssyofcanada.org/contact-us</loc>
 		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
 		<priority>0.52</priority>
-	</url>
+	</url> -->
 </urlset>

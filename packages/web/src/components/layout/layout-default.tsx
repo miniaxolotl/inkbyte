@@ -1,9 +1,8 @@
 import React from "react";
 
-import { ActionIcon, Box, Drawer, Title } from "@mantine/core";
-import { FiMenu } from "react-icons/fi/index.js";
-import { useDisclosure } from "@mantine/hooks";
+import { Box } from "@mantine/core";
 
+import { featureList, solutionList } from "@lib/data";
 import { web_config } from "@lib/config";
 
 import {
@@ -11,6 +10,7 @@ import {
   DesktopNavigationItem,
   MobileNavigation,
   MobileNavigationItem,
+  MobileNavigationList,
 } from "@components/layout/navigation";
 import { FooterDefault } from "@components/layout/footer";
 import { Link } from "@components/core";
@@ -21,7 +21,7 @@ export type LayoutDefaultProps = {
 };
 
 export const Content = ({ children }: { children: React.ReactNode }) => {
-  const [opened, { open, close }] = useDisclosure(false);
+  const isLoggedIn = false;
 
   return (
     <Box
@@ -34,79 +34,46 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
     >
       <DesktopNavigation title={web_config.app_title} sx={{ padding: 24 }}>
         <DesktopNavigationItem>
-          <Title size="h4" order={2}>
-            <Link href="/features">Features</Link>
-          </Title>
+          <Link href={`/features/${featureList[0].slug}`}>Features</Link>
         </DesktopNavigationItem>
 
         <DesktopNavigationItem>
-          <Title size="h4" order={2}>
+          <Link href={`/solutions/${solutionList[0].slug}`}>Solutions</Link>
+        </DesktopNavigationItem>
+
+        {isLoggedIn ? (
+          <DesktopNavigationItem>
             <Link href="/dashboard">Dashboard</Link>
-          </Title>
-        </DesktopNavigationItem>
-        {/* <DesktopNavigationItem>
-          <ActionIcon variant="filled" color="brand-blue">
-            <FiClock />
-          </ActionIcon>
-        </DesktopNavigationItem> */}
-        <DesktopNavigationItem>
-          <Title size="h4" order={2}>
+          </DesktopNavigationItem>
+        ) : (
+          <DesktopNavigationItem>
             <Link href="/login">Login</Link>
-          </Title>
-          /
-          <Title size="h4" order={2}>
+            <Box sx={{ "::after": { content: "'/'" } }} />
             <Link href="/register">Register</Link>
-          </Title>
-        </DesktopNavigationItem>
-        {/* <DesktopNavigationItem>
-          <Link href="/register">
-            <Button leftIcon={<FiUser />} color="brand-cerulean">
-              Register
-            </Button>
-          </Link>
-        </DesktopNavigationItem> */}
-        {/* <DesktopNavigationItem>
-          <Title size="h4" order={2}>
-            <Link href="/register">
-              Register
-              <FiUserPlus />
-            </Link>
-          </Title>
-        </DesktopNavigationItem> */}
-        {/* <DesktopNavigationItem>
-          <Title size="h4" order={2}>
-            <Link href="/login">
-              Login
-              <FiLogIn />
-            </Link>
-          </Title>
-        </DesktopNavigationItem> */}
+          </DesktopNavigationItem>
+        )}
       </DesktopNavigation>
 
       <MobileNavigation title={web_config.app_title} sx={{ padding: 24 }}>
-        <MobileNavigationItem>
-          <Drawer
-            opened={opened}
-            onClose={close}
-            title="Menu"
-            size="xs"
-            position="right"
-            overlayProps={{
-              opacity: 0.5,
-              blur: 4,
-            }}
-            sx={{
-              ".mantine-Drawer-header": { padding: 24 },
-              "	.mantine-Drawer-close": { width: 24, height: 24 },
-            }}
-          >
-            {/* Drawer content */}
-          </Drawer>
+        <MobileNavigationList>
+          {isLoggedIn ? (
+            <MobileNavigationItem>
+              <Link href="/dashboard">Dashboard</Link>
+            </MobileNavigationItem>
+          ) : (
+            <>
+              <MobileNavigationItem>
+                <Link href="/login">Login</Link>
+                <Box sx={{ "::after": { content: "'/'" } }} />
+                <Link href="/register">Register</Link>
+              </MobileNavigationItem>
+            </>
+          )}
 
-          <ActionIcon size="xl" onClick={open}>
-            <FiMenu size={24} />
-          </ActionIcon>
-        </MobileNavigationItem>
+          <MobileNavigationItem>
+            <Link href="/features">Features</Link>
+          </MobileNavigationItem>
+        </MobileNavigationList>
       </MobileNavigation>
 
       <Box sx={{ flex: 1, flexGrow: 1, padding: "16px 0" }}>{children}</Box>

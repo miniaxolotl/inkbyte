@@ -1,9 +1,11 @@
 import React from "react";
 
-import { Center, Container, Image } from "@mantine/core";
+import { Box, Container, Divider, Image } from "@mantine/core";
 
 import { DomainList } from "@lib/shared";
+import { featureList } from "@lib/data";
 
+import { BaseList, FeaturedListItem } from "@components/display";
 import { FormCreateLink } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
 import { Link } from "@components/core";
@@ -15,21 +17,37 @@ type PageProps = {};
 export const Page = ({}: PageProps) => {
   return (
     <>
-      <Container>
-        <Center>
-          <Link href="/">
-            <Image
-              src="/assets/logo/default.svg"
-              alt="Logo"
-              height={112}
-              width={112}
-              sx={{ padding: 16 }}
-            />
-          </Link>
-        </Center>
-        <Center>
-          <FormCreateLink links={DomainList} />
-        </Center>
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 72,
+        }}
+      >
+        <Box>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Link href="/">
+              <Image
+                src="/assets/logo/default.svg"
+                alt="Logo"
+                height={112}
+                width={112}
+                sx={{ padding: 16 }}
+              />
+            </Link>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <FormCreateLink links={DomainList} />
+          </Box>
+        </Box>
+
+        <Divider />
+
+        <BaseList
+          items={featureList}
+          id_key="title"
+          item_type={FeaturedListItem}
+        />
       </Container>
     </>
   );

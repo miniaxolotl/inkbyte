@@ -42,7 +42,7 @@ export const DesktopNavigation = ({
   );
 };
 
-const DesktopNavigationList = ({ sx, children }: ListProps) => (
+export const DesktopNavigationList = ({ sx, children }: ListProps) => (
   <List
     sx={{
       ...sx,
