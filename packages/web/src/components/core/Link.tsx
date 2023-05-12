@@ -16,7 +16,7 @@ export const Link = (props: LinkProps) => {
   return (
     <Anchor
       {...props}
-      weight={600}
+      // weight={600}
       sx={(theme) => ({
         color: isActive
           ? theme.colors["brand-red"][4]
