@@ -5,7 +5,7 @@ import { Box, Container, Divider, Image } from "@mantine/core";
 import { DomainList } from "@lib/shared";
 import { featureList } from "@lib/data";
 
-import { BaseList, FeaturedListItem } from "@components/display";
+import { BaseList, FeatureListItem } from "@components/display";
 import { FormCreateLink } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
 import { Link } from "@components/core";
@@ -46,7 +46,7 @@ export const Page = ({}: PageProps) => {
         <BaseList
           items={featureList}
           id_key="title"
-          item_type={FeaturedListItem}
+          item_type={FeatureListItem}
         />
       </Container>
     </>

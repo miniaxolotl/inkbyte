@@ -92,8 +92,22 @@ const ITextInput = (props: TextInputProps) => (
         padding: "4px 16px",
         fontSize: 12,
       },
-      ":first-of-type": { input: { borderRadius: "4px 0px 0px 4px" } },
-      ":last-of-type": { input: { borderRadius: "0px 4px 4px 0px" } },
+      ":first-of-type": {
+        input: {
+          borderRadius: "4px 0px 0px 4px",
+          "@media (max-width: 680px)": {
+            borderRadius: "4px 4px 0px 0px",
+          },
+        },
+      },
+      ":last-of-type": {
+        input: {
+          borderRadius: "0px 4px 4px 0px",
+          "@media (max-width: 680px)": {
+            borderRadius: "0px 0px 4px 4px",
+          },
+        },
+      },
       ":only-of-type": { input: { borderRadius: "4px" } },
     }}
   />
@@ -118,8 +132,22 @@ const ISelectInput = (props: SelectProps) => (
       ".mantine-Select-item": {
         // margin: 2,
       },
-      ":first-of-type": { input: { borderRadius: "4px 0px 0px 4px" } },
-      ":last-of-type": { input: { borderRadius: "0px 4px 4px 0px" } },
+      ":first-of-type": {
+        input: {
+          borderRadius: "4px 0px 0px 4px",
+          "@media (max-width: 680px)": {
+            borderRadius: "4px 4px 0px 0px",
+          },
+        },
+      },
+      ":last-of-type": {
+        input: {
+          borderRadius: "0px 4px 4px 0px",
+          "@media (max-width: 680px)": {
+            borderRadius: "0px 0px 4px 4px",
+          },
+        },
+      },
     }}
     radius={0}
   />
