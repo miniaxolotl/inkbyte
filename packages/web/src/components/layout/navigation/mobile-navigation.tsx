@@ -18,7 +18,6 @@ export const MobileNavigation = ({
     <Box
       sx={{
         ...sx,
-        display: "flex",
         justifyContent: "space-between",
         display: "none",
         visibility: "hidden",

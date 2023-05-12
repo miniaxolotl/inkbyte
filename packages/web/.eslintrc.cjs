@@ -16,7 +16,6 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
-  ignorePatterns: ["playwright.config.ts"],
   rules: {
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/sort-type-constituents": "error",
