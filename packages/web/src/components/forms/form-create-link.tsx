@@ -4,9 +4,9 @@ import {
   Box,
   BoxProps,
   Button,
-  Checkbox,
   Select,
   SelectProps,
+  Switch,
   TextInput,
   TextInputProps,
 } from "@mantine/core";
@@ -61,14 +61,21 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
         />
         <ITextInput placeholder="custom alias (optional)" sx={{ flex: 3 }} />
       </Box>
-      {/* <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Checkbox
-          label="Enable Analytics"
+      <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {/* <Checkbox
+          // label="Enable Analytics"
+          label="Link Redirect"
           sx={{ flex: 1 }}
-          color="brand-peach"
-          defaultChecked={false}
+          color="brand-green"
+          defaultChecked={true}
+        /> */}
+        <Switch
+          label="Advanced Analytics"
+          sx={{ flex: 1 }}
+          color="brand-green"
+          defaultChecked={true}
         />
-      </Box> */}
+      </Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Button color="brand-peach" size="xs">
           <FiClock />
