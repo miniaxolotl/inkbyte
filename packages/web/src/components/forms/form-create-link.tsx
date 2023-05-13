@@ -61,14 +61,14 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
         />
         <ITextInput placeholder="custom alias (optional)" sx={{ flex: 3 }} />
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {/* <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Checkbox
           label="Enable Analytics"
           sx={{ flex: 1 }}
           color="brand-peach"
           defaultChecked={false}
         />
-      </Box>
+      </Box> */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Button color="brand-peach" size="xs">
           <FiClock />
