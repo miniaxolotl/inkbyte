@@ -55,9 +55,15 @@
     "start:web": "yarn workspace @package/web start",
     "script:migrate": "yarn workspace @script/migrate start",
     "web:build": "docker build -t ghcr.io/celestialstag/react-directus-template:0.0.1 .",
-    "web:start": "yarn service:start web"
+    "web:start": "yarn service:start web",
+    "db:reset": "MYSQL_CONNECTION_STRING=$MYSQL_ROOT_CONNECTION_STRING yarn prisma migrate reset --force --skip-seed",
+    "db:generate": "yarn prisma generate",
+    "db:push": "yarn prisma db push",
+    "db:migrate": "MYSQL_CONNECTION_STRING=$MYSQL_ROOT_CONNECTION_STRING yarn prisma migrate dev --skip-seed",
+    "db:deploy": "MYSQL_CONNECTION_STRING=$MYSQL_ROOT_CONNECTION_STRING yarn prisma migrate deploy"
   },
   "dependencies": {
+    "@prisma/client": "^4.14.0",
     "cross-env": "~7.0.3",
     "d3-time-format": "^4.1.0",
     "date-fns": "~2.30.0",
@@ -65,7 +71,8 @@
     "dotenv-expand": "~10.0.0",
     "eslint-plugin-prettier": "~4.2.1",
     "lodash": "^4.17.21",
-    "nodemon": "~2.0.22"
+    "nodemon": "~2.0.22",
+    "prisma": "^4.14.0"
   },
   "devDependencies": {
     "@types/d3-time-format": "^4",
