@@ -149,7 +149,7 @@ export const MobileNavigationItemGroup = ({
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
-  items?: { label: string; href: string }[];
+  items?: { label: string; href: string; slug: string }[];
 }) => (
   <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
     <MobileNavigationList>
@@ -164,8 +164,8 @@ export const MobileNavigationItemGroup = ({
       </MobileNavigationItem>
 
       {items &&
-        items.map(({ label, href }) => (
-          <MobileNavigationItem>
+        items.map(({ label, href, slug }) => (
+          <MobileNavigationItem key={slug}>
             <Link href={href}>{label}</Link>
           </MobileNavigationItem>
         ))}

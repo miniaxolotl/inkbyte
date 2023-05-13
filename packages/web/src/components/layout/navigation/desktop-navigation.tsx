@@ -100,7 +100,7 @@ export const DesktopNavigationItemDropdown = ({
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
-  items?: { label: string; href: string }[];
+  items?: { label: string; href: string; slug: string }[];
 }) => (
   <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
     <Menu trigger="hover" shadow="md" position="bottom-start" keepMounted>
@@ -121,8 +121,9 @@ export const DesktopNavigationItemDropdown = ({
         }}
       >
         {items &&
-          items.map(({ label, href }) => (
+          items.map(({ label, href, slug }) => (
             <Menu.Item
+              key={slug}
               sx={{ padding: "4px 8px", borderRadius: 4 }}
               color="brand-blue"
             >
