@@ -6,8 +6,8 @@ import {
 
 export const featureList = [
   {
-    slug: "link-shortening",
-    title: "Link Shortening",
+    slug: "link-shortener",
+    title: "Link Shortener",
     subtitle: "Customize your links and track your audience engagement.",
     description:
       "InkByte simplifies your links by creating short, clean links that are easy to remember and share. Its powerful analytics tracks link clicks to help you optimize your marketing campaigns, saving you time and boosting your online presence.",
