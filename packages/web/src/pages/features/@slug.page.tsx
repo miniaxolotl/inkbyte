@@ -83,16 +83,18 @@ export const Page = ({ heading }: PageProps) => {
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              color="brand-blue"
-              sx={{
-                "@media (max-width: 680px)": {
-                  flexGrow: 1,
-                },
-              }}
-            >
-              Get Started Free
-            </Button>
+            <Link href="/create-account">
+              <Button
+                color="brand-blue"
+                sx={{
+                  "@media (max-width: 680px)": {
+                    flexGrow: 1,
+                  },
+                }}
+              >
+                Get Started Free
+              </Button>
+            </Link>
           </Box>
 
           <Box>
