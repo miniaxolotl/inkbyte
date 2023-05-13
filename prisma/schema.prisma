@@ -144,6 +144,7 @@ model LinkLog {
   region     String? @db.VarChar(128)
   latitude   Float?  @db.Float
   longitude  Float?  @db.Float
+  delta      Int?    @db.UnsignedInt
 
   updated DateTime  @updatedAt
   created DateTime  @default(now())

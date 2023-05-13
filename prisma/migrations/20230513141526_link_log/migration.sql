@@ -10,6 +10,7 @@ CREATE TABLE `LinkLog` (
 	`region` VARCHAR(128) NULL,
 	`latitude` FLOAT NULL,
 	`longitude` FLOAT NULL,
+	`delta` INTEGER UNSIGNED NULL,
 	`updated` DATETIME(3) NOT NULL,
 	`created` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`deleted` DATETIME(3) NULL,
