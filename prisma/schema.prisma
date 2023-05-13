@@ -1,0 +1,155 @@
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_CONNECTION_STRING")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["filteredRelationCount", "fullTextSearch", "fullTextIndex"]
+}
+
+model Role {
+  id        Int    @default(autoincrement()) @db.UnsignedInt
+  slug      String @unique @db.VarChar(32)
+  authority Int    @db.UnsignedTinyInt
+
+  description String? @db.TinyText
+
+  updated DateTime  @updatedAt
+  created DateTime  @default(now())
+  deleted DateTime?
+
+  users UserRole[]
+
+  @@id([id])
+}
+
+model User {
+  id                 Int       @default(autoincrement()) @db.UnsignedInt
+  uid                String    @unique @db.VarChar(24)
+  email              String    @unique @db.VarChar(64)
+  password           String    @db.VarChar(128)
+  last_ip            String?   @db.VarChar(128)
+  verification_date  DateTime?
+  verification_token String?   @db.VarChar(24)
+  apple_token        String?   @unique @db.VarChar(128) // apple token
+  google_token       String?   @unique @db.VarChar(128) // google token
+  marketing_opt_out  DateTime?
+
+  updated_by Int? @db.UnsignedInt
+
+  updated DateTime  @updatedAt
+  created DateTime  @default(now())
+  deleted DateTime?
+
+  roles UserRole[]
+  links Link[]
+
+  @@id([id])
+}
+
+model UserRole {
+  user_id Int @db.UnsignedInt
+  role_id Int @db.UnsignedInt
+
+  updated_by Int @db.UnsignedInt
+
+  updated DateTime  @updatedAt
+  created DateTime  @default(now())
+  deleted DateTime?
+
+  role Role @relation(fields: [role_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@id([role_id, user_id])
+}
+
+model Image {
+  id   Int    @default(autoincrement()) @db.UnsignedInt
+  uid  String @unique @db.VarChar(256)
+  slug String @unique @db.VarChar(256)
+
+  bucket   String  @db.VarChar(128)
+  mime     String  @db.VarChar(32)
+  path     String  @db.VarChar(128)
+  filename String  @db.VarChar(128)
+  filetype String? @db.VarChar(32)
+  endpoint String  @db.VarChar(32)
+  region   String  @db.VarChar(32)
+
+  checksum String? @db.Text
+
+  updated_by Int @db.UnsignedInt
+
+  updated  DateTime  @updatedAt
+  created  DateTime  @default(now())
+  deleted  DateTime?
+  archived DateTime?
+
+  links Link[]
+
+  @@id([id])
+}
+
+model Domain {
+  id   Int    @default(autoincrement()) @db.UnsignedInt
+  slug String @unique @db.VarChar(24)
+
+  updated_by Int @db.UnsignedInt
+
+  updated  DateTime  @updatedAt
+  created  DateTime  @default(now())
+  deleted  DateTime?
+  archived DateTime?
+
+  @@id([id])
+}
+
+model Link {
+  id        Int    @default(autoincrement()) @db.UnsignedInt
+  slug      String @unique @db.VarChar(24)
+  domain_id Int    @db.UnsignedInt
+  user_id   Int?   @db.UnsignedInt
+  image_id  Int?   @db.UnsignedInt
+  long_url  String @db.VarChar(512)
+
+  is_redirect Int     @db.UnsignedInt
+  cta_heading String? @db.Text
+  cta_body    String? @db.Text
+  cta_action  String? @db.Text
+
+  updated_by Int @db.UnsignedInt
+
+  updated  DateTime  @updatedAt
+  created  DateTime  @default(now())
+  deleted  DateTime?
+  archived DateTime?
+
+  user    User?     @relation(fields: [user_id], references: [id])
+  image   Image?    @relation(fields: [image_id], references: [id])
+  LinkLog LinkLog[]
+
+  @@id([id])
+}
+
+model LinkLog {
+  link_id    Int    @default(autoincrement()) @db.UnsignedInt
+  session_id String @unique @db.VarChar(256)
+
+  ip_address String? @db.VarChar(128)
+  user_agent String? @db.VarChar(256)
+  referrer   String? @db.VarChar(256)
+  country    String? @db.VarChar(128)
+  city       String? @db.VarChar(128)
+  region     String? @db.VarChar(128)
+  latitude   Float?  @db.Float
+  longitude  Float?  @db.Float
+
+  updated DateTime  @updatedAt
+  created DateTime  @default(now())
+  deleted DateTime?
+
+  link Link? @relation(fields: [link_id], references: [id])
+
+  @@id([link_id, session_id])
+}
