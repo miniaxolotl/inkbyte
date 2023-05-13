@@ -29,10 +29,8 @@ export type IBaseConfig = {
   /** data */
   data_dir: string;
   max_bytes: number;
-  /** services */
+  /** s3 */
   s3: {
-    // access_key: string;
-    // secret_key: string;
     endpoint: string;
     bucket: string;
     region: string;
@@ -42,10 +40,10 @@ export type IBaseConfig = {
 export const base_config: IBaseConfig = {
   env: (env.ENV as IConfigEnvironment) ?? "development",
   print_errors: env.DEPLOYMENT === "false" ? false : true,
-  appname: env.APPNAME ?? "react-directus-template",
-  app_title: env.APP_TITLE ?? "react-directus-template",
+  appname: env.APPNAME ?? "appname",
+  app_title: env.APP_TITLE ?? "app-title",
   app_email: env.APP_EMAIL ?? "admin@example.com",
-  app_description: env.APP_DESCRIPTION ?? "react-directus-template",
+  app_description: env.APP_DESCRIPTION ?? "app-description",
   host: env.HOST ?? "localhost",
   /** api config */
   api_port: parseInt(env.API_PORT ?? "3000"),
@@ -60,10 +58,10 @@ export const base_config: IBaseConfig = {
   /** data */
   data_dir: env.DATA_DIR ?? "data",
   max_bytes: parseInt(env.MAX_BYTES || `${(2 << 22) * 250}`),
-  /** services */
+  /** s3 */
   s3: {
     endpoint: env.S3_ENDPOINT ?? "http://localhost:9000",
-    bucket: env.S3_BUCKET ?? "react-directus-template",
+    bucket: env.S3_BUCKET ?? "app-bucket",
     region: env.S3_REGION ?? "us-west-1",
   },
 };
