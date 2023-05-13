@@ -78,7 +78,7 @@ export const FormRegister = ({ sx }: FormRegisterProps) => {
           <Link href="/forgot-password">Forgot Password</Link>
         </Box>
       </Box>
-      <Button color="brand-green" size="xs" fullWidth>
+      <Button color="brand-peach" size="xs" fullWidth>
         Create Account
       </Button>
     </Box>
