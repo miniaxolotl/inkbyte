@@ -59,6 +59,8 @@
   },
   "dependencies": {
     "cross-env": "~7.0.3",
+    "d3-time-format": "^4.1.0",
+    "date-fns": "~2.30.0",
     "dotenv": "~16.0.3",
     "dotenv-expand": "~10.0.0",
     "eslint-plugin-prettier": "~4.2.1",
@@ -66,6 +68,7 @@
     "nodemon": "~2.0.22"
   },
   "devDependencies": {
+    "@types/d3-time-format": "^4",
     "@types/jest": "~29.2.5",
     "@types/lodash": "~4.14.191",
     "@types/node": "~16.18.1",

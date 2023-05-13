@@ -1,7 +1,7 @@
 {
-  "short_name": "react-directus-template",
-  "name": "react-directus-template",
-  "description": "Simple blog web application",
+  "short_name": "InkByte",
+  "name": "InkByte - Link Shortener, Link Tracking, and Link-in-Bio",
+  "description": "Shorten your links with InkByte get more out of your online presence - InkByte provides offers link tracking, link shortening, and link-in-bio services.",
   "icons": [
     {
       "src": "/assets/icon/application-512x512.svg",
@@ -37,17 +37,10 @@
   "scope": "/",
   "shortcuts": [
     {
-      "name": "Blog Posts",
-      "short_name": "Blog",
+      "name": "Dashboard",
+      "short_name": "Dashboard",
       "description": "View weather information for today",
-      "url": "/blog?source=pwa",
-      "icons": [{ "src": "/assets/icon/favicon-32x32.png", "sizes": "32x32" }]
-    },
-    {
-      "name": "Conference Overview",
-      "short_name": "Conference",
-      "description": "View weather information for today",
-      "url": "/conference/overview?source=pwa",
+      "url": "/dashboard?source=pwa",
       "icons": [{ "src": "/assets/icon/favicon-32x32.png", "sizes": "32x32" }]
     }
   ]

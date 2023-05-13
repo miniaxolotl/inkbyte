@@ -8,7 +8,6 @@ import {
   List,
   ListProps,
   Text,
-  Title,
   TitleOrder,
 } from "@mantine/core";
 import { FiMenu } from "react-icons/fi/index.js";
@@ -94,7 +93,7 @@ export const MobileNavigationList = ({
 }: MobileNavigationListProps) => (
   <Box>
     {title && (
-      <Text size="xs" sx={{ fontWeight: 600 }}>
+      <Text size="sm" sx={{ fontWeight: 600 }}>
         {title}
       </Text>
     )}
@@ -123,50 +122,64 @@ export const MobileNavigationList = ({
 export const MobileNavigationItem = ({
   children,
   size,
-  order,
 }: {
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
 }) => (
-  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
-    <Title
-      order={order ?? 3}
-      size={size ?? "h3"}
-      sx={{ display: "flex", alignItems: "center", gap: 4 }}
+  <List.Item>
+    <Text
+      size={size ?? "xl"}
+      weight={600}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        fontFamily: "'Secular One', sans-serif",
+      }}
     >
       {children}
-    </Title>
+    </Text>
   </List.Item>
 );
 
 export const MobileNavigationItemGroup = ({
   children,
   size,
-  order,
   items,
 }: {
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
-  items?: { label: string; href: string }[];
+  items?: { label: string; href: string; slug: string }[];
 }) => (
   <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
     <MobileNavigationList>
       <MobileNavigationItem>
-        <Title
-          order={order ?? 3}
-          size={size ?? "h4"}
-          sx={{ display: "flex", alignItems: "center", gap: 4 }}
+        <Text
+          size={size ?? "lg"}
+          weight={600}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontFamily: "'Secular One', sans-serif",
+          }}
         >
           {children}
-        </Title>
+        </Text>
       </MobileNavigationItem>
 
       {items &&
-        items.map(({ label, href }) => (
-          <MobileNavigationItem>
-            <Link href={href}>{label}</Link>
+        items.map(({ label, href, slug }) => (
+          <MobileNavigationItem key={slug}>
+            <Link
+              href={href}
+              size={size ?? "md"}
+              sx={{ fontFamily: "'Secular One', sans-serif" }}
+            >
+              {label}
+            </Link>
           </MobileNavigationItem>
         ))}
     </MobileNavigationList>

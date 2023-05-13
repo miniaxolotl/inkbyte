@@ -35,23 +35,23 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
     >
       <DesktopNavigation title={web_config.app_title} sx={{ padding: 24 }}>
         <DesktopNavigationItemDropdown
-          items={featureList.map((feature) => ({
-            label: feature.title,
-            href: `/features/${feature.slug}`,
+          items={featureList.map(({ title, slug }) => ({
+            label: title,
+            href: `/features/${slug}`,
+            slug: slug,
           }))}
         >
-          {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
-          <Link href={`/features`}>Features</Link>
+          <Link>Features</Link>
         </DesktopNavigationItemDropdown>
 
         <DesktopNavigationItemDropdown
-          items={solutionList.map((solution) => ({
-            label: solution.title,
-            href: `/solutions/${solution.slug}`,
+          items={solutionList.map(({ title, slug }) => ({
+            label: title,
+            href: `/solutions/${slug}`,
+            slug: slug,
           }))}
         >
-          {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
-          <Link href={`/features`}>Features</Link>
+          <Link>Solutions</Link>
         </DesktopNavigationItemDropdown>
 
         {/* <DesktopNavigationItem> */}
@@ -96,7 +96,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
 
         <MobileNavigationList title="Features">
           {featureList.map(({ title, slug }) => (
-            <MobileNavigationItem>
+            <MobileNavigationItem key={slug}>
               <Link href={`/features/${slug}`}>{title}</Link>
             </MobileNavigationItem>
           ))}
@@ -104,7 +104,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
 
         <MobileNavigationList title="Solutions">
           {solutionList.map(({ title, slug }) => (
-            <MobileNavigationItem>
+            <MobileNavigationItem key={slug}>
               <Link href={`/solutions/${slug}`}>{title}</Link>
             </MobileNavigationItem>
           ))}

@@ -26,13 +26,6 @@ export const Page = ({}: PageProps) => {
           </Title>
           <Text>
             <List>
-              {["/login", "/register", "/sitemap", "/help"].map((path) => (
-                <List.Item key={path}>
-                  <Link href={path}>
-                    {`https://www.${web_config.web_host}${path}`}
-                  </Link>
-                </List.Item>
-              ))}
               {featureList.map(({ slug }) => (
                 <List.Item key={slug}>
                   <Link href={`/features/${slug}`}>
@@ -44,6 +37,22 @@ export const Page = ({}: PageProps) => {
                 <List.Item key={slug}>
                   <Link href={`/solutions/${slug}`}>
                     {`https://www.${web_config.web_host}/solutions/${slug}`}
+                  </Link>
+                </List.Item>
+              ))}
+              {["/sitemap", "/help", "/login", "/register", "/dashboard"].map(
+                (path) => (
+                  <List.Item key={path}>
+                    <Link href={path}>
+                      {`https://www.${web_config.web_host}${path}`}
+                    </Link>
+                  </List.Item>
+                ),
+              )}
+              {featureList.map(({ slug }) => (
+                <List.Item key={slug}>
+                  <Link href={`/dashboard/${slug}`}>
+                    {`https://www.${web_config.web_host}/dashboard/${slug}`}
                   </Link>
                 </List.Item>
               ))}

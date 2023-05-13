@@ -6,7 +6,7 @@ import {
   List,
   ListProps,
   Menu,
-  Title,
+  Text,
   TitleOrder,
 } from "@mantine/core";
 
@@ -35,7 +35,7 @@ export const DesktopNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem size="h2" order={2}>
+        <DesktopNavigationItem size="xl" order={2}>
           <Link href="/">{title}</Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>
@@ -74,44 +74,52 @@ export const DesktopNavigationList = ({ sx, children }: ListProps) => (
 export const DesktopNavigationItem = ({
   children,
   size,
-  order,
 }: {
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
 }) => (
-  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
-    <Title
-      order={order ?? 3}
-      size={size ?? "h4"}
-      sx={{ display: "flex", alignItems: "center", gap: 4 }}
+  <List.Item>
+    <Text
+      size={size ?? "lg"}
+      weight={600}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        fontFamily: "'Secular One', sans-serif",
+      }}
     >
       {children}
-    </Title>
+    </Text>
   </List.Item>
 );
 
 export const DesktopNavigationItemDropdown = ({
   children,
   size,
-  order,
   items,
 }: {
   children?: React.ReactNode;
   size?: string;
   order?: TitleOrder;
-  items?: { label: string; href: string }[];
+  items?: { label: string; href: string; slug: string }[];
 }) => (
-  <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+  <List.Item>
     <Menu trigger="hover" shadow="md" position="bottom-start" keepMounted>
       <Menu.Target>
-        <Title
-          order={order ?? 3}
-          size={size ?? "h4"}
-          sx={{ display: "flex", alignItems: "center", gap: 4 }}
+        <Text
+          size={size ?? "lg"}
+          weight={600}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontFamily: "'Secular One', sans-serif",
+          }}
         >
           {children}
-        </Title>
+        </Text>
       </Menu.Target>
 
       <Menu.Dropdown
@@ -121,12 +129,19 @@ export const DesktopNavigationItemDropdown = ({
         }}
       >
         {items &&
-          items.map(({ label, href }) => (
+          items.map(({ label, href, slug }) => (
             <Menu.Item
+              key={slug}
               sx={{ padding: "4px 8px", borderRadius: 4 }}
               color="brand-blue"
             >
-              <Link href={href}>{label}</Link>
+              <Link
+                href={href}
+                size={size ?? "md"}
+                sx={{ fontFamily: "'Secular One', sans-serif" }}
+              >
+                {label}
+              </Link>
             </Menu.Item>
           ))}
       </Menu.Dropdown>

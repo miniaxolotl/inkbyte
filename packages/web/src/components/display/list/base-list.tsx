@@ -23,7 +23,7 @@ export const BaseList = <T extends { [x: string]: unknown } = { id: string }>({
         display: "grid",
         // "grid-template-columns": `repeat(3, 1fr)`,
         gridTemplateColumns: `repeat(3, 1fr)`,
-        columnGap: 8,
+        columnGap: 24,
         rowGap: 24,
         "@media (max-width: 980px)": {
           // "grid-template-columns": `repeat(2, 1fr)`,
