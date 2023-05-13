@@ -29,20 +29,31 @@ export const Page = ({}: PageProps) => {
         </Title>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <Text sx={{ textAlign: "center" }}>
-            Don't have an account? <Link href="/login">Create Account</Link>
+            Don't have an account?{" "}
+            <Link href="/create-account">Create Account</Link>
           </Text>
           <Box>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <FormLogin />
             </Box>
             <TextDivider sx={{ maxWidth: 680 }}>OR</TextDivider>
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
-              <ActionIcon variant="filled" color="brand-green">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <ActionIcon variant="filled" color="brand-green" disabled>
                 <IoLogoGoogle />
               </ActionIcon>
-              <ActionIcon variant="filled" color="brand-green">
+              <ActionIcon variant="filled" color="brand-green" disabled>
                 <IoLogoApple />
               </ActionIcon>
+              <Text size="xs" color="gray">
+                soon
+              </Text>
             </Box>
           </Box>
         </Box>

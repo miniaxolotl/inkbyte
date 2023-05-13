@@ -36,13 +36,23 @@ export const Page = ({}: PageProps) => {
               <FormRegister />
             </Box>
             <TextDivider sx={{ maxWidth: 680 }}>OR</TextDivider>
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 4 }}>
-              <ActionIcon variant="filled" color="brand-green">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <ActionIcon variant="filled" color="brand-green" disabled>
                 <IoLogoGoogle />
               </ActionIcon>
-              <ActionIcon variant="filled" color="brand-green">
+              <ActionIcon variant="filled" color="brand-green" disabled>
                 <IoLogoApple />
               </ActionIcon>
+              <Text size="xs" color="gray">
+                soon
+              </Text>
             </Box>
           </Box>
         </Box>
