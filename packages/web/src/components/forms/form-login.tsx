@@ -69,7 +69,7 @@ export const FormLogin = ({ sx }: FormLoginProps) => {
           <Link href="/forgot-password">Forgot Password</Link>
         </Box>
       </Box>
-      <Button color="brand-blue" size="xs" fullWidth>
+      <Button color="brand-peach" size="xs" fullWidth>
         Login
       </Button>
     </Box>
