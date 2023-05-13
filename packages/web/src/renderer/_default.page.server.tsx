@@ -21,7 +21,7 @@ export const render = async (pageContext: PageContextServer) => {
     exports: { documentProps = {} },
   } = pageContext;
 
-  const title = documentProps.title || base_config.app_title;
+  const title = documentProps.title || base_config.appname;
   const description = documentProps.description || base_config.app_description;
 
   const pageContent = ReactDOMServer.renderToString(
