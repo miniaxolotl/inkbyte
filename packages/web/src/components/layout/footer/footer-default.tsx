@@ -28,7 +28,7 @@ export const FooterDefault = ({ children, sx }: FooterDefaultProps) => {
       <FooterList>
         <FooterListItem sx={{ fontSize: 14 }}>
           <MdCopyright />
-          {web_config.app_title} {new Date().getFullYear()}
+          {web_config.appname} {new Date().getFullYear()}
         </FooterListItem>
         <FooterListItem sx={{ fontSize: 14 }}>
           <Link href="/sitemap" sx={{ color: "white" }}>
