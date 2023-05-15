@@ -18,10 +18,10 @@
     "test:web": "echo 'test:web @package/web' && playwright test",
     "watch": "vite",
     "serve": "echo 'serving @package/web' && cross-env ENV=development yarn watch",
-    "optimize": "echo 'optimize @package/web:client' && cross-env ENV=production vite optimize",
-    "build": "echo 'build @package/web:client' && cross-env ENV=production vite build",
-    "preview": "echo 'preview @package/web' && cross-env ENV=production yarn watch preview",
-    "start": "echo 'starting @package/web' && cross-env ENV=production yarn watch preview"
+    "optimize": "echo 'optimize @package/web:client' && cross-env ENV=production NODE_ENV=production vite optimize",
+    "build": "echo 'build @package/web:client' && cross-env ENV=production NODE_ENV=production vite build",
+    "preview": "echo 'preview @package/web' && cross-env ENV=production NODE_ENV=production yarn watch preview",
+    "start": "echo 'starting @package/web' && cross-env ENV=production NODE_ENV=production yarn watch preview"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "~1.2.0",
@@ -66,6 +66,7 @@
     "ts-node": "~10.9.1",
     "typescript": "~5.0.2",
     "vite": "~4.2.1",
+    "vite-plugin-pwa": "~0.14.7",
     "vite-plugin-ssr": "~0.4.123"
   }
 }
