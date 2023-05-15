@@ -40,17 +40,27 @@ export const Page = ({}: PageProps) => {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 gap: 4,
               }}
             >
-              <ActionIcon variant="filled" color="brand-green" disabled>
-                <IoLogoGoogle />
-              </ActionIcon>
-              <ActionIcon variant="filled" color="brand-green" disabled>
-                <IoLogoApple />
-              </ActionIcon>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                <ActionIcon variant="filled" color="brand-green" disabled>
+                  <IoLogoGoogle />
+                </ActionIcon>
+                <ActionIcon variant="filled" color="brand-green" disabled>
+                  <IoLogoApple />
+                </ActionIcon>
+              </Box>
               <Text size="xs" color="gray">
                 soon
               </Text>

@@ -24,11 +24,14 @@ export const TextDivider = (props: TextDividerProps) => {
       <Divider sx={{ flex: 1 }} />
       <Text
         weight={600}
+        color="brand-peach"
         sx={{
           flex: 0,
           padding: "0 12px",
           fontFamily: "'Secular One', sans-serif",
-          "::after": { content: `'${props.children ?? "OR"}'` },
+          "::after": {
+            content: `'${props.children ?? "OR"}'`,
+          },
         }}
       >
         {/* {props.children} */}
