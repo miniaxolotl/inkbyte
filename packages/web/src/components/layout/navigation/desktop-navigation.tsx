@@ -35,12 +35,12 @@ export const DesktopNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem size="xl" order={2}>
+        <DesktopNavigationItem size={24} order={2}>
           <Link href="/">{title}</Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>
       <DesktopNavigationList
-        sx={{ display: "flex", justifyContent: "flex-end", flex: 1 }}
+        sx={{ display: "flex", justifyContent: "flex-end", flex: 2 }}
       >
         {children}
       </DesktopNavigationList>
@@ -54,7 +54,7 @@ export const DesktopNavigationList = ({ sx, children }: ListProps) => (
       ...sx,
       display: "flex",
       flexDirection: "row",
-      gap: 12,
+      gap: 24,
       li: {
         listStyle: "none",
         display: "flex",
@@ -64,6 +64,7 @@ export const DesktopNavigationList = ({ sx, children }: ListProps) => (
         display: "flex",
         alignItems: "center",
         gap: 4,
+        whiteSpace: "nowrap",
       },
     }}
   >
@@ -76,7 +77,7 @@ export const DesktopNavigationItem = ({
   size,
 }: {
   children?: React.ReactNode;
-  size?: string;
+  size?: string | number;
   order?: TitleOrder;
 }) => (
   <List.Item>
