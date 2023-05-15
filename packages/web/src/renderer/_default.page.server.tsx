@@ -51,7 +51,7 @@ export const render = async (pageContext: PageContextServer) => {
 				<!-- PWA -->
 				<link rel="manifest" href="/.webmanifest" />
 				<script src="/scripts/register-sw.js" async></script>
-				<meta name="theme-color" content="#0b2540" />
+				<meta name="theme-color" content="#f2f2f2" />
 				
 				<!-- Open Graph / Facebook -->
 				<meta property="og:type" content="website" />
