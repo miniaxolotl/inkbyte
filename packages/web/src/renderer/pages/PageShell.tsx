@@ -25,6 +25,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
+        withCSSVariables
         theme={{
           focusRing: "never",
           primaryColor: "brand-cerulean",
