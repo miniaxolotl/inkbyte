@@ -19,9 +19,10 @@ import { Waves } from "@components/display";
 
 export type LayoutDefaultProps = {
   children?: React.ReactNode;
+  disableLogo?: boolean;
 };
 
-export const Content = ({ children }: { children: React.ReactNode }) => {
+export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
   const isLoggedIn = false;
 
   return (
@@ -33,7 +34,11 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
         height: "100%",
       }}
     >
-      <DesktopNavigation title={web_config.appname} sx={{ padding: 24 }}>
+      <DesktopNavigation
+        title={web_config.appname}
+        sx={{ padding: 24 }}
+        disableLogo={disableLogo}
+      >
         <DesktopNavigationItemDropdown
           items={featureList.map(({ title, slug }) => ({
             label: title,
@@ -77,7 +82,11 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
         )}
       </DesktopNavigation>
 
-      <MobileNavigation title={web_config.appname} sx={{ padding: 24 }}>
+      <MobileNavigation
+        title={web_config.appname}
+        sx={{ padding: 24 }}
+        disableLogo={disableLogo}
+      >
         <MobileNavigationList title="Account">
           {isLoggedIn ? (
             <MobileNavigationItem>
@@ -132,7 +141,7 @@ export const LayoutDefault = (props: LayoutDefaultProps) => {
   return (
     <>
       {/* TODO: Generate SEO */}
-      <Content>{props.children}</Content>
+      <Content {...props}>{props.children}</Content>
     </>
   );
 };

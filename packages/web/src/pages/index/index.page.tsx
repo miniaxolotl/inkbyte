@@ -140,5 +140,5 @@ export const Page = ({}: PageProps) => {
 };
 
 Page.getLayout = (page: React.ReactNode) => {
-  return <LayoutDefault>{page}</LayoutDefault>;
+  return <LayoutDefault disableLogo>{page}</LayoutDefault>;
 };

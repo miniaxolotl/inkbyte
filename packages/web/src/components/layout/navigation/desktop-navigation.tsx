@@ -3,11 +3,13 @@ import React from "react";
 import {
   Box,
   BoxProps,
+  Image,
   List,
   ListProps,
   Menu,
   Text,
   TitleOrder,
+  Transition,
 } from "@mantine/core";
 
 import { Link } from "@components/core";
@@ -15,13 +17,27 @@ import { Link } from "@components/core";
 export type DesktopNavigationProps = BoxProps & {
   children?: React.ReactNode;
   title: string;
+  disableLogo?: boolean;
 };
 
 export const DesktopNavigation = ({
   children,
   sx,
   title,
+  disableLogo,
 }: DesktopNavigationProps) => {
+  const slideIn = {
+    in: { top: "0vh", width: 28 },
+    out: { top: "100vw", width: 0 },
+    transitionProperty: "top, width",
+  };
+
+  const slideOut = {
+    in: { bottom: "0px", width: 28 },
+    out: { bottom: "20vh", width: 0 },
+    transitionProperty: "bottom, width",
+  };
+
   return (
     <Box
       sx={{
@@ -35,8 +51,36 @@ export const DesktopNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem size={24} order={2}>
-          <Link href="/">{title}</Link>
+        <DesktopNavigationItem size={28} order={2}>
+          <Link
+            href="/"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Transition
+              mounted={!disableLogo}
+              transition={!disableLogo ? slideIn : slideOut}
+              duration={800}
+              timingFunction="linear"
+              keepMounted
+            >
+              {/* {!disableLogo && ( */}
+              {(styles) => (
+                <Image
+                  sx={{ position: "relative", zIndex: -10 }}
+                  style={{ ...styles }}
+                  src="/assets/logo/default.svg"
+                  alt="Logo"
+                  height={28}
+                  width={28}
+                />
+              )}
+              {/* )} */}
+            </Transition>
+            {title}
+          </Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>
       <DesktopNavigationList
