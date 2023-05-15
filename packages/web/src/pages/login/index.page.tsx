@@ -29,7 +29,7 @@ export const Page = ({}: PageProps) => {
         </Title>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <Text sx={{ textAlign: "center" }}>
-            Don't have an account?{" "}
+            {"Don't have an account? "}
             <Link href="/create-account">Create Account</Link>
           </Text>
           <Box>

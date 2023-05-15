@@ -46,7 +46,7 @@ export const MobileNavigation = ({
       }}
     >
       <DesktopNavigationList sx={{ flex: 1 }}>
-        <DesktopNavigationItem size="h2" order={2}>
+        <DesktopNavigationItem size={24} order={2}>
           <Link href="/">{title}</Link>
         </DesktopNavigationItem>
       </DesktopNavigationList>

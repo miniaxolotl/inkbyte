@@ -24,7 +24,7 @@ export const FormLogin = ({ sx }: FormLoginProps) => {
         maxWidth: 680,
         display: "flex",
         flexDirection: "column",
-        gap: 8,
+        gap: 16,
         "@media (max-width: 980px)": {
           maxWidth: 480,
         },
@@ -69,7 +69,7 @@ export const FormLogin = ({ sx }: FormLoginProps) => {
           <Link href="/forgot-password">Forgot Password</Link>
         </Box>
       </Box>
-      <Button color="brand-peach" size="xs" fullWidth>
+      <Button color="brand-green" size="xs" fullWidth>
         Login
       </Button>
     </Box>
@@ -90,7 +90,8 @@ const ITextInput = (props: TextInputProps) => (
       },
       ":first-of-type": {
         input: {
-          borderRadius: "4px 0px 0px 4px",
+          // borderRadius: "4px 0px 0px 4px",
+          borderRadius: "4px 4px 0px 0px",
           "@media (max-width: 680px)": {
             borderRadius: "4px 4px 0px 0px",
           },
@@ -98,7 +99,8 @@ const ITextInput = (props: TextInputProps) => (
       },
       ":last-of-type": {
         input: {
-          borderRadius: "0px 4px 4px 0px",
+          // borderRadius: "0px 4px 4px 0px",
+          borderRadius: "0px 0px 4px 4px",
           "@media (max-width: 680px)": {
             borderRadius: "0px 0px 4px 4px",
           },

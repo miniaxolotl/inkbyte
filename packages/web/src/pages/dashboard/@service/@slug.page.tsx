@@ -31,7 +31,13 @@ export const Page = ({ service, slug }: PageProps) => {
           <Paper
             shadow="md"
             p="lg"
-            sx={{ flex: 1, maxWidth: "max-content" }}
+            sx={{
+              flex: 1,
+              maxWidth: "max-content",
+              "@media (max-width: 680px)": {
+                flexDirection: "column",
+              },
+            }}
             withBorder
           >
             <List sx={{ listStyleType: "none" }}>
@@ -50,14 +56,26 @@ export const Page = ({ service, slug }: PageProps) => {
                 </List.Item>
               ))}
 
-              <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+              {/* <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
                 <Link href={`/dashboard/subscription`} isDisabled>
                   Subscription
                 </Link>
-              </List.Item>
+              </List.Item> */}
             </List>
           </Paper>
-          <Paper shadow="md" p="md" sx={{ flex: 1, flexGrow: 1 }} withBorder>
+
+          <Paper
+            shadow="md"
+            p="md"
+            sx={{
+              flex: 1,
+              flexGrow: 1,
+              "@media (max-width: 680px)": {
+                maxWidth: "unset",
+              },
+            }}
+            withBorder
+          >
             <Title size="h2" order={2} color="brand-blue">
               {title}
             </Title>

@@ -33,7 +33,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
         height: "100%",
       }}
     >
-      <DesktopNavigation title={web_config.app_title} sx={{ padding: 24 }}>
+      <DesktopNavigation title={web_config.appname} sx={{ padding: 24 }}>
         <DesktopNavigationItemDropdown
           items={featureList.map(({ title, slug }) => ({
             label: title,
@@ -77,7 +77,7 @@ export const Content = ({ children }: { children: React.ReactNode }) => {
         )}
       </DesktopNavigation>
 
-      <MobileNavigation title={web_config.app_title} sx={{ padding: 24 }}>
+      <MobileNavigation title={web_config.appname} sx={{ padding: 24 }}>
         <MobileNavigationList title="Account">
           {isLoggedIn ? (
             <MobileNavigationItem>

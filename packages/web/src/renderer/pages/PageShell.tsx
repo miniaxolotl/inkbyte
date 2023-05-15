@@ -27,7 +27,7 @@ export const PageShell: React.FC<PageShellProps> = ({
         withNormalizeCSS
         theme={{
           focusRing: "never",
-          primaryColor: "gray",
+          primaryColor: "brand-cerulean",
           white: "#f2f2f2",
           black: "#262626",
           colors: {

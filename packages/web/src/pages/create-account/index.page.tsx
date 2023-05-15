@@ -29,7 +29,8 @@ export const Page = ({}: PageProps) => {
         </Title>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <Text sx={{ textAlign: "center" }}>
-            Already have an account? <Link href="/login">Login</Link>
+            {"Already have an account? "}
+            <Link href="/login">Login</Link>
           </Text>
           <Box>
             <Box sx={{ display: "flex", justifyContent: "center" }}>

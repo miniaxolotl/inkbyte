@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Box,
@@ -9,8 +9,11 @@ import {
   Switch,
   TextInput,
   TextInputProps,
+  Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
 import { FiClock, FiSettings } from "react-icons/fi/index.js";
+import { useDisclosure } from "@mantine/hooks";
 
 export type FormCreateLinkProps = BoxProps & {
   children?: React.ReactNode;
@@ -18,18 +21,20 @@ export type FormCreateLinkProps = BoxProps & {
 };
 
 export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
+  const [isAdvancedAnalyticsEnabled, { toggle: toggleAdvancedAnalytics }] =
+    useDisclosure(false);
+  const [customAlias, setCustomAlias] = useState("");
+
+  const theme = useMantineTheme();
+
   return (
     <Box
       sx={{
         ...sx,
         width: "100%",
-        maxWidth: 680,
         display: "flex",
         flexDirection: "column",
-        gap: 8,
-        "@media (max-width: 980px)": {
-          maxWidth: 480,
-        },
+        gap: 16,
       }}
     >
       <Box>
@@ -43,7 +48,13 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
         }}
       >
         <FiSettings />
-        <Box sx={{ "::after": { content: '"Link Customization"' } }} />
+        <Box
+          sx={{
+            "::after": {
+              content: '"Link Customization"',
+            },
+          }}
+        />
       </Box>
       <Box
         sx={{
@@ -59,9 +70,21 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
           defaultValue={links[0]}
           sx={{ flex: 2, minWidth: 144 }}
         />
-        <ITextInput placeholder="custom alias (optional)" sx={{ flex: 3 }} />
+        <ITextInput
+          placeholder="custom alias (optional)"
+          sx={{
+            flex: 3,
+            '[value=""]': {
+              ":not(:focus)": {
+                backgroundColor: theme.colors.gray[3],
+              },
+            },
+          }}
+          value={customAlias}
+          onChange={(e) => setCustomAlias(e.currentTarget.value)}
+        />
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 12 }}>
         {/* <Checkbox
           // label="Enable Analytics"
           label="Link Redirect"
@@ -69,17 +92,41 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
           color="brand-green"
           defaultChecked={true}
         /> */}
-        <Switch
-          label="Advanced Analytics"
-          sx={{ flex: 1 }}
-          color="brand-green"
-          defaultChecked={true}
-        />
+        <Tooltip
+          transitionProps={{ transition: "pop" }}
+          label={
+            isAdvancedAnalyticsEnabled
+              ? "Your link will redirect to your website"
+              : "Your website will be displayed through our website"
+          }
+        >
+          <Box>
+            <Switch
+              label="Advanced Analytics"
+              color="brand-green"
+              value={isAdvancedAnalyticsEnabled ? "true" : "false"}
+              onChange={toggleAdvancedAnalytics}
+              sx={{
+                flex: 1,
+                // ".mantine-Switch-label": {
+                //   color: theme.colors["brand-peach"][5],
+                // color: theme.colors["brand-green"][4],
+                // },
+                ".mantine-Switch-track": {
+                  backgroundColor: "lightgrey",
+                  borderColor: "lightgrey",
+                },
+              }}
+            />
+          </Box>
+        </Tooltip>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Button color="brand-peach" size="xs">
-          <FiClock />
-        </Button>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <Tooltip transitionProps={{ transition: "pop" }} label="View History">
+          <Button color="brand-peach" size="xs">
+            <FiClock />
+          </Button>
+        </Tooltip>
         <Button color="brand-green" size="xs" fullWidth>
           CREATE LINK
         </Button>

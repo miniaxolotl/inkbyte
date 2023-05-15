@@ -4,18 +4,15 @@ import {
   Box,
   BoxProps,
   Button,
-  Checkbox,
   TextInput,
   TextInputProps,
 } from "@mantine/core";
 
-import { Link } from "@components/core";
-
-type FormRegisterProps = BoxProps & {
+type FormForgotPasswordProps = BoxProps & {
   children?: React.ReactNode;
 };
 
-export const FormRegister = ({ sx }: FormRegisterProps) => {
+export const FormForgotPassword = ({ sx }: FormForgotPasswordProps) => {
   return (
     <Box
       sx={{
@@ -39,47 +36,8 @@ export const FormRegister = ({ sx }: FormRegisterProps) => {
         <ITextInput placeholder="email" />
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <ITextInput placeholder="Password" type="password" />
-        <ITextInput placeholder="Confirm Password" type="password" />
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          "@media (max-width: 680px)": {
-            flexDirection: "column",
-          },
-        }}
-      >
-        <Checkbox
-          label="Email Updates"
-          size="xs"
-          sx={{ flex: 1 }}
-          color="brand-peach"
-          defaultChecked={false}
-        />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            gap: 4,
-            fontSize: 12,
-          }}
-        >
-          {/* <Link href="/login">Login</Link> */}
-          {/* <Box sx={{ "::after": { content: "'/'" } }} /> */}
-          <Link href="/forgot-password">Forgot Password</Link>
-        </Box>
-      </Box>
-      <Button color="brand-green" size="xs" fullWidth>
-        Create Account
+      <Button color="brand-red" size="xs" fullWidth>
+        Reset Password
       </Button>
     </Box>
   );

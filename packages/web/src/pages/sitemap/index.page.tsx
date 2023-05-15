@@ -40,15 +40,20 @@ export const Page = ({}: PageProps) => {
                   </Link>
                 </List.Item>
               ))}
-              {["/sitemap", "/help", "/login", "/register", "/dashboard"].map(
-                (path) => (
-                  <List.Item key={path}>
-                    <Link href={path}>
-                      {`https://www.${web_config.web_host}${path}`}
-                    </Link>
-                  </List.Item>
-                ),
-              )}
+              {[
+                "/sitemap",
+                "/help",
+                "/login",
+                "/create-account",
+                "/forgot-password",
+                "/dashboard",
+              ].map((path) => (
+                <List.Item key={path}>
+                  <Link href={path}>
+                    {`https://www.${web_config.web_host}${path}`}
+                  </Link>
+                </List.Item>
+              ))}
               {featureList.map(({ slug }) => (
                 <List.Item key={slug}>
                   <Link href={`/dashboard/${slug}`}>
