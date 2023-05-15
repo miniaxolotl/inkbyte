@@ -200,6 +200,11 @@ const ISelectInput = (props: SelectProps) => (
           color: "red",
         },
       },
+      ".mantine-Select-input": {
+        "@media (max-width: 680px)": {
+          height: 48,
+        },
+      },
       ".mantine-Select-itemsWrapper": {
         padding: 2,
       },
