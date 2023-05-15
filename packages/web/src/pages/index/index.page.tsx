@@ -44,6 +44,8 @@ export const Page = ({}: PageProps) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            width: "100%",
+            gap: 12,
             "@media (max-width: 680px)": {
               maxWidth: 480,
             },
@@ -54,9 +56,8 @@ export const Page = ({}: PageProps) => {
               <Image
                 src="/assets/logo/default.svg"
                 alt="Logo"
-                height={172}
-                width={172}
-                sx={{ padding: 16 }}
+                height={224}
+                width={224}
               />
             </Link>
           </Box>
@@ -66,11 +67,17 @@ export const Page = ({}: PageProps) => {
               display: "flex",
               flexDirection: "column",
               width: "100%",
+              flexGrow: 1,
               maxWidth: 680,
               gap: 12,
             }}
           >
-            <Paper shadow="md" p="md" sx={{ flexGrow: 1 }} withBorder>
+            <Paper
+              shadow="md"
+              p="md"
+              sx={{ flexGrow: 1, width: "100%" }}
+              withBorder
+            >
               <FormCreateLink links={DomainList} />
             </Paper>
 
@@ -80,17 +87,22 @@ export const Page = ({}: PageProps) => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                borderWidth: 2,
                 gap: 4,
               }}
               withBorder
             >
-              <Text size="sm" align="center">
-                <em>
-                  InkByte is a URL shortener, QR code generator, and link
-                  management platform all in one place.
-                </em>
-              </Text>
+              <Text
+                size="sm"
+                align="center"
+                sx={{
+                  "::after": {
+                    fontSize: 12,
+                    fontStyle: "italic",
+                    content:
+                      "'InkByte is a URL shortener, QR code generator, and link-in-bio platform all in one place.'",
+                  },
+                }}
+              />
               <span id="details" ref={detailsPanelRef} />
               <Button size="xs" onClick={() => toggleDetailsPanel()}>
                 {isDetailsPanelOpen ? "CLOSE DETAILS" : "LEARN MORE"}

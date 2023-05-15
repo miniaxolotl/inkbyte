@@ -5,6 +5,6 @@
     /* build options */
     "allowJs": true,
     "checkJs": true
-  }
-  // "include": ["./api/**/*.ts", "./api/**/*.js"]
+  },
+  "include": ["./src/**/*", "./public/**/*", "vite.config.ts"]
 }

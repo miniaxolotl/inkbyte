@@ -1,27 +1,30 @@
 import React from "react";
 
-import { Box, Image } from "@mantine/core";
+import { AspectRatio, Image } from "@mantine/core";
 
 import Wave from "./wave.svg";
 
 export const Waves = () => (
-  <Box
+  <AspectRatio
+    ratio={1440 / 690}
     sx={{
       position: "fixed",
       bottom: 0,
-      height: "100vh",
       width: "100vw",
+      height: "auto",
       zIndex: -1,
     }}
   >
     <Image
       src={Wave}
       alt="Waves"
+      width="100vw"
+      height="auto"
       sx={{
         position: "absolute",
         bottom: 0,
-        width: "100vw",
       }}
     />
-  </Box>
+  </AspectRatio>
+  // </Box>
 );

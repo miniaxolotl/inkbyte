@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Container, List, Text, Title } from "@mantine/core";
+import { Box, Container, List, Paper, Text, Title } from "@mantine/core";
 
 import { featureList, solutionList } from "@lib/data";
 import { DomainList } from "@lib/shared";
@@ -20,69 +20,81 @@ export const Page = ({}: PageProps) => {
         <Title size="h2" order={2} color="brand-blue">
           Sitemap
         </Title>
-        <Box>
-          <Title size="h3" order={3}>
-            Pages
-          </Title>
-          <Text>
-            <List>
-              {featureList.map(({ slug }) => (
-                <List.Item key={slug}>
-                  <Link href={`/features/${slug}`}>
-                    {`https://www.${web_config.web_host}/features/${slug}`}
+        <Paper
+          shadow="md"
+          p="md"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          }}
+          withBorder
+        >
+          <Box>
+            <Title size="h3" order={3} color="brand-peach">
+              Pages
+            </Title>
+
+            <Text>
+              <List>
+                {featureList.map(({ slug }) => (
+                  <List.Item key={slug}>
+                    <Link href={`/features/${slug}`}>
+                      {`https://www.${web_config.web_host}/features/${slug}`}
+                    </Link>
+                  </List.Item>
+                ))}
+                {solutionList.map(({ slug }) => (
+                  <List.Item key={slug}>
+                    <Link href={`/solutions/${slug}`}>
+                      {`https://www.${web_config.web_host}/solutions/${slug}`}
+                    </Link>
+                  </List.Item>
+                ))}
+                {[
+                  "/sitemap",
+                  "/help",
+                  "/login",
+                  "/create-account",
+                  "/forgot-password",
+                  "/dashboard",
+                ].map((path) => (
+                  <List.Item key={path}>
+                    <Link href={path}>
+                      {`https://www.${web_config.web_host}${path}`}
+                    </Link>
+                  </List.Item>
+                ))}
+                {featureList.map(({ slug }) => (
+                  <List.Item key={slug}>
+                    <Link href={`/dashboard/${slug}`}>
+                      {`https://www.${web_config.web_host}/dashboard/${slug}`}
+                    </Link>
+                  </List.Item>
+                ))}
+                <List.Item>
+                  <Link href={`https://${web_config.dashboard_host}`}>
+                    {`https://www.${web_config.dashboard_host}`}
                   </Link>
                 </List.Item>
-              ))}
-              {solutionList.map(({ slug }) => (
-                <List.Item key={slug}>
-                  <Link href={`/solutions/${slug}`}>
-                    {`https://www.${web_config.web_host}/solutions/${slug}`}
-                  </Link>
-                </List.Item>
-              ))}
-              {[
-                "/sitemap",
-                "/help",
-                "/login",
-                "/create-account",
-                "/forgot-password",
-                "/dashboard",
-              ].map((path) => (
-                <List.Item key={path}>
-                  <Link href={path}>
-                    {`https://www.${web_config.web_host}${path}`}
-                  </Link>
-                </List.Item>
-              ))}
-              {featureList.map(({ slug }) => (
-                <List.Item key={slug}>
-                  <Link href={`/dashboard/${slug}`}>
-                    {`https://www.${web_config.web_host}/dashboard/${slug}`}
-                  </Link>
-                </List.Item>
-              ))}
-              <List.Item>
-                <Link href={`https://${web_config.dashboard_host}`}>
-                  {`https://www.${web_config.dashboard_host}`}
-                </Link>
-              </List.Item>
-            </List>
-          </Text>
-        </Box>
-        <Box>
-          <Title size="h3" order={3}>
-            Domains
-          </Title>
-          <Text>
-            <List>
-              {DomainList.map((domain) => (
-                <List.Item key={domain}>
-                  <Link href={`https://${domain}`}>https://www.{domain}</Link>
-                </List.Item>
-              ))}
-            </List>
-          </Text>
-        </Box>
+              </List>
+            </Text>
+          </Box>
+          <Box>
+            <Title size="h3" order={3} color="brand-peach">
+              Domains
+            </Title>
+            <Text>
+              <List>
+                {DomainList.map((domain) => (
+                  <List.Item key={domain}>
+                    <Link href={`https://${domain}`}>https://www.{domain}</Link>
+                  </List.Item>
+                ))}
+              </List>
+            </Text>
+          </Box>
+        </Paper>
       </Container>
     </>
   );

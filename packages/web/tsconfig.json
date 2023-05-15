@@ -42,6 +42,5 @@
     "../../typings/**/*.d.ts",
     "vite-env.d.ts",
     "vite.config.ts"
-    // "api/vite-env.d.ts"
   ]
 }

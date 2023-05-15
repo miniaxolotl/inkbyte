@@ -14,10 +14,18 @@ export type FooterDefaultProps = BoxProps & {
 
 export const FooterDefault = ({ children, sx }: FooterDefaultProps) => {
   return (
-    <Box sx={{ ...sx, li: { color: "white" } }}>
+    <Box
+      sx={{
+        ...sx,
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        li: { color: "white" },
+      }}
+    >
       <FooterList>
         {children && <FooterList>{children}</FooterList>}
-        <FooterListItem>
+        <FooterListItem sx={{ fontSize: 14 }}>
           Made with <FiHeart size={14} />
           by
           <Link href="https://mawa.dev" sx={{ color: "palevioletred" }}>
@@ -51,7 +59,7 @@ const FooterList = ({ children }: { children?: React.ReactNode }) => (
       display: "flex",
       flexDirection: "row",
       justifyContent: "center",
-      gap: 12,
+      gap: 16,
       li: {
         listStyle: "none",
         display: "flex",
