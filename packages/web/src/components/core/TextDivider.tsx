@@ -1,7 +1,7 @@
 import React from "react";
 
-import * as _ from "lodash";
 import { Box, BoxProps, Divider, Text } from "@mantine/core";
+import _ from "lodash";
 
 type TextDividerProps = Omit<BoxProps, "children"> & {
   href?: string;

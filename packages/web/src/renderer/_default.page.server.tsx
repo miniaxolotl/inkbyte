@@ -34,6 +34,8 @@ export const render = async (pageContext: PageContextServer) => {
     <ServerStyles html={pageContent} server={stylesServer} />,
   );
 
+  const openGraphImage = `https://${web_config.host}/assets/logo/default.png`;
+
   const documentHtml = escapeInject`
 		<!DOCTYPE html>
     <html lang="en">
@@ -47,26 +49,22 @@ export const render = async (pageContext: PageContextServer) => {
         <link rel="icon" href="/favicon.ico" />
 
 				<!-- PWA -->
-				<link rel="manifest" href="/.webmanifest">
-				<script src="/scripts/register-sw.js" ></script>
+				<link rel="manifest" href="/.webmanifest" />
+				<script src="/scripts/register-sw.js" async></script>
+				<meta name="theme-color" content="#0b2540" />
 				
 				<!-- Open Graph / Facebook -->
-				<meta property="og:type" content="website">
-				<meta property="og:url" content="https://${web_config.web_host}">
-				<meta property="og:title" content="${web_config.app_title}">
-				<meta property="og:description" content="${web_config.app_description}">
-				<meta property="og:image" content="https://${
-          web_config.host
-        }/assets/logo/default.png">
+				<meta property="og:type" content="website" />
+				<meta property="og:url" content="https://${web_config.web_host}" />
+				<meta property="og:title" content="${web_config.app_title}" />
+				<meta property="og:description" content="${openGraphImage}" />
 
 				<!-- Twitter -->
 				<meta property="twitter:card" content="summary">
 				<meta property="twitter:url" content="https://${web_config.web_host}">
 				<meta property="twitter:title" content="${web_config.app_title}">
 				<meta property="twitter:description" content="${web_config.app_description}">
-				<meta property="twitter:image" content="https://${
-          web_config.host
-        }/assets/logo/default.png">
+				<meta property="twitter:image" content="${openGraphImage}">
 
 				<!-- Styles -->
 				${dangerouslySkipEscape(styles)}
