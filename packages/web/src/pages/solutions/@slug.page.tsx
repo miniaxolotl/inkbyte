@@ -1,6 +1,5 @@
 import React from "react";
 
-import * as _ from "lodash";
 import {
   Box,
   Button,
@@ -11,6 +10,7 @@ import {
   Title,
 } from "@mantine/core";
 import { FiCheckCircle } from "react-icons/fi/index.js";
+import _ from "lodash";
 
 import { PageContextServer } from "@lib/vite-react";
 import { solutionList } from "@lib/data";
