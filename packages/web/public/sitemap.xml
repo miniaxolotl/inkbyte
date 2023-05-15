@@ -1,58 +1,79 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<!-- <url>
-		<loc>https://ssyofcanada.org/</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+	<url>
+		<loc>https://www.inkbyte.app/</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
 		<priority>1.00</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/conference/overview</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.72</priority>
+		<loc>https://www.inkbyte.app/features/link-shortener</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/conference/itinerary</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.52</priority>
+		<loc>https://www.inkbyte.app/features/link-in-bio</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/conference/presenters</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.52</priority>
+		<loc>https://www.inkbyte.app/features/qr-codes</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/conference/vendors</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.52</priority>
+		<loc>https://www.inkbyte.app/solutions/social-media-presence</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/conference/get-involved</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.82</priority>
+		<loc>https://www.inkbyte.app/solutions/digital-marketing</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/about-us/our-story</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.92</priority>
+		<loc>https://www.inkbyte.app/solutions/event-management</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/about-us/our-team</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.72</priority>
+		<loc>https://www.inkbyte.app/login</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/about-us/our-sponsors</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.82</priority>
+		<loc>https://www.inkbyte.app/create-account</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/about-us/financial-reports</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.52</priority>
+		<loc>https://www.inkbyte.app/sitemap</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
 	</url>
 	<url>
-		<loc>https://ssyofcanada.org/contact-us</loc>
-		<lastmod>2023-05-04T07:10:20+00:00</lastmod>
-		<priority>0.52</priority>
-	</url> -->
+		<loc>https://www.inkbyte.app/help</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.80</priority>
+	</url>
+	<url>
+		<loc>https://www.inkbyte.app/forgot-password</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.64</priority>
+	</url>
+	<url>
+		<loc>https://www.inkbyte.app/dashboard/link-shortener</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.64</priority>
+	</url>
+	<url>
+		<loc>https://www.inkbyte.app/dashboard/link-in-bio</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.64</priority>
+	</url>
+	<url>
+		<loc>https://www.inkbyte.app/dashboard/qr-codes</loc>
+		<lastmod>2023-05-15T16:23:44+00:00</lastmod>
+		<priority>0.64</priority>
+	</url>
 </urlset>
