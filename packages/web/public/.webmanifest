@@ -1,15 +1,21 @@
 {
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "theme_color": "#0b2540",
+  "background_color": "#f2f2f2",
+  "display": "standalone",
   "short_name": "InkByte",
   "name": "InkByte - Link Shortener, Link Tracking, and Link-in-Bio",
   "description": "Shorten your links with InkByte get more out of your online presence - InkByte provides offers link tracking, link shortening, and link-in-bio services.",
   "icons": [
     {
-      "src": "/assets/icon/application-512x512.svg",
+      "src": "/assets/icon/application-512x512.png",
       "type": "image/svg+xml",
       "sizes": "512x512"
     },
     {
-      "src": "/assets/icon/application-192x192.svg",
+      "src": "/assets/icon/application-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
@@ -29,19 +35,26 @@
       "sizes": "180x180"
     }
   ],
-  "id": "/?source=pwa",
-  "start_url": "/?source=pwa",
-  "theme_color": "#f2f2f2",
-  "background_color": "#f2f2f2",
-  "display": "standalone",
-  "scope": "/",
   "shortcuts": [
     {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
+      "name": "Create Link",
+      "short_name": "Create Link",
       "description": "View weather information for today",
-      "url": "/dashboard?source=pwa",
-      "icons": [{ "src": "/assets/icon/favicon-32x32.png", "sizes": "32x32" }]
+      "url": "/",
+      "icons": [
+        { "src": "/assets/icon/maskable-48x48.png", "sizes": "48x48" },
+        { "src": "/assets/icon/maskable-96x96.png", "sizes": "96x96" }
+      ]
+    },
+    {
+      "name": "Management Dashboard",
+      "short_name": "Dashboard",
+      "description": "View management & analytics dashboard",
+      "url": "/dashboard",
+      "icons": [
+        { "src": "/assets/icon/maskable-48x48.png", "sizes": "48x48" },
+        { "src": "/assets/icon/maskable-96x96.png", "sizes": "96x96" }
+      ]
     }
   ]
 }

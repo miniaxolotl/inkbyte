@@ -43,9 +43,12 @@ export const render = async (pageContext: PageContextServer) => {
 
         <title>${title}</title>
         <meta name="description" content="${description}" />
-    		<link rel="canonical" href="https://${web_config.web_host}${urlPathname}"/>
-				<link rel="manifest" href="/manifest.json">
+				<link rel="canonical" href="https://${web_config.web_host}${urlPathname}"/>
         <link rel="icon" href="/favicon.ico" />
+
+				<!-- PWA -->
+				<link rel="manifest" href=".webmanifest">
+				<script src="/scripts/register-sw.js" ></script>
 				
 				<!-- Open Graph / Facebook -->
 				<meta property="og:type" content="website">
