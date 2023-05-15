@@ -55,7 +55,7 @@ export const MobileNavigation = ({
         sx={{ display: "flex", justifyContent: "flex-end", flex: 1 }}
       >
         <DesktopNavigationItem>
-          <ActionIcon size="xl" onClick={open}>
+          <ActionIcon size="xl" onClick={open} aria-label="Mobile Menu Button">
             <FiMenu size={24} />
           </ActionIcon>
         </DesktopNavigationItem>
