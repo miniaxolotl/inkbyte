@@ -47,7 +47,7 @@ export const render = async (pageContext: PageContextServer) => {
         <link rel="icon" href="/favicon.ico" />
 
 				<!-- PWA -->
-				<link rel="manifest" href=".webmanifest">
+				<link rel="manifest" href="/.webmanifest">
 				<script src="/scripts/register-sw.js" ></script>
 				
 				<!-- Open Graph / Facebook -->
