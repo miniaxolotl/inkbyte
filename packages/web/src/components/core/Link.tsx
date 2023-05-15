@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Anchor, AnchorProps, CSSObject } from "@mantine/core";
+import { Anchor, AnchorProps, Box, CSSObject } from "@mantine/core";
 import _ from "lodash";
 
 import { usePageContext } from "@renderer/hooks";
@@ -16,10 +16,12 @@ export const Link = (props: LinkProps) => {
   const pageContext = usePageContext();
   const isActive = pageContext.urlPathname === props.href;
   const isDisabled = !!props.isDisabled;
+  const Component = props.href ? Anchor : Box;
   return (
-    <Anchor
+    <Component
       {..._.omit(props, ["isDisabled"])}
-      href={isDisabled ? undefined : props.href}
+      {...(props.href ? { href: props.href } : {})}
+      // href={isDisabled ? undefined : props.href}
       weight={600}
       sx={(theme) => ({
         color: isDisabled
@@ -39,6 +41,6 @@ export const Link = (props: LinkProps) => {
       })}
     >
       {props.children}
-    </Anchor>
+    </Component>
   );
 };
