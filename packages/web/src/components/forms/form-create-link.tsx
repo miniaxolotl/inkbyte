@@ -96,8 +96,8 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
           transitionProps={{ transition: "pop" }}
           label={
             isAdvancedAnalyticsEnabled
-              ? "Your link will redirect to your website"
-              : "Your website will be displayed through our website"
+              ? "Your website will be displayed through our website"
+              : "Your link will redirect to your website"
           }
         >
           <Box>
