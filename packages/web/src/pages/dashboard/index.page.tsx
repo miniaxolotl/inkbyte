@@ -25,11 +25,25 @@ export const Page = ({}: PageProps) => {
         <Title size="h1" order={1} color="brand-blue">
           Dashboard
         </Title>
-        <Box sx={{ display: "flex", gap: 24 }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 24,
+            "@media (max-width: 680px)": {
+              flexDirection: "column",
+            },
+          }}
+        >
           <Paper
             shadow="md"
             p="lg"
-            sx={{ flex: 1, maxWidth: "max-content" }}
+            sx={{
+              flex: 1,
+              maxWidth: "max-content",
+              "@media (max-width: 680px)": {
+                maxWidth: "unset",
+              },
+            }}
             withBorder
           >
             <List sx={{ listStyleType: "none" }}>
@@ -48,11 +62,11 @@ export const Page = ({}: PageProps) => {
                 </List.Item>
               ))}
 
-              <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
+              {/* <List.Item sx={{ fontFamily: "'Secular One', sans-serif" }}>
                 <Link href={`/dashboard/subscription`} isDisabled>
                   Subscription
                 </Link>
-              </List.Item>
+              </List.Item> */}
             </List>
           </Paper>
 
