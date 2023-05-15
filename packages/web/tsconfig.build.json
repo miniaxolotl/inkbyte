@@ -6,5 +6,12 @@
     "allowJs": true,
     "checkJs": true
   },
-  "include": ["./src/**/*", "./public/**/*", "vite.config.ts"]
+  "include": [
+    "./src/**/*",
+    "./public/**/*",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "vite-env.d.ts",
+    "vite.config.ts"
+  ]
 }
