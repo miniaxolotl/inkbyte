@@ -38,7 +38,11 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
       }}
     >
       <Box>
-        <ITextInput placeholder="shorten a url" />
+        <ITextInput
+          name="long_url"
+          aria-label="Original URL Input"
+          placeholder="shorten a url"
+        />
       </Box>
       <Box
         sx={{
@@ -66,11 +70,15 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
         }}
       >
         <ISelectInput
+          name="domain"
+          aria-label="Domain Select"
           data={links}
           defaultValue={links[0]}
           sx={{ flex: 2, minWidth: 144 }}
         />
         <ITextInput
+          name="custom_slug"
+          aria-label="Custom Link Alias Input"
           placeholder="custom alias (optional)"
           sx={{
             flex: 3,
@@ -123,11 +131,20 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", gap: 12 }}>
         <Tooltip transitionProps={{ transition: "pop" }} label="View History">
-          <Button color="brand-peach" size="xs">
+          <Button
+            color="brand-peach"
+            size="xs"
+            aria-label="View History Button"
+          >
             <FiClock />
           </Button>
         </Tooltip>
-        <Button color="brand-green" size="xs" fullWidth>
+        <Button
+          color="brand-green"
+          size="xs"
+          aria-label="Submit Button"
+          fullWidth
+        >
           CREATE LINK
         </Button>
       </Box>
@@ -145,6 +162,9 @@ const ITextInput = (props: TextInputProps) => (
         borderRadius: "0",
         padding: "4px 16px",
         fontSize: 12,
+        "@media (max-width: 680px)": {
+          height: 48,
+        },
       },
       ":first-of-type": {
         input: {
