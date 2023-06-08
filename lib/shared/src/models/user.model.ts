@@ -1,13 +1,14 @@
 //***********************************************
-//* user.model.ts
+//* user
 //***********************************************
 
 export type BaseUser = {
   id: string;
-  avatar: string;
   email: string;
   first_name: string;
   last_name: string;
-  title: string;
-  description: string;
+  birth_date?: Date | string | null;
+  user_image: string;
 };
+
+export type BaseEditor = BaseUser;
