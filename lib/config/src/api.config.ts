@@ -9,14 +9,22 @@ export type IAPIConfig = IBaseConfig & {
   salt_rounds: number;
   encryption_key: string;
   session_keys: string[];
-  /** database */
+  /** database (MySQL) */
   database_schema: string;
   mysql_string: string;
   mysql_root_string: string;
+  /** database (MeiliSearch) */
+  meilisearch_private_key: string;
   /** s3 */
   s3: {
     access_key: string;
     secret_key: string;
+  };
+  /** appwrite */
+  appwrite: {
+    endpoint: string;
+    project: string;
+    key: string;
   };
 };
 
@@ -32,13 +40,22 @@ export const api_config: IAPIConfig = {
     "super-secret-key",
   ],
   /** database */
-  database_schema: env.DATABASE_SCHEMA ?? "app-schema",
+  database_schema: env.DATABASE_SCHEMA ?? "",
+  /** database (MySQL) */
   mysql_string: env.MYSQL_STRING ?? "",
   mysql_root_string: env.MYSQL_ROOT_STRING ?? "",
+  /** database (MeiliSearch) */
+  meilisearch_private_key: env.MEILISEARCH_PRIVATE_KEY ?? "",
   /** s3 */
   s3: {
     ...base_config.s3,
     access_key: env.S3_ACCESS_KEY ?? "",
     secret_key: env.S3_SECRET_KEY ?? "",
+  },
+  /** appwrite */
+  appwrite: {
+    endpoint: env.APPWRITE_ENDPOINT ?? "",
+    project: env.APPWRITE_PROJECT ?? "",
+    key: env.APPWRITE_KEY ?? "",
   },
 };

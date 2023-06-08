@@ -5,6 +5,7 @@ export type IConfigEnvironment =
   | "production"
   | "staging"
   | "test";
+
 export type IConfigLogErrors = false | true;
 
 export type IBaseConfig = {
@@ -29,6 +30,10 @@ export type IBaseConfig = {
   /** data */
   data_dir: string;
   max_bytes: number;
+  /** database (meilisearch) */
+  meilisearch_host: string;
+  meilisearch_port: number;
+  meilisearch_public_key: string;
   /** s3 */
   s3: {
     endpoint: string;
@@ -38,6 +43,7 @@ export type IBaseConfig = {
 };
 
 export const base_config: IBaseConfig = {
+  /** general */
   env: (env.ENV as IConfigEnvironment) ?? "development",
   print_errors: env.DEPLOYMENT === "false" ? false : true,
   appname: env.APPNAME ?? "appname",
@@ -58,6 +64,10 @@ export const base_config: IBaseConfig = {
   /** data */
   data_dir: env.DATA_DIR ?? "data",
   max_bytes: parseInt(env.MAX_BYTES || `${(2 << 22) * 250}`),
+  /** database (MeiliSearch) */
+  meilisearch_host: env.MEILISEARCH_HOST ?? "http://localhost:7700",
+  meilisearch_port: parseInt(env.MEILISEARCH_PORT ?? "7700"),
+  meilisearch_public_key: env.MEILISEARCH_PUBLIC_KEY ?? "public_key",
   /** s3 */
   s3: {
     endpoint: env.S3_ENDPOINT ?? "http://localhost:9000",

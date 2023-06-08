@@ -6,6 +6,7 @@ export type IWebConfig = IBaseConfig;
 
 export const web_config: IWebConfig = {
   ...base_config,
+  /** general */
   env: (env.VITE_ENV as IConfigEnvironment) ?? base_config.env,
   print_errors: env.VITE_DEPLOYMENT === "false" ? false : true,
   appname: env.VITE_APPNAME ?? base_config.appname,
@@ -26,9 +27,15 @@ export const web_config: IWebConfig = {
   ),
   dashboard_host: env.VITE_DASHBOARD_HOST ?? base_config.dashboard_host,
   /** data */
-  data_dir: env.VITE_DATA_DIR ?? base_config.data_dir,
   max_bytes: parseInt(env.VITE_MAX_BYTES || `${base_config.max_bytes}`),
-  /** services */
+  /** database (MeiliSearch) */
+  meilisearch_host: env.VITE_MEILISEARCH_HOST ?? base_config.meilisearch_host,
+  meilisearch_port: parseInt(
+    env.VITE_MEILISEARCH_PORT ?? `${base_config.meilisearch_port}`,
+  ),
+  meilisearch_public_key:
+    env.VITE_MEILISEARCH_PUBLIC_KEY ?? base_config.meilisearch_public_key,
+  /** s3 */
   s3: {
     endpoint: env.VITE_S3_ENDPOINT ?? base_config.s3.endpoint,
     bucket: env.VITE_S3_BUCKET ?? base_config.s3.bucket,
