@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `LinkLog` (
-	`link_id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`link_id` INTEGER UNSIGNED NOT NULL,
 	`session_id` VARCHAR(256) NOT NULL,
 	`ip_address` VARCHAR(128) NULL,
 	`user_agent` VARCHAR(256) NULL,
