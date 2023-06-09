@@ -23,6 +23,11 @@
     "bcrypt": "~5.1.0"
   },
   "devDependencies": {
-    "@types/bcrypt": "~5.0.0"
+    "@rollup/plugin-node-resolve": "~15.0.1",
+    "@rollup/plugin-terser": "~0.4.1",
+    "@rollup/plugin-typescript": "~10.0.1",
+    "@types/bcrypt": "~5.0.0",
+    "rollup": "~3.10.0",
+    "rollup-plugin-dts": "~5.3.0"
   }
 }
