@@ -3,10 +3,10 @@ require("dotenv").config({
   path: "../../.env",
 });
 
-import { Stande } from "@lib/stande";
+import { Quikk } from "@lib/quikk";
 import { api_config } from "@lib/config";
 
-const { get } = new Stande({
+const { get } = new Quikk({
   base_url: api_config.cms_host,
   api_token: api_config.directus.token,
   api_token_type: "Bearer",
