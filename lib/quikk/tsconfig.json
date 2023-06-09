@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "target": "es6",
+    "module": "esnext"
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "typings/types"
+  ],
+  "exclude": ["./node_modules/", "./dist/**/*"]
+}

@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@lib/config": "~0.0.1",
-    "@lib/stande": "~0.0.1",
+    "@lib/quikk": "~0.0.1",
     "@ngneat/elf": "~2.3.1",
     "@ngneat/elf-entities": "~4.4.4",
     "immer": "~9.0.21"

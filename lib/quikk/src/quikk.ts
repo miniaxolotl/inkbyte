@@ -5,12 +5,12 @@ import {
   GetParams,
   HTTPStatusCodes,
   PostParams,
-  StandeConfig,
-  StandeParams,
-  StandeResponse,
+  QuikkConfig,
+  QuikkParams,
+  QuikkResponse,
 } from "./types";
 
-export class Stande {
+export class Quikk {
   private readonly protocol: "http" | "https";
 
   private readonly base_url: string;
@@ -22,7 +22,7 @@ export class Stande {
 
   private readonly api_url: string;
 
-  constructor(private readonly config: StandeConfig) {
+  constructor(private readonly config: QuikkConfig) {
     this.protocol = config.protocol || "https";
 
     this.base_url = config.base_url;
@@ -43,7 +43,7 @@ export class Stande {
 
   public fetch = async <T = unknown, K = unknown>(
     path: string,
-    { method, headers, body, formData, parameters = {} }: StandeParams<K> = {}
+    { method, headers, body, formData, parameters = {} }: QuikkParams<K> = {},
   ) => {
     const formPayload = new FormData();
     if (formData && Object.keys(formData)) {
@@ -77,14 +77,14 @@ export class Stande {
             ? body
             : JSON.stringify(body)
           : undefined,
-      }
-    ) as StandeResponse<T>);
+      },
+    ) as QuikkResponse<T>);
     return data;
   };
 
   post = async <T, K = unknown, R = unknown>(
     path: string,
-    { headers, parameters, body, formData }: PostParams<K> = {}
+    { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
     | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
@@ -134,7 +134,7 @@ export class Stande {
 
   search = async <T, K = unknown, R = unknown>(
     path: string,
-    { headers, parameters, body, formData }: PostParams<K> = {}
+    { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
     | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
@@ -184,7 +184,7 @@ export class Stande {
 
   public get = async <T, R = unknown>(
     path: string,
-    { headers, parameters }: GetParams = {}
+    { headers, parameters }: GetParams = {},
   ): Promise<
     | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
@@ -232,7 +232,7 @@ export class Stande {
 
   patch = async <T, K = unknown, R = unknown>(
     path: string,
-    { headers, parameters, body, formData }: PostParams<K> = {}
+    { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
     | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
@@ -283,7 +283,7 @@ export class Stande {
 
   delete = async <T, R = unknown>(
     path: string,
-    { headers, parameters }: GetParams = {}
+    { headers, parameters }: GetParams = {},
   ): Promise<
     | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }

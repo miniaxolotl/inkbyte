@@ -1,0 +1,45 @@
+{
+  "name": "@lib/services",
+  "version": "0.0.1",
+  "license": "GPL-3.0",
+  "author": "Elias Mawa <elias@emawa.io>",
+  "private": true,
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "scripts": {
+    "lint": "echo 'linting @lib/services' && eslint . --ext .js,.ts",
+    "prettier": "yarn prettier --write",
+    "clean": "echo 'clean @lib/services' && rm -rf ./dist** ||:",
+    "rollup": "echo 'bundle @lib/services' && rollup -c --bundleConfigAsCjs",
+    "rollup:watch": "nodemon --watch 'src/' --delay 2000ms -e ts,tsx --exec yarn rollup",
+    "watch": "echo 'watching @lib/services' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
+    "build": "NODE_ENV=production && yarn build:cjs",
+    "build:cjs": "NODE_ENV=production && echo 'building @lib/services:cjs' && tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@lib/config": "^0.0.1",
+    "@lib/crypt": "^0.0.1",
+    "@lib/database": "^0.0.1",
+    "@lib/quikk": "^0.0.1",
+    "@lib/schema-validator": "^0.0.1",
+    "@lib/shared": "^0.0.1",
+    "date-fns": "~2.28.0",
+    "date-fns-tz": "~1.3.5",
+    "formidable": "~2.0.1",
+    "koa": "~2.14.2",
+    "yup": "~1.2.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "~15.0.1",
+    "@rollup/plugin-terser": "~0.4.1",
+    "@rollup/plugin-typescript": "~10.0.1",
+    "@types/koa": "^2.13.4",
+    "@types/uuid": "~9.0.0",
+    "rollup": "~3.10.0",
+    "rollup-plugin-dts": "~5.3.0",
+    "ts-node": "~10.9.1",
+    "typescript": "~4.9.4"
+  }
+}

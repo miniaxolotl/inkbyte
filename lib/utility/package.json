@@ -1,5 +1,5 @@
 {
-  "name": "@lib/shared",
+  "name": "@lib/utility",
   "version": "0.0.1",
   "license": "GPL-3.0",
   "author": "Elias Mawa <elias@emawa.io>",
@@ -8,23 +8,26 @@
   "module": "dist/esm/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
-    "lint": "echo 'linting @lib/shared' && eslint . --ext .js,.ts",
+    "lint": "echo 'linting @lib/utility' && eslint . --ext .js,.ts",
     "prettier": "yarn prettier --write",
-    "clean": "echo 'clean @lib/shared' && rm -rf ./dist** ||:",
-    "rollup": "echo 'bundle @lib/shared' && rollup -c --bundleConfigAsCjs",
+    "clean": "echo 'clean @lib/utility' && rm -rf ./dist** ||:",
+    "rollup": "echo 'bundle @lib/utility' && rollup -c --bundleConfigAsCjs",
     "rollup:watch": "nodemon --watch 'src/' --delay 2000ms -e ts,tsx --exec yarn rollup",
-    "watch": "echo 'watching @lib/shared' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
+    "watch": "echo 'watching @lib/utility' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
     "build": "NODE_ENV=production && yarn build:cjs",
-    "build:cjs": "NODE_ENV=production && echo 'building @lib/shared:cjs' && tsc",
+    "build:cjs": "NODE_ENV=production && echo 'building @lib/utility:cjs' && tsc",
     "test": "jest"
   },
   "dependencies": {
-    "yup": "~1.2.0"
+    "@lib/config": "~0.0.1",
+    "uid": "~2.0.1",
+    "uuid": "~9.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "~15.0.1",
     "@rollup/plugin-terser": "~0.4.1",
     "@rollup/plugin-typescript": "~10.0.1",
+    "@types/uuid": "~9.0.0",
     "rollup": "~3.10.0",
     "rollup-plugin-dts": "~5.3.0",
     "ts-node": "~10.9.1",

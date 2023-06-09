@@ -3,12 +3,12 @@
 //***********************************************
 
 export type BaseUser = {
-  id: string;
+  id?: number;
   email: string;
   first_name: string;
   last_name: string;
-  birth_date?: Date | string | null;
-  user_image: string;
+  last_ip?: string;
+  image: string;
 };
 
 export type BaseEditor = BaseUser;

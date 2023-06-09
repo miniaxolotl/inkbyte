@@ -1,5 +1,5 @@
 {
-  "name": "@lib/env",
+  "name": "@lib/quikk",
   "version": "0.0.1",
   "license": "GPL-3.0",
   "author": "Elias Mawa <elias@emawa.io>",
@@ -8,15 +8,20 @@
   "module": "dist/esm/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
-    "lint": "echo 'linting @lib/env' && eslint . --ext .js,.ts",
+    "lint": "echo 'linting @lib/quikk' && eslint . --ext .js,.ts",
     "prettier": "yarn prettier --write",
-    "clean": "echo 'clean @lib/env' && rm -rf ./dist** ||:",
-    "rollup": "echo 'bundle @lib/env' && rollup -c --bundleConfigAsCjs",
+    "clean": "echo 'clean @lib/quikk' && rm -rf ./dist** ||:",
+    "rollup": "echo 'bundle @lib/quikk' && rollup -c --bundleConfigAsCjs",
     "rollup:watch": "nodemon --watch 'src/' --delay 2000ms -e ts,tsx --exec yarn rollup",
-    "watch": "echo 'watching @lib/env' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
+    "watch": "echo 'watching @lib/quikk' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
     "build": "NODE_ENV=production && yarn build:cjs",
-    "build:cjs": "NODE_ENV=production && echo 'building @lib/env:cjs' && tsc",
+    "build:cjs": "NODE_ENV=production && echo 'building @lib/quikk:cjs' && tsc",
     "test": "jest"
+  },
+  "dependencies": {
+    "@lib/config": "~0.0.1",
+    "cross-fetch": "~3.1.5",
+    "form-data": "~4.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "~15.0.1",

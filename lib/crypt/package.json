@@ -1,0 +1,28 @@
+{
+  "name": "@lib/crypt",
+  "version": "0.0.1",
+  "license": "GPL-3.0",
+  "author": "Elias Mawa <elias@emawa.io>",
+  "private": true,
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "scripts": {
+    "lint": "echo 'linting @lib/crypt' && eslint . --ext .js,.ts",
+    "prettier": "yarn prettier --write",
+    "clean": "echo 'clean @lib/crypt' && rm -rf ./dist** ||:",
+    "rollup": "echo 'bundle @lib/crypt' && rollup -c --bundleConfigAsCjs",
+    "rollup:watch": "nodemon --watch 'src/' --delay 2000ms -e ts,tsx --exec yarn rollup",
+    "watch": "echo 'watching @lib/crypt' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
+    "build": "NODE_ENV=production && yarn build:cjs",
+    "build:cjs": "NODE_ENV=production && echo 'building @lib/crypt:cjs' && tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@lib/config": "~0.0.1",
+    "bcrypt": "~5.1.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "~5.0.0"
+  }
+}
