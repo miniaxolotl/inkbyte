@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "@lib/config": "~0.0.1",
-    "@lib/stande": "~0.0.1"
+    "@lib/quikk": "~0.0.1"
   }
 }

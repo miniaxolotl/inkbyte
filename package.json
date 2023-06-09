@@ -1,17 +1,17 @@
 {
-  "name": "react-directus-template",
+  "name": "inkbyte",
   "private": true,
   "version": "0.0.1",
   "packageManager": "yarn@3.3.1",
   "license": "GPL-3.0",
   "author": "Elias Mawa <elias@emawa.io>",
-  "homepage": "https://github.com/celestialstag/react-directus-template#readme",
+  "homepage": "https://github.com/celestialstag/inkbyte#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/celestialstag/react-directus-template.git"
+    "url": "git+https://github.com/celestialstag/inkbyte.git"
   },
   "bugs": {
-    "url": "https://github.com/celestialstag/react-directus-template/issues"
+    "url": "https://github.com/celestialstag/inkbyte/issues"
   },
   "engines": {
     "node": ">16.14.0 <17.0.0"
@@ -43,18 +43,19 @@
     "watch": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run watch",
     "watch:libs": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run watch",
     "serve:web": "yarn workspace @package/web run serve",
-    "serve:cms": "yarn workspace @package/cms run develop",
-    "serve:keystone": "yarn workspace @package/keystone run serve",
-    "rollup": "yarn workspaces foreach -ti --from '{@lib/*,@package/*}' run rollup",
+    "serve:api": "yarn workspace @package/api run watch",
+    "rollup": "yarn workspaces foreach -ti --from '@lib/*' run rollup",
     "rollup:watch": "yarn workspaces foreach -j unlimited -pi --from '@lib/*' run rollup:watch",
     "optimize:web": "yarn workspace @package/web optimize",
     "build": "yarn workspaces foreach -ti --from '{@lib/*,@package/*}' run rollup",
     "build:web": "yarn workspace @package/web build",
+    "build:api": "yarn workspace @package/api build",
     "preview:web": "yarn workspace @package/web preview",
     "start": "yarn workspaces foreach -pti --from '{@lib/*}' run start",
     "start:web": "yarn workspace @package/web start",
+    "start:api": "yarn workspace @package/api start",
     "script:migrate": "yarn workspace @script/migrate start",
-    "web:build": "docker build -t ghcr.io/celestialstag/react-directus-template:0.0.1 .",
+    "web:build": "docker build -t ghcr.io/celestialstag/inkbyte:0.0.1 .",
     "web:start": "yarn service:start web",
     "db:reset": "MYSQL_CONNECTION_STRING=$MYSQL_ROOT_CONNECTION_STRING yarn prisma migrate reset --force --skip-seed",
     "db:generate": "yarn prisma generate",
@@ -63,16 +64,17 @@
     "db:deploy": "MYSQL_CONNECTION_STRING=$MYSQL_ROOT_CONNECTION_STRING yarn prisma migrate deploy"
   },
   "dependencies": {
-    "@prisma/client": "^4.14.0",
+    "@prisma/client": "~4.14.1",
+    "appwrite": "~11.0.0",
     "cross-env": "~7.0.3",
-    "d3-time-format": "^4.1.0",
     "date-fns": "~2.30.0",
     "dotenv": "~16.0.3",
     "dotenv-expand": "~10.0.0",
     "eslint-plugin-prettier": "~4.2.1",
-    "lodash": "^4.17.21",
+    "lodash": "~4.17.21",
+    "node-appwrite": "^9.0.0",
     "nodemon": "~2.0.22",
-    "prisma": "^4.14.0"
+    "prisma": "~4.14.1"
   },
   "devDependencies": {
     "@types/d3-time-format": "^4",
