@@ -1,0 +1,14 @@
+/**/ignore_*
+/api/
+
+.DS_Store
+.env*
+!.env.local
+!.env*.example
+rollup.config.js
+
+node_modules/
+coverage/
+/**/build/
+/**/dist/
+.rollup.cache/

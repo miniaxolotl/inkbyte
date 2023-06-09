@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist/cjs",
+    "target": "es2020",
+    "module": "commonjs",
+    /* build options */
+    "noEmit": false,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "typings/types"
+  ],
+  "exclude": ["./node_modules/", "./dist/**/*"]
+}

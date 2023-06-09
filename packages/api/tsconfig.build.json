@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    /* build options */
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": [
+    "./src/**/*",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "rollup.config.js"
+  ]
+}
