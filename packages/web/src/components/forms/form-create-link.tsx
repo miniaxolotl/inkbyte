@@ -129,12 +129,24 @@ export const FormCreateLink = ({ links = [], sx }: FormCreateLinkProps) => {
           </Box>
         </Tooltip>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          button: {
+            "@media (max-width: 680px)": {
+              height: 48,
+            },
+          },
+        }}
+      >
         <Tooltip transitionProps={{ transition: "pop" }} label="View History">
           <Button
             color="brand-peach"
             size="xs"
             aria-label="View History Button"
+            sx={{ minWidth: 48 }}
           >
             <FiClock />
           </Button>

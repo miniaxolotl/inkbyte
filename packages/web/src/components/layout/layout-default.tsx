@@ -2,13 +2,13 @@ import React from "react";
 
 import { Box } from "@mantine/core";
 
-import { featureList, solutionList } from "@lib/data";
+// import { featureList, solutionList } from "@lib/data";
 import { web_config } from "@lib/config";
 
 import {
   DesktopNavigation,
   DesktopNavigationItem,
-  DesktopNavigationItemDropdown,
+  // DesktopNavigationItemDropdown,
   MobileNavigation,
   MobileNavigationItem,
   MobileNavigationList,
@@ -39,7 +39,7 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
         sx={{ padding: 24 }}
         disableLogo={disableLogo}
       >
-        <DesktopNavigationItemDropdown
+        {/* <DesktopNavigationItemDropdown
           items={featureList.map(({ title, slug }) => ({
             label: title,
             href: `/features/${slug}`,
@@ -47,9 +47,9 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
           }))}
         >
           <Link>Features</Link>
-        </DesktopNavigationItemDropdown>
+        </DesktopNavigationItemDropdown> */}
 
-        <DesktopNavigationItemDropdown
+        {/* <DesktopNavigationItemDropdown
           items={solutionList.map(({ title, slug }) => ({
             label: title,
             href: `/solutions/${slug}`,
@@ -57,7 +57,7 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
           }))}
         >
           <Link>Solutions</Link>
-        </DesktopNavigationItemDropdown>
+        </DesktopNavigationItemDropdown> */}
 
         {/* <DesktopNavigationItem> */}
         {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
@@ -103,21 +103,21 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
           )}
         </MobileNavigationList>
 
-        <MobileNavigationList title="Features">
+        {/* <MobileNavigationList title="Features">
           {featureList.map(({ title, slug }) => (
             <MobileNavigationItem key={slug}>
               <Link href={`/features/${slug}`}>{title}</Link>
             </MobileNavigationItem>
           ))}
-        </MobileNavigationList>
+        </MobileNavigationList> */}
 
-        <MobileNavigationList title="Solutions">
+        {/* <MobileNavigationList title="Solutions">
           {solutionList.map(({ title, slug }) => (
             <MobileNavigationItem key={slug}>
               <Link href={`/solutions/${slug}`}>{title}</Link>
             </MobileNavigationItem>
           ))}
-        </MobileNavigationList>
+        </MobileNavigationList> */}
 
         {/* <MobileNavigationItem> */}
         {/* <Link href={`/features/${featureList[0].slug}`}>Features</Link> */}
