@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
-import { api_config } from '@lib/config';
+import { api_config } from "@lib/config";
 
 const saltRounds = api_config.salt_rounds || 12;
 
