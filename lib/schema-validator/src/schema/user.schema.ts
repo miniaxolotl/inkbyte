@@ -1,4 +1,4 @@
-import yup, { object } from "yup";
+import yup, { InferType, object } from "yup";
 
 //***********************************************
 //* user
@@ -29,3 +29,7 @@ export const createUserSchema = object({
     .equals([yup.ref("password")], "Passwords must match")
     .required(),
 });
+
+export type UserSchema = InferType<typeof userSchema>;
+
+export type CreateUserSchema = InferType<typeof createUserSchema>;
