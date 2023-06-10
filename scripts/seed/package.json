@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "@script/seed",
+  "version": "0.0.1",
+  "license": "GPL-3.0",
+  "author": "Elias Mawa <elias@emawa.io>",
+  "scripts": {
+    "lint": "echo 'linting @script/seed' && eslint . --ext .js,.ts",
+    "prettier": "yarn prettier --write",
+    "start": "cross-env NODE_ENV=production ts-node src/index.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@lib/config": "~0.0.1",
+    "@lib/database": "~0.0.1",
+    "@lib/quikk": "~0.0.1",
+    "@lib/shared": "~0.0.1"
+  }
+}
