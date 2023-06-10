@@ -2,8 +2,12 @@
 //* shared
 //***********************************************
 
-export type BaseType = {
+export type Base = {
   updated?: Date;
   created?: Date;
   deleted?: Date | null;
+};
+
+export type IdMap = {
+  id: number;
 };
