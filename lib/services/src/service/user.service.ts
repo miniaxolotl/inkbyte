@@ -8,10 +8,17 @@ import { prisma_db } from "@lib/database";
 //* user
 //***********************************************
 
+export const get_users = async () => {
+  const user = await prisma_db.user.findMany({
+    include: { roles: { include: { role: true } } },
+  });
+  return user;
+}; // get_users
+
 export const get_user_by_id = async (id: number) => {
   const user = await prisma_db.user.findUnique({
     where: { id },
-    include: { roles: true },
+    include: { roles: { include: { role: true } } },
   });
   return user;
 }; // get_user_by_id

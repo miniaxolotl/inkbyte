@@ -15,6 +15,7 @@ import { api_config } from "@lib/config";
 import { base_router, load_routes } from "./route.config";
 import { body_parser, cors, json_parser, logger } from "./middleware.config";
 import { error_logger } from "./error_logger.config";
+import { sanitize } from "./sanitize.config";
 
 /************************************************
  * setup
@@ -29,6 +30,7 @@ server.use(json_parser);
 server.use(logger);
 
 server.use(error_logger);
+server.use(sanitize);
 
 load_routes().then(() => {
   server.use(base_router.routes());
