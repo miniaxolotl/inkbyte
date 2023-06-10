@@ -4,7 +4,7 @@ import { ActionIcon, Box, Container, Text, Title } from "@mantine/core";
 import { IoLogoApple, IoLogoGoogle } from "react-icons/io/index.js";
 
 import { Link, TextDivider } from "@components/core";
-import { FormRegister } from "@components/forms";
+import { FormCreateAccount } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -34,7 +34,7 @@ export const Page = ({}: PageProps) => {
           </Text>
           <Box>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <FormRegister />
+              <FormCreateAccount />
             </Box>
             <TextDivider sx={{ maxWidth: 680 }}>OR</TextDivider>
             <Box

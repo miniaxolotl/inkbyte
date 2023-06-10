@@ -35,15 +35,7 @@ export default [
         },
       }),
     ],
-    external: [
-      "@lib/schema-validator",
-      "@lib/config",
-      "@lib/utility",
-      "@lib/shared",
-      "@lib/crypt",
-      "@lib/database",
-      "node-appwrite",
-    ],
+    external: ["cross-fetch", "form-data"],
   },
   {
     input: "./dist/esm/index.d.ts",

@@ -16,7 +16,7 @@
     "lint": "echo 'linting @lib/api' && eslint . --ext .js,.ts",
     "prettier": "yarn prettier --write",
     "clean": "echo 'clean @lib/api' && rm -rf ./dist** ||:",
-    "watch": "echo 'watching @lib/api' && nodemon --watch './src' --watch '../../lib' -e ts,tsx,js --delay 20ms --exec yarn serve",
+    "watch": "echo 'watching @lib/api' && nodemon --watch './src' --watch '../../lib' -e ts,tsx,js --delay 200ms --exec yarn serve",
     "serve": "echo 'serving @package/api' && ts-node ./src/server.ts",
     "build": "NODE_ENV=production && yarn build:cjs",
     "build:cjs": "NODE_ENV=production && echo 'building @lib/api:cjs' && yarn tsc",

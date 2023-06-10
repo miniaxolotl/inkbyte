@@ -15,7 +15,7 @@ type FormRegisterProps = BoxProps & {
   children?: React.ReactNode;
 };
 
-export const FormRegister = ({ sx }: FormRegisterProps) => {
+export const FormCreateAccount = ({ sx }: FormRegisterProps) => {
   return (
     <Box
       sx={{
@@ -37,6 +37,16 @@ export const FormRegister = ({ sx }: FormRegisterProps) => {
         }}
       >
         <ITextInput placeholder="email" />
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <ITextInput placeholder="First Name" type="first_name" />
+        <ITextInput placeholder="Last Name" type="last_name" />
       </Box>
 
       <Box

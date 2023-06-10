@@ -3,9 +3,9 @@
 //***********************************************
 
 export enum PermissionRoleEnum {
-  PREMIUM_USER = "PREMIUM_USER",
-  BASIC_USER = "BASIC_USER",
   ADMIN_USER = "ADMIN_USER",
+  BASIC_USER = "BASIC_USER",
+  PREMIUM_USER = "PREMIUM_USER",
 }
 
 export const PermissionRoleMap = {
