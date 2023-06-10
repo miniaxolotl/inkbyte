@@ -2265,7 +2265,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lib/database@^0.0.1, @lib/database@workspace:lib/database":
+"@lib/database@^0.0.1, @lib/database@workspace:lib/database, @lib/database@~0.0.1":
   version: 0.0.0-use.local
   resolution: "@lib/database@workspace:lib/database"
   dependencies:
@@ -3040,6 +3040,17 @@ __metadata:
   dependencies:
     "@lib/config": ~0.0.1
     "@lib/quikk": ~0.0.1
+  languageName: unknown
+  linkType: soft
+
+"@script/seed@workspace:scripts/seed":
+  version: 0.0.0-use.local
+  resolution: "@script/seed@workspace:scripts/seed"
+  dependencies:
+    "@lib/config": ~0.0.1
+    "@lib/database": ~0.0.1
+    "@lib/quikk": ~0.0.1
+    "@lib/shared": ~0.0.1
   languageName: unknown
   linkType: soft
 
