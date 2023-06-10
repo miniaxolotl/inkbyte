@@ -1,4 +1,4 @@
-# react-directus-template
+# InkByte
 
 ## Getting Started
 
@@ -14,7 +14,7 @@
 1. Clone the repository
 
 ```bash
-git clone git@github.com:celestialstag/react-directus-template.git
+git clone git@github.com:celestialstag/inkbyte.git
 ```
 
 2. Install dependencies
