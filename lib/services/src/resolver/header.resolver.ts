@@ -1,6 +1,7 @@
 import { Next, ParameterizedContext } from "koa";
 import { IMiddleware } from "koa-router";
-import Joi from "joi";
+
+import yup, { ObjectSchema } from "yup";
 
 import { CLIENT_ERROR } from "@lib/utility";
 import { validateSchema } from "@lib/schema-validator";
@@ -10,17 +11,16 @@ export type HeaderContext<T = { [key: string]: unknown }> = {
 };
 
 export const HeaderResolver = <T = unknown>(
-  Schema: Joi.ObjectSchema,
+  schema: ObjectSchema<yup.AnyObject>,
 ): IMiddleware<HeaderContext<T>> => {
   return async (ctx: ParameterizedContext<HeaderContext<T>>, next: Next) => {
-    const { value, error } = validateSchema<T>(Schema, ctx.request.headers, {
-      allowUnknown: true,
+    const { value, error } = validateSchema<T>(schema, ctx.request.headers, {
+      stripUnknown: true,
       abortEarly: false,
-      errors: { escapeHtml: true },
     });
     if (error || !value) {
       ctx.status = CLIENT_ERROR.BAD_REQUEST.status;
-      ctx.body = error?.[0] || "Invalid request body";
+      ctx.body = error || CLIENT_ERROR.BAD_REQUEST.message;
       return;
     }
     ctx.state = {

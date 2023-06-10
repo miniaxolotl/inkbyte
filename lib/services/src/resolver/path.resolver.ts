@@ -1,6 +1,7 @@
 import { Next, ParameterizedContext } from "koa";
 import { IMiddleware } from "koa-router";
-import Joi from "joi";
+
+import yup, { ObjectSchema } from "yup";
 
 import { CLIENT_ERROR } from "@lib/utility";
 import { validateSchema } from "@lib/schema-validator";
@@ -10,23 +11,27 @@ export type PathContext<T = { [key: string]: unknown }> = {
 };
 
 export const PathResolver = <T = unknown>(
-  Schema: Joi.ObjectSchema,
+  schema: ObjectSchema<yup.AnyObject>,
 ): IMiddleware<PathContext<T>> => {
   return async (ctx: ParameterizedContext<PathContext<T>>, next: Next) => {
-    const { value, error } = validateSchema<T>(Schema, ctx.params, {
-      allowUnknown: false,
-      abortEarly: false,
-      errors: { escapeHtml: true },
-    });
+    const { value, error } = validateSchema<T>(
+      schema,
+      (ctx.request as unknown as { params: Record<string, unknown> }).params,
+      {
+        stripUnknown: true,
+        abortEarly: false,
+      },
+    );
     if (error || !value) {
       ctx.status = CLIENT_ERROR.BAD_REQUEST.status;
-      ctx.body = error?.[0] || "Invalid request body";
+      ctx.p = error || CLIENT_ERROR.BAD_REQUEST.message;
       return;
     }
     ctx.state = {
       ...ctx.state,
       path: value,
     };
+    (ctx.request as unknown as { body: T | null }).body = value;
     await next();
   };
 };
