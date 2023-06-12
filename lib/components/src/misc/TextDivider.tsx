@@ -5,7 +5,6 @@ import _ from "lodash";
 
 type TextDividerProps = Omit<BoxProps, "children"> & {
   href?: string;
-  // children?: React.ReactNode;
   children?: string;
 };
 

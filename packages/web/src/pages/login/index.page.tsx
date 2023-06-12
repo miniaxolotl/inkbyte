@@ -3,9 +3,11 @@ import React from "react";
 import { ActionIcon, Box, Container, Text, Title } from "@mantine/core";
 import { IoLogoApple, IoLogoGoogle } from "react-icons/io/index.js";
 
-import { Link, TextDivider } from "@components/core";
+import { TextDivider } from "@lib/components";
+
 import { FormLogin } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
+import { Link } from "@components/core";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type PageProps = {};
