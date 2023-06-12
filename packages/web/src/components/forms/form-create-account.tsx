@@ -62,11 +62,7 @@ export const FormCreateAccount = ({ sx }: FormRegisterProps) => {
         {({ register, link }) => {
           return (
             <>
-              <InputComponent
-                {...register("email")}
-                showLabel={false}
-                required
-              />
+              <InputComponent {...register("email")} showLabel={false} />
 
               <Box>
                 <InputComponent {...register("first_name")} />
