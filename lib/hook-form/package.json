@@ -1,0 +1,40 @@
+{
+  "name": "@lib/hook-form",
+  "version": "0.0.1",
+  "license": "GPL-3.0",
+  "author": "Elias Mawa <elias@emawa.io>",
+  "private": true,
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/cjs/index.d.ts",
+  "scripts": {
+    "lint": "echo 'linting @lib/hook-form' && eslint . --ext .js,.ts",
+    "prettier": "yarn prettier --write",
+    "clean": "echo 'clean @lib/hook-form' && rm -rf ./dist** ||:",
+    "rollup": "echo 'bundle @lib/hook-form' && rollup -c --bundleConfigAsCjs",
+    "rollup:watch": "nodemon --watch 'src/' --delay 2000ms -e ts,tsx --exec yarn rollup",
+    "watch": "echo 'watching @lib/hook-form' && nodemon --watch 'src/' -e ts,tsx --exec yarn build",
+    "build": "NODE_ENV=production && yarn build:cjs",
+    "build:cjs": "NODE_ENV=production && echo 'building @lib/hook-form:cjs' && tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@lib/components": "~0.0.1",
+    "@lib/shared": "~0.0.1",
+    "@mantine/core": "~6.0.10",
+    "react": "~18.2.0",
+    "react-dom": "~18.2.0",
+    "yup": "~1.2.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "~15.0.1",
+    "@rollup/plugin-terser": "~0.4.1",
+    "@rollup/plugin-typescript": "~10.0.1",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "~4.6.0",
+    "rollup": "~3.10.0",
+    "rollup-plugin-dts": "~5.3.0",
+    "ts-node": "~10.9.1",
+    "typescript": "~4.9.4"
+  }
+}
