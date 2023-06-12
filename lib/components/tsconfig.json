@@ -4,17 +4,13 @@
     "baseUrl": "./src",
     "outDir": "./dist",
     "target": "es2020",
-    "module": "es6",
-    "jsx": "react-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"]
-    // "noEmit": false,
-    // "declaration": true,
-    // "declarationMap": true,
-    // "skipLibCheck": true
+    "module": "es2020",
+    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["react"]
   },
   "include": [
     "./src/**/*.ts",
-    "./src/**/*.tsx",
     "./typings/**/*.d.ts",
     "../../typings/**/*.d.ts",
     "typings/types"

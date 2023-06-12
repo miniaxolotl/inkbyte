@@ -30,6 +30,8 @@
     "@rollup/plugin-node-resolve": "~15.0.1",
     "@rollup/plugin-terser": "~0.4.1",
     "@rollup/plugin-typescript": "~10.0.1",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "~4.6.0",
     "rollup": "~3.10.0",
     "rollup-plugin-dts": "~5.3.0",
     "ts-node": "~10.9.1",
