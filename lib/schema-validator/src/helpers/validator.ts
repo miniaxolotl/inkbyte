@@ -1,7 +1,8 @@
-import yup, { ObjectSchema, ValidateOptions, ValidationError } from "yup";
+import type { AnyObject, ObjectSchema, ValidateOptions } from "yup";
+import { ValidationError } from "yup";
 
 export const validateSchema = <T = unknown>(
-  schema: ObjectSchema<yup.AnyObject>,
+  schema: ObjectSchema<AnyObject>,
   data: Record<string, unknown>,
   options: ValidateOptions = {},
 ) => {
