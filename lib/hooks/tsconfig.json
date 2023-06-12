@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "target": "es2020",
+    "module": "es2020",
+    "jsx": "react",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["react"]
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./typings/**/*.d.ts",
+    "../../typings/**/*.d.ts",
+    "typings/types"
+  ],
+  "exclude": ["./node_modules/", "./dist/**/*"]
+}
