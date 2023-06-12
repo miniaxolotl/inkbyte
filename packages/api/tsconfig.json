@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist/cjs",
-    "target": "es2020",
+    "target": "es2022",
     "module": "commonjs",
     /* build options */
     "noEmit": false,
