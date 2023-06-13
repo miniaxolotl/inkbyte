@@ -32,7 +32,7 @@ export const exclude = (
       if (Object.keys(payload).length) {
         return Object.keys(payload).reduce(
           (a, key) =>
-            keys.includes(key) || like.filter((v) => v.includes(key)).length
+            keys.includes(key) || like.filter((v) => key.includes(v)).length
               ? a
               : payload[key]
               ? { ...a, [key]: reduce(payload[key] as BaseMap) }
