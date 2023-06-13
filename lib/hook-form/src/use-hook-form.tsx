@@ -141,7 +141,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     };
 
     const handleFocus = () => {
-      if (!isTouched(name)) setTouched(name);
+      // if (!isTouched(name)) setTouched(name);
     };
 
     const handleBlur = () => {
@@ -177,7 +177,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     };
 
     const handleFocus = () => {
-      if (!isTouched(name)) setTouched(name);
+      // if (!isTouched(name)) setTouched(name);
     };
 
     const handleBlur = () => {
@@ -186,7 +186,9 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
 
     return {
       name,
-      onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      onChange: (e: ChangeEvent<HTMLInputElement> | string | null) => {
+        if (!e) return;
+        if (typeof e === "string") return handleChange(e);
         if (e.target.type === "checkbox")
           return handleChange(`${e.target.checked}`);
         handleChange(e.target.value);

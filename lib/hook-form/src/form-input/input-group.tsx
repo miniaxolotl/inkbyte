@@ -5,11 +5,13 @@ import { Box } from "@lib/components";
 export type InputGroupProps = {
   children: ReactNode;
   direction?: "horizontal" | "vertical";
+  gap?: number;
 };
 
 export const InputGroup = ({
   children,
   direction = "vertical",
+  gap = 0,
 }: InputGroupProps) => {
   const groupStyle =
     direction === "vertical"
@@ -56,6 +58,7 @@ export const InputGroup = ({
     <Box
       sx={{
         display: "flex",
+        gap,
         flexDirection: direction === "vertical" ? "column" : "row",
         "@media (max-width: 680px)": {
           flexDirection: "column",

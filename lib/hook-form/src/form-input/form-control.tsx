@@ -5,7 +5,7 @@ import { BaseInput, BaseInputProps } from "./base-input";
 export type InputFieldProps = {
   type?: BaseInputType;
   autoComplete?: BaseInputAutoComplete;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement> | string | null) => void;
   onFocus: () => void;
   value: string;
 };
