@@ -8,8 +8,9 @@ import React, {
   useState,
 } from "react";
 
-import * as _ from "lodash";
 import { Input, InputProps } from "@mantine/core";
+import _ from "lodash";
+
 import { Box } from "@lib/components";
 
 export type BaseInputState = {
