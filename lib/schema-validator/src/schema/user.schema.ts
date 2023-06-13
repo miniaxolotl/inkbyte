@@ -35,8 +35,14 @@ export const loginUserSchema = object({
   remember_me: boolean().label("Remember me").default(false),
 });
 
+export const resetUserSchema = object({
+  email: string().label("Email").email().max(32).required(),
+});
+
 export type UserSchema = InferType<typeof userSchema>;
 
 export type CreateUserSchema = InferType<typeof createUserSchema>;
 
 export type LoginUserSchema = InferType<typeof loginUserSchema>;
+
+export type ResetUserSchema = InferType<typeof resetUserSchema>;
