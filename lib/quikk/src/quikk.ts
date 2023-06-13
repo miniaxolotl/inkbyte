@@ -14,9 +14,10 @@ export class Quikk {
   private readonly protocol: "http" | "https";
 
   private readonly base_url: string;
+  private readonly base_port?: number;
   private readonly base_path?: string;
 
-  private readonly api_token?: string;
+  private api_token?: string;
   private readonly api_token_type: string;
   private readonly api_version?: string;
 
@@ -26,6 +27,7 @@ export class Quikk {
     this.protocol = config.protocol || "https";
 
     this.base_url = config.base_url;
+    this.base_port = config.base_port;
     this.base_path = config.base_path;
 
     this.api_token = config.api_token;
@@ -33,13 +35,15 @@ export class Quikk {
     this.api_version = config.api_version;
 
     this.api_url = [
-      `${this.protocol}://${this.base_url}`,
+      [`${this.protocol}://${this.base_url}`, this.base_port ?? 80].join(":"),
       this.base_path,
       this.api_version,
     ]
       .filter((x) => !!x)
       .join("/");
   }
+
+  public setApiToken = (token: string) => (this.api_token = token);
 
   public fetch = async <T = unknown, K = unknown>(
     path: string,
@@ -82,7 +86,7 @@ export class Quikk {
     return data;
   };
 
-  post = async <T, K = unknown, R = unknown>(
+  public post = async <T, K = unknown, R = unknown>(
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
@@ -132,7 +136,7 @@ export class Quikk {
     };
   };
 
-  search = async <T, K = unknown, R = unknown>(
+  public search = async <T, K = unknown, R = unknown>(
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
@@ -230,7 +234,7 @@ export class Quikk {
     };
   };
 
-  patch = async <T, K = unknown, R = unknown>(
+  public patch = async <T, K = unknown, R = unknown>(
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
@@ -281,7 +285,7 @@ export class Quikk {
     };
   };
 
-  delete = async <T, R = unknown>(
+  public delete = async <T, R = unknown>(
     path: string,
     { headers, parameters }: GetParams = {},
   ): Promise<
