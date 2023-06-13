@@ -18,7 +18,7 @@ export type BaseImage = {
   updated_by?: number | null;
 };
 
-export type ImageJoin = BaseImage & {
+export type ImageModel = BaseImage & {
   editor?: BaseEditor;
   updated?: Date;
   created?: Date;

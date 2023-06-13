@@ -2,11 +2,16 @@
 //* role
 //***********************************************
 
-export type PermissionRole = "PREMIUM_USER" | "BASIC_USER" | "ADMIN_USER";
+export type PermissionRole = "admin_user" | "basic_user" | "premium_user";
 
 export type BaseRole = {
   id: number;
-  slug: Lowercase<PermissionRole>;
+  slug: PermissionRole;
   authority: number;
-  deleted?: boolean;
+};
+
+export type RoleModel = BaseRole & {
+  updated: Date;
+  created: Date;
+  deleted?: Date | null;
 };
