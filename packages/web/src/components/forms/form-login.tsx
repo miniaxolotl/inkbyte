@@ -1,20 +1,32 @@
 import React from "react";
 
 import { Box, Button, Checkbox } from "@mantine/core";
+import { FiLock, FiMail } from "react-icons/fi/index.js";
 
-import { InputGroup, useHookForm } from "@lib/hook-form";
-import { LoginUserSchema, loginUserSchema } from "@lib/schema-validator";
+import { HookFormState, InputGroup, useHookForm } from "@lib/hook-form";
+import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
 
 import { Link } from "@components/core";
+import { useStore } from "@stores";
 
 export const FormLogin = () => {
-  const handleSubmit = async () => {
-    console.log("submit form!");
+  const { session } = useStore();
+
+  const handleSubmit = async (
+    payload: UserLoginSchema,
+    h: HookFormState<UserLoginSchema>,
+  ) => {
+    const response = await session.createSession(payload);
+    if (!response.ok) {
+      h.setSubmitError({
+        heading: `Error ${response.status}`,
+        content: response.error,
+      });
+    }
   };
 
-  const { HookForm, InputComponent } = useHookForm<LoginUserSchema>({
-    initialState: {},
-    schema: loginUserSchema,
+  const { HookForm, InputComponent } = useHookForm<UserLoginSchema>({
+    schema: userLoginSchema,
     handleSubmit,
   });
 
@@ -24,10 +36,17 @@ export const FormLogin = () => {
         return (
           <>
             <InputGroup>
-              <InputComponent {...register("email")} showError />
+              <InputComponent
+                {...register("email")}
+                icon={<FiMail />}
+                autoComplete="username"
+                showError
+              />
               <InputComponent
                 {...register("password")}
                 type="password"
+                icon={<FiLock />}
+                autoComplete="current-password"
                 showError
               />
             </InputGroup>

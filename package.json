@@ -66,19 +66,16 @@
   },
   "dependencies": {
     "@prisma/client": "~4.14.1",
-    "appwrite": "~11.0.0",
     "cross-env": "~7.0.3",
     "date-fns": "~2.30.0",
     "dotenv": "~16.0.3",
     "dotenv-expand": "~10.0.0",
     "lodash": "~4.17.21",
-    "node-appwrite": "^9.0.0",
+    "node-appwrite": "~9.0.0",
     "nodemon": "~2.0.22",
-    "prisma": "~4.14.1",
-    "valtio": "^1.10.5"
+    "prisma": "~4.14.1"
   },
   "devDependencies": {
-    "@types/d3-time-format": "^4",
     "@types/jest": "~29.2.5",
     "@types/lodash": "~4.14.191",
     "@types/node": "~16.18.1",

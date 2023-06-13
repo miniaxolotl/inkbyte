@@ -1,1 +1,1 @@
-export * from "./header.guard";
+export * from "./session.guard";

@@ -1,13 +1,12 @@
-// `usePageContext` allows us to access `pageContext` in any React component.
-// More infos: https://vite-plugin-ssr.com/pageContext-anywhere
-import React, { ReactNode, createContext, useContext } from "react";
+import React, { ReactNode, createContext, useContext, useRef } from "react";
 
-import { baseRootStore } from "@lib/stores";
+import { proxy, useSnapshot } from "valtio";
 
-const isServer = typeof window === "undefined";
-let clientStore: unknown = null;
+import { RootStore } from "./root.store";
 
-const Context = createContext<unknown>(null);
+let clientStore: RootStore | null = null;
+
+const Context = createContext<React.MutableRefObject<RootStore> | null>(null);
 
 type StoreContextProviderProps = {
   children: ReactNode;
@@ -16,13 +15,13 @@ type StoreContextProviderProps = {
 export const StoreProvider: React.FC<StoreContextProviderProps> = ({
   children,
 }) => {
-  const store = clientStore || baseRootStore(isServer);
-  if (!clientStore) clientStore = store;
+  const store = useRef<RootStore>(clientStore || proxy(new RootStore()));
+  if (!clientStore) clientStore = store.current;
   return <Context.Provider value={store}>{children}</Context.Provider>;
 };
 
 export const useStore = () => {
-  const store = useContext(Context) as ReturnType<typeof baseRootStore>;
+  const store = useContext(Context)?.current ?? null;
   if (!store) throw new Error("useStore must be used within a StoreProvider.");
-  return store;
+  return useSnapshot(store);
 };

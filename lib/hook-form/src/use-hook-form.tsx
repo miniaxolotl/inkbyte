@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FormEvent, ReactNode, useState } from "react";
 
 import { type AnyObject, type ObjectSchema } from "yup";
+import { Notification } from "@mantine/core";
 
 import { Box } from "@lib/components";
 
@@ -13,22 +14,34 @@ import {
 } from "./form-input";
 import { validateForm } from "./helpers";
 
-type HookFormState<T extends InputFieldValues> = {
+export type HookFormState<
+  T extends InputFieldValues = { [x: string]: string },
+> = {
   register: (name: keyof T) => Omit<BaseInputProps, "name"> & { name: keyof T };
   link: (name: keyof T) => Omit<InputFieldProps, "name"> & { name: keyof T };
   getState: () => Partial<T>;
-  setField: (field: keyof T, value: string) => void;
   getField: (field: keyof T) => string;
-  setError: (error: Partial<T>) => void;
+  setField: (field: keyof T, value: string) => void;
   getError: () => Partial<T>;
+  setError: (error: Partial<T>) => void;
+  getSubmitError: () => SubmitError | null;
+  setSubmitError: (value?: SubmitError) => void;
+  isValidating: boolean;
+  isUpdating: boolean;
+  isSubmitting: boolean;
 };
 
 type HookFormOptions<T extends InputFieldValues> = {
   initialState?: Partial<T>;
   initialErrors?: Partial<T>;
-  handleSubmit?: (values: T) => void;
+  handleSubmit?: (values: T, helpers: HookFormState<T>) => void;
   schema?: ObjectSchema<AnyObject>;
 };
+
+type SubmitError = {
+  heading: string;
+  content: string;
+} | null;
 
 type HookFormProps<T extends InputFieldValues> = HookFormOptions<T> & {
   children?: (state: HookFormState<T>) => ReactNode;
@@ -47,6 +60,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     touchedFields: {} as T,
     values: initialState,
     errors: initialErrors,
+    error: null as SubmitError,
   });
 
   const [action, setAction] = useState({
@@ -114,6 +128,14 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     });
   };
 
+  const getSubmitError = () => state.error;
+  const setSubmitError = (error?: SubmitError) => {
+    setState({
+      ...state,
+      error: error ?? null,
+    });
+  };
+
   const hasSubmit = () => !!state.submitAttempts;
   const getSubmitAttempts = () => state.submitAttempts;
   const incrementSubmit = () => {
@@ -155,6 +177,9 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
       handleBlur,
       value: getField(name),
       error: hasSubmit() || isTouched(name) ? getFieldError(name) : null,
+      isValidating: action.isValidating,
+      isUpdating: action.isUpdating,
+      isSubmitting: action.isSubmitting,
     };
   };
 
@@ -199,6 +224,27 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     };
   };
 
+  const helpers = {
+    register,
+    link,
+    getState,
+    getField,
+    getFieldError,
+    setField,
+    setError,
+    getError,
+    setSubmitError,
+    getSubmitError,
+    isTouched,
+    setTouched,
+    hasSubmit,
+    incrementSubmit,
+    getSubmitAttempts,
+    isValidating: action.isValidating,
+    isUpdating: action.isUpdating,
+    isSubmitting: action.isSubmitting,
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -213,29 +259,13 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
       setValidating(false);
     }
 
-    if (!Object.keys(state.errors).length) return;
-    if (props.handleSubmit) props.handleSubmit(state.values as T);
+    if (
+      Object.keys(state.errors).length ||
+      !Object.keys(state.touchedFields).length
+    )
+      return;
+    if (props.handleSubmit) props.handleSubmit(state.values as T, helpers);
     setSubmitting(false);
-  };
-
-  const helpers = {
-    register,
-    link,
-    getState,
-    getField,
-    getFieldError,
-    setField,
-    setError,
-    getError,
-    isTouched,
-    setTouched,
-    hasSubmit,
-    incrementSubmit,
-    getSubmitAttempts,
-    handleSubmit,
-    isValidating: action.isValidating,
-    isUpdating: action.isUpdating,
-    isSubmitting: action.isSubmitting,
   };
 
   return (
@@ -253,12 +283,26 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
         },
       }}
     >
-      <form onSubmit={handleSubmit}>{children && children(helpers)}</form>
+      <form onSubmit={handleSubmit}>
+        {children && children(helpers)}
+        {state.error && (
+          <Notification
+            color="brand-red"
+            title={state.error.heading}
+            withCloseButton={false}
+            loading={action.isUpdating}
+          >
+            {state.error.content}
+          </Notification>
+        )}
+      </form>
     </Box>
   );
 };
 
-export const useHookForm = <T extends InputFieldValues>(
+export const useHookForm = <
+  T extends InputFieldValues = { [x: string]: string },
+>(
   options: HookFormOptions<T> = {},
 ) => {
   type FormComponentProps = {

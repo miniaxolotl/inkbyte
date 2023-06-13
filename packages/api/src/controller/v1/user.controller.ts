@@ -13,9 +13,9 @@ import {
 } from "@lib/services";
 import type { IdMap } from "@lib/shared";
 
-import { createUserSchema, idSchema } from "@lib/schema-validator";
-import type { CreateUserSchema } from "@lib/schema-validator";
+import { idSchema, userCreateSchema } from "@lib/schema-validator";
 import { SUCCESS } from "@lib/utility";
+import type { UserCreateSchema } from "@lib/schema-validator";
 
 export const route = ["/user"];
 export const router = new KoaRouter();
@@ -39,8 +39,8 @@ router.get(
 
 router.post(
   "/",
-  SchemaResolver(createUserSchema),
-  async (ctx: ParameterizedContext<SchemaContext<CreateUserSchema>>) => {
+  SchemaResolver(userCreateSchema),
+  async (ctx: ParameterizedContext<SchemaContext<UserCreateSchema>>) => {
     const user = await create_user(ctx.state.body);
     ctx.body = user;
     ctx.status = SUCCESS.CREATED.status;

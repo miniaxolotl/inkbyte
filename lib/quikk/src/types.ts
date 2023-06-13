@@ -30,6 +30,7 @@ export type QuikkConfig = {
   protocol?: "http" | "https";
 
   base_url: string;
+  base_port?: number;
   base_path?: string;
 
   api_token?: string;

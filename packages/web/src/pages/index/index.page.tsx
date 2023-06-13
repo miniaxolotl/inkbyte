@@ -9,6 +9,7 @@ import {
   Paper,
   Text,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 import { DomainList } from "@lib/shared";
 import { featureList } from "@lib/data";
@@ -18,13 +19,8 @@ import { FormCreateLink } from "@components/forms";
 import { LayoutDefault } from "@components/layout";
 import { Link } from "@components/core";
 
-import { useDisclosure } from "@mantine/hooks";
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-type PageProps = {};
-
 // eslint-disable-next-line no-empty-pattern
-export const Page = ({}: PageProps) => {
+export const Page = () => {
   const detailsPanelRef = useRef<HTMLDivElement>(null);
   const [isDetailsPanelOpen, { toggle: toggleDetailsPanel }] =
     useDisclosure(false);

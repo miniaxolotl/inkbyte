@@ -2,6 +2,8 @@ import { IBaseConfig, IConfigEnvironment, base_config } from "./base.config";
 
 const env = typeof window === "undefined" ? process.env : import.meta.env;
 
+const dev = env.VITE_ENV === "development";
+
 export type IWebConfig = IBaseConfig;
 
 export const web_config: IWebConfig = {
@@ -16,16 +18,18 @@ export const web_config: IWebConfig = {
   host: env.VITE_HOST ?? base_config.host,
   /** api config */
   api_port: parseInt(env.VITE_API_PORT ?? `${base_config.api_port}`),
-  api_host: env.VITE_API_HOST ?? base_config.api_host,
+  api_host: dev ? "localhost" : env.VITE_API_HOST ?? base_config.api_host,
   api_version: env.VITE_API_VERSION ?? base_config.api_version,
   /** web config */
   web_port: parseInt(env.VITE_WEB_PORT ?? `${base_config.web_port}`),
-  web_host: env.VITE_WEB_HOST ?? base_config.web_host,
+  web_host: dev ? "localhost" : env.VITE_WEB_HOST ?? base_config.web_host,
   /** cms config */
   dashboard_port: parseInt(
     env.VITE_DASHBOARD_PORT ?? `${base_config.dashboard_port}`,
   ),
-  dashboard_host: env.VITE_DASHBOARD_HOST ?? base_config.dashboard_host,
+  dashboard_host: dev
+    ? "localhost"
+    : env.VITE_DASHBOARD_HOST ?? base_config.dashboard_host,
   /** data */
   max_bytes: parseInt(env.VITE_MAX_BYTES || `${base_config.max_bytes}`),
   /** database (MeiliSearch) */

@@ -1,9 +1,10 @@
 import React from "react";
 
 import { Box, Button, Checkbox } from "@mantine/core";
+import { FiLock, FiMail } from "react-icons/fi/index.js";
 
-import { CreateUserSchema, createUserSchema } from "@lib/schema-validator";
 import { InputGroup, useHookForm } from "@lib/hook-form";
+import { UserCreateSchema, userCreateSchema } from "@lib/schema-validator";
 
 import { Link } from "@components/core";
 
@@ -12,9 +13,8 @@ export const FormCreateAccount = () => {
     console.log("submit form!");
   };
 
-  const { HookForm, InputComponent } = useHookForm<CreateUserSchema>({
-    initialState: {},
-    schema: createUserSchema,
+  const { HookForm, InputComponent } = useHookForm<UserCreateSchema>({
+    schema: userCreateSchema,
     handleSubmit,
   });
 
@@ -24,17 +24,35 @@ export const FormCreateAccount = () => {
         return (
           <>
             <InputGroup direction="horizontal">
-              <InputComponent {...register("first_name")} />
-              <InputComponent {...register("last_name")} />
+              <InputComponent
+                {...register("first_name")}
+                autoComplete="given-name"
+              />
+              <InputComponent
+                {...register("last_name")}
+                autoComplete="family-name"
+              />
             </InputGroup>
 
-            <InputComponent {...register("email")} showLabel={false} />
+            <InputComponent
+              {...register("email")}
+              icon={<FiMail />}
+              autoComplete="username"
+              showLabel={false}
+            />
 
             <InputGroup>
-              <InputComponent {...register("password")} type="password" />
+              <InputComponent
+                {...register("password")}
+                type="password"
+                icon={<FiLock />}
+                autoComplete="new-password"
+              />
               <InputComponent
                 {...register("confirm_password")}
                 type="password"
+                icon={<FiLock />}
+                autoComplete="new-password"
               />
             </InputGroup>
 

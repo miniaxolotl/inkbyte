@@ -2,24 +2,26 @@
 //* role
 //***********************************************
 
+import { BaseRole } from "../";
+
 export enum PermissionRoleEnum {
-  ADMIN_USER = "ADMIN_USER",
-  BASIC_USER = "BASIC_USER",
-  PREMIUM_USER = "PREMIUM_USER",
+  ADMIN_USER = "admin_user",
+  BASIC_USER = "basic_user",
+  PREMIUM_USER = "premium_user",
 }
 
-export const PermissionRoleMap = {
-  ADMIN_USER: {
+export const PermissionRoleMap: { [x in PermissionRoleEnum]: BaseRole } = {
+  admin_user: {
     id: 1,
     slug: PermissionRoleEnum.ADMIN_USER,
     authority: 100,
   },
-  BASIC_USER: {
+  basic_user: {
     id: 2,
     slug: PermissionRoleEnum.BASIC_USER,
     authority: 5,
   },
-  PREMIUM_USER: {
+  premium_user: {
     id: 3,
     slug: PermissionRoleEnum.PREMIUM_USER,
     authority: 10,
