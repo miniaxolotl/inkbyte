@@ -1,8 +1,9 @@
 import React from "react";
 
 import { Box, Button, Checkbox } from "@mantine/core";
+import { FiLock, FiMail } from "react-icons/fi/index.js";
 
-import { InputGroup, useHookForm } from "@lib/hook-form";
+import { HookFormState, InputGroup, useHookForm } from "@lib/hook-form";
 import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
 
 import { Link } from "@components/core";
@@ -13,11 +14,15 @@ export const FormLogin = () => {
 
   const handleSubmit = async (
     payload: UserLoginSchema,
-    // h: HookFormState<UserLoginSchema>,
+    h: HookFormState<UserLoginSchema>,
   ) => {
-    console.log(123);
-    // const response = await session.createSession(payload);
-    await session.createSession(payload);
+    const response = await session.createSession(payload);
+    if (!response.ok) {
+      h.setSubmitError({
+        heading: `Error ${response.status}`,
+        content: response.error,
+      });
+    }
   };
 
   const { HookForm, InputComponent } = useHookForm<UserLoginSchema>({
@@ -31,10 +36,17 @@ export const FormLogin = () => {
         return (
           <>
             <InputGroup>
-              <InputComponent {...register("email")} showError />
+              <InputComponent
+                {...register("email")}
+                icon={<FiMail />}
+                autoComplete="username"
+                showError
+              />
               <InputComponent
                 {...register("password")}
                 type="password"
+                icon={<FiLock />}
+                autoComplete="current-password"
                 showError
               />
             </InputGroup>

@@ -8,7 +8,12 @@ import {
   Tooltip,
   useMantineTheme,
 } from "@mantine/core";
-import { FiClock, FiSettings } from "react-icons/fi/index.js";
+import {
+  FiAtSign,
+  FiClock,
+  FiMapPin,
+  FiSettings,
+} from "react-icons/fi/index.js";
 
 import { InputGroup, useHookForm } from "@lib/hook-form";
 import { LinkCreateSchema, linkCreateSchema } from "@lib/schema-validator";
@@ -40,6 +45,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
             <InputComponent
               {...register("long_url")}
               label="Shorten a URL"
+              icon={<FiAtSign />}
               showError
             />
 
@@ -63,6 +69,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
             <InputGroup direction="horizontal">
               <SelectComponent
                 {...link("domain")}
+                icon={<FiMapPin />}
                 data={links}
                 defaultValue={links[0]}
                 sx={{ flex: 2 / 3, minWidth: 144 }}

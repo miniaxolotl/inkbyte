@@ -1,6 +1,11 @@
 import React, { ChangeEvent } from "react";
 
-import { BaseInput, BaseInputProps } from "./base-input";
+import {
+  BaseInput,
+  BaseInputAutoComplete,
+  BaseInputProps,
+  BaseInputType,
+} from "./base-input";
 
 export type InputFieldProps = {
   type?: BaseInputType;

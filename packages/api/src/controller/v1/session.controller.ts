@@ -1,3 +1,6 @@
+import KoaRouter from "koa-router";
+import { ParameterizedContext } from "koa";
+
 import {
   SchemaContext,
   SchemaResolver,
@@ -7,8 +10,7 @@ import {
   refresh_session,
 } from "@lib/services";
 import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
-import KoaRouter from "koa-router";
-import { ParameterizedContext } from "koa";
+import { CLIENT_ERROR } from "@lib/utility";
 
 export const route = ["/auth", "/session"];
 export const router = new KoaRouter();
@@ -19,7 +21,15 @@ router.post(
   "/",
   SchemaResolver(userLoginSchema),
   async (ctx: ParameterizedContext<SchemaContext<UserLoginSchema>>) => {
-    ctx.body = await login(ctx.state.body);
+    const user = await login(ctx.state.body);
+    if (!user) {
+      ctx.throw(
+        CLIENT_ERROR.UNAUTHORIZED.status,
+        CLIENT_ERROR.UNAUTHORIZED.message,
+      );
+    }
+
+    ctx.body = user;
     ctx.status = 201;
   },
 ); // {post} /v1/auth

@@ -8,17 +8,40 @@ import React, {
   useState,
 } from "react";
 
-import { Input, InputProps } from "@mantine/core";
+import { Input, InputProps, Loader } from "@mantine/core";
 import _ from "lodash";
 
 import { Box } from "@lib/components";
+
+export type BaseInputType = "text" | "password";
+
+export type BaseInputAutoComplete =
+  | "email"
+  | "username"
+  | "current-password"
+  | "new-password"
+  | "cc-number"
+  | "cc-csc"
+  | "cc-exp"
+  | "cc-exp-month"
+  | "cc-exp-year"
+  | "name"
+  | "given-name"
+  | "family-name"
+  | "street-address"
+  | "postal-code"
+  | "country"
+  | "address-level2"
+  | "address-level1"
+  | "tel"
+  | "off";
 
 export type BaseInputState = {
   getValue: () => string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export type BaseInputProps = InputProps & {
+export type BaseInputProps = Omit<InputProps, "autoComplete"> & {
   name: string;
   label?: string;
   placeholder?: string;
@@ -31,6 +54,9 @@ export type BaseInputProps = InputProps & {
   handleChange?: (value: string, state: BaseInputState) => void | Promise<void>;
   handleFocus?: () => void | Promise<void>;
   handleBlur?: () => void | Promise<void>;
+  isValidating?: boolean;
+  isUpdating?: boolean;
+  isSubmitting?: boolean;
 };
 
 const BaseInputComponent = (
@@ -116,8 +142,15 @@ const BaseInputComponent = (
           "handleBlur",
           "showLabel",
           "showError",
+          "isValidating",
+          "isUpdating",
+          "isSubmitting",
         ])}
+        icon={
+          props.isSubmitting ? <Loader size={props.size ?? "xs"} /> : props.icon
+        }
         ref={ref}
+        aria-label={props.name}
         id={id}
         name={props.name}
         placeholder={placeholder}

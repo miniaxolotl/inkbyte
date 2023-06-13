@@ -24,8 +24,11 @@ export type HookFormState<
   setField: (field: keyof T, value: string) => void;
   getError: () => Partial<T>;
   setError: (error: Partial<T>) => void;
-  getSubmitError: () => SubmitError;
-  setSubmitError: (value: SubmitError) => void;
+  getSubmitError: () => SubmitError | null;
+  setSubmitError: (value?: SubmitError) => void;
+  isValidating: boolean;
+  isUpdating: boolean;
+  isSubmitting: boolean;
 };
 
 type HookFormOptions<T extends InputFieldValues> = {
@@ -36,8 +39,8 @@ type HookFormOptions<T extends InputFieldValues> = {
 };
 
 type SubmitError = {
-  heading: null;
-  content: null;
+  heading: string;
+  content: string;
 } | null;
 
 type HookFormProps<T extends InputFieldValues> = HookFormOptions<T> & {
@@ -126,10 +129,10 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
   };
 
   const getSubmitError = () => state.error;
-  const setSubmitError = (error: SubmitError) => {
+  const setSubmitError = (error?: SubmitError) => {
     setState({
       ...state,
-      error,
+      error: error ?? null,
     });
   };
 
@@ -174,6 +177,9 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
       handleBlur,
       value: getField(name),
       error: hasSubmit() || isTouched(name) ? getFieldError(name) : null,
+      isValidating: action.isValidating,
+      isUpdating: action.isUpdating,
+      isSubmitting: action.isSubmitting,
     };
   };
 
@@ -280,8 +286,13 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
       <form onSubmit={handleSubmit}>
         {children && children(helpers)}
         {state.error && (
-          <Notification withCloseButton={false} title="We notify you that">
-            You are now obligated to give a star to Mantine project on GitHub
+          <Notification
+            color="brand-red"
+            title={state.error.heading}
+            withCloseButton={false}
+            loading={action.isUpdating}
+          >
+            {state.error.content}
           </Notification>
         )}
       </form>
