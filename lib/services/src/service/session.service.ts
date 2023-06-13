@@ -6,7 +6,7 @@ import { compare } from "@lib/crypt";
 import { gen_id } from "@lib/utility";
 import { prisma_db } from "@lib/database";
 
-import { get_user_by_email, is_user_verified } from ".";
+import { get_user_by_email, is_user_verified } from "./user.service";
 
 //***********************************************
 //* session
