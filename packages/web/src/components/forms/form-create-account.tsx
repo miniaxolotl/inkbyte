@@ -2,8 +2,8 @@ import React from "react";
 
 import { Box, Button, Checkbox } from "@mantine/core";
 
-import { CreateUserSchema, createUserSchema } from "@lib/schema-validator";
 import { InputGroup, useHookForm } from "@lib/hook-form";
+import { UserCreateSchema, userCreateSchema } from "@lib/schema-validator";
 
 import { Link } from "@components/core";
 
@@ -12,9 +12,8 @@ export const FormCreateAccount = () => {
     console.log("submit form!");
   };
 
-  const { HookForm, InputComponent } = useHookForm<CreateUserSchema>({
-    initialState: {},
-    schema: createUserSchema,
+  const { HookForm, InputComponent } = useHookForm<UserCreateSchema>({
+    schema: userCreateSchema,
     handleSubmit,
   });
 

@@ -1,9 +1,8 @@
-import { apiStore, contentStore } from "../local";
+import type { AccountStore, ApiStore, SessionStore } from "../local";
 
-export const baseRootStore = (isServer: boolean) => {
-  return {
-    isServer,
-    contentStore: contentStore(),
-    apiStore: apiStore(),
-  };
-};
+export interface BaseRootState {
+  readonly isServer: boolean;
+  readonly api: ApiStore;
+  readonly account: AccountStore;
+  readonly session: SessionStore;
+}

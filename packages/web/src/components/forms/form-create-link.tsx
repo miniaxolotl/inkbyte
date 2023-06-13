@@ -10,8 +10,8 @@ import {
 } from "@mantine/core";
 import { FiClock, FiSettings } from "react-icons/fi/index.js";
 
-import { CreateLinkSchema, createLinkSchema } from "@lib/schema-validator";
 import { InputGroup, useHookForm } from "@lib/hook-form";
+import { LinkCreateSchema, linkCreateSchema } from "@lib/schema-validator";
 import { Box } from "@lib/components";
 
 export type FormCreateLinkProps = BoxProps & {
@@ -24,9 +24,9 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
     console.log("submit form!");
   };
 
-  const { HookForm, InputComponent } = useHookForm<CreateLinkSchema>({
+  const { HookForm, InputComponent } = useHookForm<LinkCreateSchema>({
     initialState: {},
-    schema: createLinkSchema,
+    schema: linkCreateSchema,
     handleSubmit,
   });
 

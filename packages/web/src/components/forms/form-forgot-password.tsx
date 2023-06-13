@@ -2,7 +2,7 @@ import React from "react";
 
 import { Button } from "@mantine/core";
 
-import { ResetUserSchema, loginUserSchema } from "@lib/schema-validator";
+import { UserResetSchema, userResetSchema } from "@lib/schema-validator";
 import { useHookForm } from "@lib/hook-form";
 
 export const FormForgotPassword = () => {
@@ -10,9 +10,8 @@ export const FormForgotPassword = () => {
     console.log("submit form!");
   };
 
-  const { HookForm, InputComponent } = useHookForm<ResetUserSchema>({
-    initialState: {},
-    schema: loginUserSchema,
+  const { HookForm, InputComponent } = useHookForm<UserResetSchema>({
+    schema: userResetSchema,
     handleSubmit,
   });
 

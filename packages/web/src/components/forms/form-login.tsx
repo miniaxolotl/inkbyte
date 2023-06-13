@@ -3,18 +3,25 @@ import React from "react";
 import { Box, Button, Checkbox } from "@mantine/core";
 
 import { InputGroup, useHookForm } from "@lib/hook-form";
-import { LoginUserSchema, loginUserSchema } from "@lib/schema-validator";
+import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
 
 import { Link } from "@components/core";
+import { useStore } from "@stores";
 
 export const FormLogin = () => {
-  const handleSubmit = async () => {
-    console.log("submit form!");
+  const { session } = useStore();
+
+  const handleSubmit = async (
+    payload: UserLoginSchema,
+    // h: HookFormState<UserLoginSchema>,
+  ) => {
+    console.log(123);
+    // const response = await session.createSession(payload);
+    await session.createSession(payload);
   };
 
-  const { HookForm, InputComponent } = useHookForm<LoginUserSchema>({
-    initialState: {},
-    schema: loginUserSchema,
+  const { HookForm, InputComponent } = useHookForm<UserLoginSchema>({
+    schema: userLoginSchema,
     handleSubmit,
   });
 
