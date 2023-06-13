@@ -56,15 +56,11 @@ const BaseInputComponent = (
       const changeValue = e.target.value;
       const getValue = () => changeValue;
       const componentState = { setValue: setFormValue, getValue };
-      if (value && props.handleChange) {
-        await props.handleChange(changeValue, componentState);
-        return setFormValue(changeValue);
-      }
       if (props.handleChange)
         await props.handleChange(changeValue, componentState);
       setFormValue(changeValue);
     },
-    [props, value],
+    [props],
   );
 
   const onFocus = useCallback(async () => {
@@ -131,7 +127,7 @@ const BaseInputComponent = (
         onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
-        value={formValue}
+        value={value ?? formValue}
       />
       {showError && !!props.error && <ErrorComponent error={props.error} />}
     </Box>
