@@ -1,18 +1,13 @@
 import React from "react";
 
-import { Box, BoxProps, Button, Checkbox } from "@mantine/core";
+import { Box, Button, Checkbox } from "@mantine/core";
 
+import { InputGroup, useHookForm } from "@lib/hook-form";
 import { LoginUserSchema, loginUserSchema } from "@lib/schema-validator";
-import { useHookForm } from "@lib/hook-form";
 
 import { Link } from "@components/core";
 
-type FormLoginProps = BoxProps & {
-  children?: React.ReactNode;
-};
-
-export const FormLogin = ({ sx }: FormLoginProps) => {
-  // const handleSubmit = async (values: LoginUserSchema) => {
+export const FormLogin = () => {
   const handleSubmit = async () => {
     console.log("submit form!");
   };
@@ -24,49 +19,20 @@ export const FormLogin = ({ sx }: FormLoginProps) => {
   });
 
   return (
-    <Box
-      sx={{
-        ...sx,
-        width: "100%",
-        maxWidth: 680,
-        "@media (max-width: 980px)": {
-          maxWidth: 480,
-        },
-        form: {
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-        },
-        ".base-input-container": {
-          ":first-of-type": {
-            input: {
-              borderRadius: "4px 4px 0px 0px",
-              "@media (max-width: 680px)": {
-                borderRadius: "4px 4px 0px 0px",
-              },
-            },
-          },
-          ":last-of-type": {
-            input: {
-              borderRadius: "0px 0px 4px 4px",
-              "@media (max-width: 680px)": {
-                borderRadius: "0px 0px 4px 4px",
-              },
-            },
-          },
-          ":only-of-type": { input: { borderRadius: "4px" } },
-        },
-      }}
-    >
-      <HookForm>
-        {({ register, link }) => {
-          return (
-            <>
-              <Box>
-                <InputComponent {...register("email")} showLabel={false} />
-                <InputComponent {...register("password")} type="password" />
-              </Box>
+    <HookForm>
+      {({ register, link }) => {
+        return (
+          <>
+            <InputGroup>
+              <InputComponent {...register("email")} showError />
+              <InputComponent
+                {...register("password")}
+                type="password"
+                showError
+              />
+            </InputGroup>
 
+            <InputGroup direction="horizontal">
               <Checkbox
                 {...link("remember_me")}
                 label="Remember me"
@@ -79,14 +45,14 @@ export const FormLogin = ({ sx }: FormLoginProps) => {
               <Box sx={{ fontSize: 12 }}>
                 <Link href="/forgot-password">Forgot Password</Link>
               </Box>
+            </InputGroup>
 
-              <Button type="submit" color="brand-green" size="xs" fullWidth>
-                Login
-              </Button>
-            </>
-          );
-        }}
-      </HookForm>
-    </Box>
+            <Button type="submit" color="brand-green" size="xs" fullWidth>
+              Login
+            </Button>
+          </>
+        );
+      }}
+    </HookForm>
   );
 };
