@@ -2,6 +2,8 @@ import React, { ChangeEvent, FormEvent, ReactNode, useState } from "react";
 
 import { type AnyObject, type ObjectSchema } from "yup";
 
+import { Box } from "@lib/components";
+
 import {
   BaseInputProps,
   FormControl,
@@ -101,7 +103,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     });
   };
 
-  const getTouched = (field: keyof T) => state.touchedFields[field] as string;
+  const isTouched = (field: keyof T) => state.touchedFields[field] as string;
   const setTouched = (field: keyof T) => {
     setState({
       ...state,
@@ -139,15 +141,20 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     };
 
     const handleFocus = () => {
-      if (!getTouched(name)) setTouched(name);
+      if (!isTouched(name)) setTouched(name);
+    };
+
+    const handleBlur = () => {
+      if (!isTouched(name)) setTouched(name);
     };
 
     return {
       name,
       handleChange,
       handleFocus,
+      handleBlur,
       value: getField(name),
-      error: hasSubmit() || getTouched(name) ? getFieldError(name) : null,
+      error: hasSubmit() || isTouched(name) ? getFieldError(name) : null,
     };
   };
 
@@ -170,7 +177,11 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     };
 
     const handleFocus = () => {
-      if (!getTouched(name)) setTouched(name);
+      if (!isTouched(name)) setTouched(name);
+    };
+
+    const handleBlur = () => {
+      if (!isTouched(name)) setTouched(name);
     };
 
     return {
@@ -181,6 +192,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
         handleChange(e.target.value);
       },
       onFocus: handleFocus,
+      onBlur: handleBlur,
       value: getField(name),
     };
   };
@@ -213,7 +225,7 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     setField,
     setError,
     getError,
-    getTouched,
+    isTouched,
     setTouched,
     hasSubmit,
     incrementSubmit,
@@ -224,7 +236,24 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     isSubmitting: action.isSubmitting,
   };
 
-  return <form onSubmit={handleSubmit}>{children && children(helpers)}</form>;
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 680,
+        form: {
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        },
+        "@media (max-width: 980px)": {
+          maxWidth: 480,
+        },
+      }}
+    >
+      <form onSubmit={handleSubmit}>{children && children(helpers)}</form>
+    </Box>
+  );
 };
 
 export const useHookForm = <T extends InputFieldValues>(

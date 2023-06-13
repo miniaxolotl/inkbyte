@@ -30,6 +30,7 @@ export type BaseInputProps = InputProps & {
   showError?: boolean;
   handleChange?: (value: string, state: BaseInputState) => void | Promise<void>;
   handleFocus?: () => void | Promise<void>;
+  handleBlur?: () => void | Promise<void>;
 };
 
 const BaseInputComponent = (
@@ -68,6 +69,10 @@ const BaseInputComponent = (
 
   const onFocus = useCallback(async () => {
     if (props.handleFocus) await props.handleFocus();
+  }, [props]);
+
+  const onBlur = useCallback(async () => {
+    if (props.handleBlur) await props.handleBlur();
   }, [props]);
 
   type ErrorComponentProps = {
@@ -112,6 +117,7 @@ const BaseInputComponent = (
         {..._.omit(props, [
           "handleChange",
           "handleFocus",
+          "handleBlur",
           "showLabel",
           "showError",
         ])}
@@ -124,6 +130,7 @@ const BaseInputComponent = (
         className="base-input"
         onChange={onChange}
         onFocus={onFocus}
+        onBlur={onBlur}
         value={formValue}
       />
       {showError && !!props.error && <ErrorComponent error={props.error} />}
