@@ -3,9 +3,12 @@ import dotenvExpand from "dotenv-expand";
 
 dotenv.config({
   path: "../../.env",
+  override: true,
 });
+
 const envConfig = dotenv.config({
   path: ".env.local",
+  override: true,
 });
 
 dotenvExpand.expand(envConfig);

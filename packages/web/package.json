@@ -18,7 +18,7 @@
     "test": "echo 'test @package/web' && yarn test:unit && yarn test:web",
     "test:unit": "echo 'test:unit @package/web' && vitest",
     "test:web": "echo 'test:web @package/web' && playwright test",
-    "watch": "vite",
+    "watch": "vite --port $API_PORT",
     "serve": "echo 'serving @package/web' && cross-env ENV=development yarn watch",
     "optimize": "echo 'optimize @package/web:client' && cross-env ENV=production NODE_ENV=production vite optimize",
     "build": "echo 'build @package/web:client' && cross-env ENV=production NODE_ENV=production vite build",

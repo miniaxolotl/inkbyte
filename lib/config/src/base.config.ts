@@ -52,14 +52,14 @@ export const base_config: IBaseConfig = {
   app_description: env.APP_DESCRIPTION ?? "app-description",
   host: env.HOST ?? "localhost",
   /** api config */
-  api_port: parseInt(env.API_PORT ?? "3020"),
+  api_port: parseInt(env.API_PORT ?? "3000"),
   api_host: env.API_HOST ?? "localhost",
   api_version: env.API_VERSION ?? "v1",
   /** web config */
-  web_port: parseInt(env.WEB_PORT ?? "3000"),
+  web_port: parseInt(env.WEB_PORT ?? "3010"),
   web_host: env.WEB_HOST ?? "localhost",
   /** cms config */
-  dashboard_port: parseInt(env.DASHBOARD_PORT ?? "3021"),
+  dashboard_port: parseInt(env.DASHBOARD_PORT ?? "3020"),
   dashboard_host: env.DASHBOARD_HOST ?? "localhost",
   /** data */
   data_dir: env.DATA_DIR ?? "data",

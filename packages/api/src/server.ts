@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 
-dotenvExpand.expand(
-  dotenv.config({
-    path: "../../.env",
-  }),
-);
+const envConfig = dotenv.config({
+  path: "../../.env",
+  override: true,
+});
+
+dotenvExpand.expand(envConfig);
 
 import Koa from "koa";
 import websockify from "koa-websocket";
