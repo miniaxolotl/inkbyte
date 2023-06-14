@@ -6,8 +6,7 @@ COPY . .
 # initialize build tools
 RUN \
 	yarn install --frozen-lockfile \
-	&& yarn rollup \
-	&& yarn build:web
+	&& yarn rollup
 
 # configure image
 FROM alpine:3.17
@@ -19,14 +18,13 @@ RUN \
 	apk update && apk upgrade \
 	# configure node
 	&& apk add --no-cache nodejs npm \ 
-	&& npm install -g yarn
-	# && npm install -g yarn
+	&& npm install -g yarn \
+	&& yarn db:generate
 
 # finalize image
-EXPOSE 80 3020
-# CMD ["yarn", "start:web"]
+EXPOSE 3000
 CMD yarn build:web && yarn start:web
 
-LABEL org.opencontainers.image.source https://github.com/celestialstag/react-directus-template
-LABEL org.opencontainers.image.description="react-directus-template"
+LABEL org.opencontainers.image.source https://github.com/celestialstag/inkbyte/packages/web
+LABEL org.opencontainers.image.description="inkbyte web"
 LABEL org.opencontainers.image.licenses=GPL-3.0
