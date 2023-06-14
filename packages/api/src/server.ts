@@ -37,21 +37,21 @@ server.use(sanitize);
 
 server.use(async (ctx, next) => {
   await next();
-});
-
-server.use(async (ctx, next) => {
-  await next();
   ctx.set("Access-Control-Allow-Origin", "*");
-  if (!ctx.router.matched) {
-    ctx.throw(
-      SERVER_ERROR.NOT_IMPLEMENTED.status,
-      SERVER_ERROR.NOT_IMPLEMENTED.message,
-    );
-  }
 });
 
 load_routes().then(() => {
   server.use(base_router.routes());
+  server.use(async (ctx, next) => {
+    await next();
+    if (!ctx.router.matched) {
+      ctx.throw(
+        SERVER_ERROR.NOT_IMPLEMENTED.status,
+        SERVER_ERROR.NOT_IMPLEMENTED.message,
+      );
+    }
+  });
+
   server.listen(api_config.api_port, () => {
     const is_prod = api_config.env === "production";
     const dev_url = `http://localhost:${api_config.api_port}/api/v1`;
