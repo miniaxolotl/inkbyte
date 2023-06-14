@@ -26,12 +26,18 @@ const base_server: Koa = new Koa();
 const server = websockify(base_server);
 
 server.use(cors);
+
 server.use(body_parser);
 server.use(json_parser);
 server.use(logger);
 
 server.use(error_logger);
 server.use(sanitize);
+
+server.use(async (ctx, next) => {
+  ctx.set("Access-Control-Allow-Origin", "*");
+  await next();
+});
 
 load_routes().then(() => {
   server.use(base_router.routes());

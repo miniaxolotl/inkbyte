@@ -18,6 +18,7 @@ export const error_logger = async (ctx: ParameterizedContext, next: Next) => {
       if (error.status) {
         ctx.body = error.status ? error.message : SERVER_ERROR.INTERNAL.message;
       } else {
+        ctx.status = SERVER_ERROR.INTERNAL.status;
         ctx.body = error.message ?? SERVER_ERROR.INTERNAL.message;
       }
       if (typeof ctx.body === "string") ctx.set("Content-Type", "text/plain");

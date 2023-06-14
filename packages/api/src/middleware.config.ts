@@ -13,6 +13,7 @@ console.log(`[data_dir]: ${api_config.data_dir}`);
 export const cors = KoaCORS({
   origin: "*",
   credentials: true,
+  keepHeadersOnError: true,
 });
 
 export const body_parser = KoaBody({
