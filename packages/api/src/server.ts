@@ -15,6 +15,7 @@ import { api_config } from "@lib/config";
 
 import { base_router, load_routes } from "./route.config";
 import { body_parser, cors, json_parser, logger } from "./middleware.config";
+import { SERVER_ERROR } from "@lib/utility";
 import { error_logger } from "./error_logger.config";
 import { sanitize } from "./sanitize.config";
 
@@ -35,8 +36,18 @@ server.use(error_logger);
 server.use(sanitize);
 
 server.use(async (ctx, next) => {
-  ctx.set("Access-Control-Allow-Origin", "*");
   await next();
+});
+
+server.use(async (ctx, next) => {
+  await next();
+  ctx.set("Access-Control-Allow-Origin", "*");
+  if (!ctx.router.matched) {
+    ctx.throw(
+      SERVER_ERROR.NOT_IMPLEMENTED.status,
+      SERVER_ERROR.NOT_IMPLEMENTED.message,
+    );
+  }
 });
 
 load_routes().then(() => {
