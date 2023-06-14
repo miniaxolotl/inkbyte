@@ -6,7 +6,8 @@ COPY . .
 # initialize build tools
 RUN \
 	yarn install --frozen-lockfile \
-	&& yarn rollup
+	&& yarn rollup \
+	&& yarn build:web
 
 # configure image
 FROM alpine:3.17
@@ -23,7 +24,7 @@ RUN \
 
 # finalize image
 EXPOSE 3000
-CMD yarn build:web && yarn start:web
+CMD yarn start:web
 
 LABEL org.opencontainers.image.source https://github.com/celestialstag/inkbyte/packages/web
 LABEL org.opencontainers.image.description="inkbyte web"

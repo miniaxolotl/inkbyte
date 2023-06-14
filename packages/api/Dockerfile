@@ -6,7 +6,8 @@ COPY . .
 # initialize build tools
 RUN \
 	yarn install --frozen-lockfile \
-	&& yarn rollup 
+	&& yarn rollup \
+	&& yarn build:api
 
 # configure image
 FROM alpine:3.17
@@ -23,7 +24,7 @@ RUN \
 
 # finalize image
 EXPOSE 3010
-CMD yarn build:api && yarn start:api
+CMD yarn start:api
 
 LABEL org.opencontainers.image.source https://github.com/celestialstag/inkbyte/packages/api
 LABEL org.opencontainers.image.description="inkbyte api"
