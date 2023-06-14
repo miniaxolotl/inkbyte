@@ -35,7 +35,9 @@ export class Quikk {
     this.api_version = config.api_version;
 
     this.api_url = [
-      [`${this.protocol}://${this.base_url}`, this.base_port ?? 80].join(":"),
+      this.base_port
+        ? [this.protocol, `//${this.base_url}`, this.base_port].join(":")
+        : [this.protocol, `//${this.base_url}`].join(":"),
       this.base_path,
       this.api_version,
     ]

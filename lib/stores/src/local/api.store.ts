@@ -10,7 +10,8 @@ export class ApiStore extends Quikk {
   ) {
     super({
       protocol: web_config.env === "development" ? "http" : "https",
-      base_port: web_config.api_port,
+      base_port:
+        web_config.env === "development" ? web_config.api_port : undefined,
       base_url: web_config.api_host,
       base_path: "api",
       api_version: "v1",
