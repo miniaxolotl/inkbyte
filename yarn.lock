@@ -2376,6 +2376,7 @@ __metadata:
     "@lib/quikk": ^0.0.1
     "@lib/schema-validator": ^0.0.1
     "@lib/shared": ^0.0.1
+    "@lib/utility": ^0.0.1
     "@rollup/plugin-node-resolve": ~15.0.1
     "@rollup/plugin-terser": ~0.4.1
     "@rollup/plugin-typescript": ~10.0.1
@@ -2432,7 +2433,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lib/utility@workspace:lib/utility, @lib/utility@~0.0.1":
+"@lib/utility@^0.0.1, @lib/utility@workspace:lib/utility, @lib/utility@~0.0.1":
   version: 0.0.0-use.local
   resolution: "@lib/utility@workspace:lib/utility"
   dependencies:
