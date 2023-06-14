@@ -22,7 +22,7 @@ RUN \
 	&& yarn db:generate
 
 # finalize image
-EXPOSE 3020
+EXPOSE 3010
 CMD yarn build:api && yarn start:api
 
 LABEL org.opencontainers.image.source https://github.com/celestialstag/inkbyte/packages/api
