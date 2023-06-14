@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@lib/config": "^0.0.1",
+    "@lib/utility": "^0.0.1",
     "@lib/crypt": "^0.0.1",
     "@lib/database": "^0.0.1",
     "@lib/quikk": "^0.0.1",
