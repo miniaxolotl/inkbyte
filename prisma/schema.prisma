@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["filteredRelationCount", "fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 model Role {
@@ -132,12 +132,12 @@ model Link {
   image_id  Int?   @db.UnsignedInt
   long_url  String @db.VarChar(512)
 
-  is_redirect Int     @db.UnsignedInt
+  is_redirect Int     @default(0) @db.UnsignedTinyInt
   cta_heading String? @db.Text
   cta_body    String? @db.Text
   cta_action  String? @db.Text
 
-  updated_by Int @db.UnsignedInt
+  updated_by Int? @db.UnsignedInt
 
   updated  DateTime  @updatedAt
   created  DateTime  @default(now())
