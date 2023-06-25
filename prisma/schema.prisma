@@ -97,7 +97,7 @@ model Image {
 
   checksum String? @db.Text
 
-  updated_by Int @db.UnsignedInt
+  updated_by Int? @db.UnsignedInt
 
   updated  DateTime  @updatedAt
   created  DateTime  @default(now())
@@ -114,7 +114,7 @@ model Domain {
   id   Int    @default(autoincrement()) @db.UnsignedInt
   slug String @unique @db.VarChar(24)
 
-  updated_by Int @db.UnsignedInt
+  updated_by Int? @db.UnsignedInt
 
   updated  DateTime  @updatedAt
   created  DateTime  @default(now())
