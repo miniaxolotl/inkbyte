@@ -69,7 +69,7 @@ model UserRole {
 
 model Session {
   id      Int    @default(autoincrement()) @db.UnsignedInt
-  token   String @unique @db.VarChar(24)
+  token   String @unique @db.VarChar(48)
   user_id Int    @db.UnsignedInt
 
   updated DateTime  @updatedAt
