@@ -17,7 +17,10 @@ export const Page = ({ slug }: PageProps) => {
 
   useMount(async () => {
     const response = await link.fetchLink(slug);
-    if (response) link.openLink(response.long_url);
+    if (response.ok) {
+      const data = response.data;
+      link.openLink(data.long_url);
+    }
   });
 
   return (

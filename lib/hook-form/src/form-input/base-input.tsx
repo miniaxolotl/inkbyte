@@ -1,5 +1,6 @@
 import React, {
   ChangeEvent,
+  MouseEventHandler,
   Ref,
   forwardRef,
   useCallback,
@@ -52,6 +53,7 @@ export type BaseInputProps = Omit<InputProps, "autoComplete"> & {
   showLabel?: boolean;
   showError?: boolean;
   handleChange?: (value: string, state: BaseInputState) => void | Promise<void>;
+  handleClick?: MouseEventHandler<HTMLInputElement>;
   handleFocus?: () => void | Promise<void>;
   handleBlur?: () => void | Promise<void>;
   isValidating?: boolean;
@@ -138,6 +140,7 @@ const BaseInputComponent = (
       <Input
         {..._.omit(props, [
           "handleChange",
+          "handleClick",
           "handleFocus",
           "handleBlur",
           "showLabel",
@@ -147,7 +150,11 @@ const BaseInputComponent = (
           "isSubmitting",
         ])}
         icon={
-          props.isSubmitting ? <Loader size={props.size ?? "xs"} /> : props.icon
+          props.isUpdating || props.isSubmitting ? (
+            <Loader size={props.size ?? "xs"} />
+          ) : (
+            props.icon
+          )
         }
         ref={ref}
         aria-label={props.name}
@@ -165,10 +172,12 @@ const BaseInputComponent = (
           },
         }}
         className="base-input"
+        onClick={props.handleClick}
         onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
         value={value ?? formValue}
+        disabled={props.disabled ?? (props.isUpdating || props.isSubmitting)}
       />
       {showError && !!props.error && <ErrorComponent error={props.error} />}
     </Box>

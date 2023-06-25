@@ -17,7 +17,10 @@ export const get_links = async () => {
 export const get_link_by_slug = async (slug: string) => {
   return await prisma_db.link.findUnique({
     where: { slug },
-    include: { image: true },
+    include: {
+      domain: true,
+      image: true,
+    },
   });
 }; // get_link
 
@@ -31,8 +34,12 @@ export const create_link = async (
     data: {
       domain_id: domain.id,
       long_url: payload.long_url,
-      slug: payload.custom_slug ?? gen_id(6),
+      slug: payload.custom_slug ?? gen_id(8),
       updated_by,
+    },
+    include: {
+      domain: true,
+      image: true,
     },
   });
   return links;
