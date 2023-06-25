@@ -8,9 +8,14 @@ export const error_logger = async (ctx: ParameterizedContext, next: Next) => {
   try {
     return await next();
   } catch (e: unknown) {
-    if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-      ctx.status = CLIENT_ERROR.NOT_FOUND.status;
-      ctx.body = CLIENT_ERROR.NOT_FOUND.message;
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (e.code === "P2025") {
+        ctx.status = CLIENT_ERROR.NOT_FOUND.status;
+        ctx.body = CLIENT_ERROR.NOT_FOUND.message;
+      } else if (e.code === "P2002") {
+        ctx.status = CLIENT_ERROR.CONFLICT.status;
+        ctx.body = CLIENT_ERROR.CONFLICT.message;
+      }
     } else {
       const error: HTTP_RESPONSE_TYPE = e as HTTP_RESPONSE_TYPE;
       ctx.status = error.status ?? SERVER_ERROR.INTERNAL.status;

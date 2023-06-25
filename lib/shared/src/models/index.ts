@@ -1,3 +1,4 @@
+export * from "./domain.model";
 export * from "./image.model";
 export * from "./link.model";
 export * from "./role.model";

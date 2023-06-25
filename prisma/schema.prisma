@@ -121,6 +121,8 @@ model Domain {
   deleted  DateTime?
   archived DateTime?
 
+  link Link[]
+
   @@id([id])
 }
 
@@ -144,9 +146,10 @@ model Link {
   deleted  DateTime?
   archived DateTime?
 
-  user    User?     @relation(fields: [user_id], references: [id])
-  image   Image?    @relation(fields: [image_id], references: [id])
-  LinkLog LinkLog[]
+  domain   Domain?   @relation(fields: [domain_id], references: [id])
+  user     User?     @relation(fields: [user_id], references: [id])
+  image    Image?    @relation(fields: [image_id], references: [id])
+  link_log LinkLog[]
 
   @@id([id])
 }

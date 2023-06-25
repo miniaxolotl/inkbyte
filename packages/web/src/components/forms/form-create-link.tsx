@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   BoxProps,
   Button,
   Select,
   SelectProps,
+  Title,
   Tooltip,
   useMantineTheme,
 } from "@mantine/core";
@@ -13,11 +14,16 @@ import {
   FiClock,
   FiMapPin,
   FiSettings,
+  FiTrash,
 } from "react-icons/fi/index.js";
 
-import { InputGroup, useHookForm } from "@lib/hook-form";
+import { BaseInput, InputGroup, useHookForm } from "@lib/hook-form";
 import { LinkCreateSchema, linkCreateSchema } from "@lib/schema-validator";
 import { Box } from "@lib/components";
+import { uuid } from "@lib/utility";
+
+import { useStateProvider, useStore } from "@stores";
+import { LinkModel } from "@lib/shared";
 
 export type FormCreateLinkProps = BoxProps & {
   children?: React.ReactNode;
@@ -25,12 +31,86 @@ export type FormCreateLinkProps = BoxProps & {
 };
 
 export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
-  const handleSubmit = async () => {
-    console.log("submit form!");
+  const { link: linkStore, toast } = useStore();
+  const { link: linkState } = useStateProvider();
+
+  const [showLinkHistory, setShowLinkHistory] = useState<boolean>(false);
+  const [linkHistory, setLinkHistory] = useState<LinkModel[]>([]);
+
+  useEffect(() => {
+    setLinkHistory(linkState.data as LinkModel[]);
+  }, [linkState.data]);
+
+  const created_link = linkState.created_link;
+
+  const handleSubmit = async (payload: LinkCreateSchema) => {
+    const response = await linkStore.createLink(payload);
+    const toastId = uuid();
+    if (response.ok) {
+      toast.createToast({
+        id: toastId,
+        heading: "Link Created",
+        content: "Your link has been created!",
+      });
+    } else {
+      toast.createToast({
+        id: toastId,
+        heading: "Error",
+        content: "There was an error while creating your link!",
+      });
+    }
+  };
+
+  const LinkHistoryItem = ({ slug, long_url, domain }: LinkModel) => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          label: { fontSize: 14 },
+        }}
+      >
+        <label>{long_url}</label>
+        <Box sx={{ display: "flex", flex: 1, gap: 16 }}>
+          <Tooltip
+            transitionProps={{ transition: "pop" }}
+            label="Click to Copy"
+          >
+            <BaseInput
+              name={slug}
+              value={`https://${domain.slug}/l/${slug}`}
+              sx={{
+                flex: 1,
+                input: {
+                  backgroundColor: theme.colors.gray[3],
+                },
+              }}
+              handleClick={(event) => {
+                const element = event.target as HTMLInputElement;
+                element.select();
+                navigator.clipboard.writeText(element.value);
+              }}
+            />
+          </Tooltip>
+          <Tooltip transitionProps={{ transition: "pop" }} label="Remove Item">
+            <Button
+              color="brand-peach"
+              size="xs"
+              aria-label="View History Button"
+              onClick={() => linkStore.removeLink(slug)}
+              sx={{ minWidth: 48 }}
+            >
+              <FiTrash />
+            </Button>
+          </Tooltip>
+        </Box>
+      </Box>
+    );
   };
 
   const { HookForm, InputComponent } = useHookForm<LinkCreateSchema>({
-    initialState: {},
+    initialState: { domain: links[0] },
     schema: linkCreateSchema,
     handleSubmit,
   });
@@ -39,7 +119,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
 
   return (
     <HookForm>
-      {({ register, link }) => {
+      {({ register, link, isSubmitting, isUpdating }) => {
         return (
           <>
             <InputComponent
@@ -71,7 +151,6 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
                 {...link("domain")}
                 icon={<FiMapPin />}
                 data={links}
-                defaultValue={links[0]}
                 sx={{ flex: 2 / 3, minWidth: 144 }}
               />
               <InputComponent
@@ -88,13 +167,17 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
               />
             </InputGroup>
 
-            <InputGroup direction="horizontal" gap={12} noWrap>
+            <InputGroup direction="horizontal" gap={16} noWrap>
+              <Button type="submit" color="brand-green" size="xs" fullWidth>
+                Create Link
+              </Button>
               <Tooltip
                 transitionProps={{ transition: "pop" }}
                 label="View History"
+                onClick={() => setShowLinkHistory(!showLinkHistory)}
               >
                 <Button
-                  color="brand-peach"
+                  color="brand-blue"
                   size="xs"
                   aria-label="View History Button"
                   sx={{ minWidth: 48 }}
@@ -102,10 +185,64 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
                   <FiClock />
                 </Button>
               </Tooltip>
-              <Button type="submit" color="brand-green" size="xs" fullWidth>
-                Login
-              </Button>
             </InputGroup>
+
+            {created_link && (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Title
+                  order={3}
+                  size="h3"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                  color="brand-red"
+                >
+                  Created Link
+                </Title>
+                <BaseInput
+                  name="created-link"
+                  value={
+                    created_link
+                      ? `https://${created_link?.domain.slug}/l/${created_link?.slug}`
+                      : ""
+                  }
+                  handleClick={(event) => {
+                    const element = event.target as HTMLInputElement;
+                    element.select();
+                    navigator.clipboard.writeText(element.value);
+                  }}
+                  isSubmitting={isSubmitting}
+                  isUpdating={isUpdating}
+                />
+              </Box>
+            )}
+
+            {showLinkHistory && (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <Title
+                  order={3}
+                  size="h3"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                  color="brand-red"
+                >
+                  Link History
+                </Title>
+                {linkHistory
+                  .slice()
+                  .reverse()
+                  .map((item) => (
+                    <LinkHistoryItem key={item.slug} {...item} />
+                  ))}
+              </Box>
+            )}
           </>
         );
       }}
