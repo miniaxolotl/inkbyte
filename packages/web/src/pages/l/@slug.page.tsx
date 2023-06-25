@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container } from "@mantine/core";
+import { Container, Text } from "@mantine/core";
 
 import { PageContextServer } from "@lib/vite-react";
 import { useMount } from "@lib/hooks";
@@ -22,7 +22,9 @@ export const Page = ({ slug }: PageProps) => {
 
   return (
     <>
-      <Container>opening link...</Container>
+      <Container>
+        <Text align="center">opening link...</Text>
+      </Container>
     </>
   );
 };
