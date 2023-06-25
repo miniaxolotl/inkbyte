@@ -5,22 +5,30 @@ import { FiLock, FiMail } from "react-icons/fi/index.js";
 
 import { HookFormState, InputGroup, useHookForm } from "@lib/hook-form";
 import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
+import { uuid } from "@lib/utility";
 
 import { Link } from "@components/core";
 import { useStore } from "@stores";
 
 export const FormLogin = () => {
-  const { session } = useStore();
+  const { session, account, toast } = useStore();
 
   const handleSubmit = async (
     payload: UserLoginSchema,
-    h: HookFormState<UserLoginSchema>,
+    helper: HookFormState<UserLoginSchema>,
   ) => {
-    const response = await session.createSession(payload);
+    const response = await session.login(payload);
     if (!response.ok) {
-      h.setSubmitError({
+      helper.setSubmitError({
         heading: `Error ${response.status}`,
-        content: response.error,
+        content: response.data ?? response.error,
+      });
+    } else {
+      const toastId = uuid();
+      toast.createToast({
+        id: toastId,
+        heading: "Login Successful",
+        content: `Welcome Back ${account.data?.first_name}!`,
       });
     }
   };
@@ -31,7 +39,7 @@ export const FormLogin = () => {
   });
 
   return (
-    <HookForm>
+    <HookForm withError>
       {({ register, link }) => {
         return (
           <>
@@ -51,7 +59,7 @@ export const FormLogin = () => {
               />
             </InputGroup>
 
-            <InputGroup direction="horizontal">
+            <InputGroup direction="horizontal" noWrap>
               <Checkbox
                 {...link("remember_me")}
                 label="Remember me"
@@ -61,7 +69,14 @@ export const FormLogin = () => {
                 defaultChecked={false}
               />
 
-              <Box sx={{ fontSize: 12 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  placeContent: "flex-end",
+                  flex: 1,
+                  fontSize: 12,
+                }}
+              >
                 <Link href="/forgot-password">Forgot Password</Link>
               </Box>
             </InputGroup>

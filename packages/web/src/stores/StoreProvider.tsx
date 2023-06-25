@@ -1,27 +1,38 @@
 import React, { ReactNode, createContext, useContext, useRef } from "react";
-
 import { proxy, useSnapshot } from "valtio";
+
+import { PageCookies } from "@lib/vite-react";
 
 import { RootStore } from "./root.store";
 
 let clientStore: RootStore | null = null;
 
-const Context = createContext<React.MutableRefObject<RootStore> | null>(null);
+const Context = createContext<RootStore | null>(null);
 
 type StoreContextProviderProps = {
   children: ReactNode;
+  cookies?: PageCookies;
 };
 
 export const StoreProvider: React.FC<StoreContextProviderProps> = ({
   children,
+  cookies,
 }) => {
-  const store = useRef<RootStore>(clientStore || proxy(new RootStore()));
+  const store = useRef(clientStore ?? proxy(new RootStore(cookies)));
+
   if (!clientStore) clientStore = store.current;
-  return <Context.Provider value={store}>{children}</Context.Provider>;
+
+  return <Context.Provider value={store.current}>{children}</Context.Provider>;
 };
 
 export const useStore = () => {
-  const store = useContext(Context)?.current ?? null;
+  const store = useContext(Context) ?? null;
+  if (!store) throw new Error("useStore must be used within a StoreProvider.");
+  return store;
+};
+
+export const useStateProvider = () => {
+  const store = useContext(Context) ?? null;
   if (!store) throw new Error("useStore must be used within a StoreProvider.");
   return useSnapshot(store);
 };

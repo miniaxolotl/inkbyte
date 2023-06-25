@@ -130,8 +130,9 @@ export const DesktopNavigationItem = ({
       weight={600}
       sx={{
         display: "flex",
+        justifyContent: "center",
         alignItems: "center",
-        gap: 4,
+        gap: 8,
         fontFamily: "'Secular One', sans-serif",
       }}
     >

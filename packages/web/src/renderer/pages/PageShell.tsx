@@ -1,8 +1,9 @@
 import React, { StrictMode } from "react";
 
 import { Box, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 
-import { PageContext } from "@lib/vite-react";
+import { PageContext, PageCookies } from "@lib/vite-react";
 
 import { PageContextProvider } from "@renderer/hooks";
 import { StoreProvider } from "@stores";
@@ -12,11 +13,11 @@ import "./PageShell.scss";
 export type PageShellProps = {
   children: React.ReactNode;
   pageContext: PageContext;
+  cookies?: PageCookies;
 };
 
-export const PageShell: React.FC<PageShellProps> = ({
-  pageContext,
-}: PageShellProps) => {
+export const PageShell: React.FC<PageShellProps> = (ctx: PageShellProps) => {
+  const { pageContext, cookies } = ctx;
   const { Page, pageProps } = pageContext;
   const getLayout = Page.getLayout || ((page: unknown) => page);
 
@@ -97,9 +98,10 @@ export const PageShell: React.FC<PageShellProps> = ({
           fontFamily: "'Open Sans', sans-serif",
         }}
       >
-        <StoreProvider>
+        <StoreProvider cookies={cookies}>
           <PageContextProvider pageContext={pageContext}>
             <Box id="page-content" sx={{ display: "block !important" }}>
+              <Notifications position="top-center" />
               {getLayout(<Page {...pageProps} />)}
             </Box>
           </PageContextProvider>

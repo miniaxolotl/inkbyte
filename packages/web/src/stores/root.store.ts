@@ -1,16 +1,36 @@
+import { proxy } from "valtio";
+
 import {
   AccountStore,
   ApiStore,
   BaseRootState,
   SessionStore,
+  ToastStore,
 } from "@lib/stores";
+import { PageCookies } from "@lib/vite-react";
+
+export type RootState = {
+  isServer: boolean;
+  api: ApiStore;
+  account: AccountStore;
+  session: SessionStore;
+};
 
 export class RootStore implements BaseRootState {
   public readonly isServer: boolean = typeof window === "undefined";
 
-  public readonly api: ApiStore = new ApiStore(this);
-  public readonly account: AccountStore = new AccountStore(this);
-  public readonly session: SessionStore = new SessionStore(this);
+  public api!: ApiStore;
+  public account!: AccountStore;
+  public session!: SessionStore;
+  public toast!: ToastStore;
 
-  constructor(private readonly name = "root-store") {}
+  constructor(
+    public readonly cookies?: PageCookies,
+    public readonly name = "root-store",
+  ) {
+    this.api = proxy(new ApiStore());
+    this.account = proxy(new AccountStore(this));
+    this.session = proxy(new SessionStore(this));
+    this.toast = proxy(new ToastStore(this));
+  }
 }

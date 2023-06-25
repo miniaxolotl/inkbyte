@@ -88,7 +88,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
               />
             </InputGroup>
 
-            <InputGroup direction="horizontal" gap={12}>
+            <InputGroup direction="horizontal" gap={12} noWrap>
               <Tooltip
                 transitionProps={{ transition: "pop" }}
                 label="View History"
@@ -119,7 +119,7 @@ const SelectComponent = (props: SelectProps) => (
     size="xs"
     sx={{
       ...props.sx,
-      fontSize: 12,
+      fontSize: 14,
       "&[data-selected]": {
         "&, &:hover": {
           backgroundColor: "brand-red",

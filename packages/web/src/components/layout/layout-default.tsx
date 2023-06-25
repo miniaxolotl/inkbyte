@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box } from "@mantine/core";
 
-// import { featureList, solutionList } from "@lib/data";
+import { Button } from "@lib/components";
 import { web_config } from "@lib/config";
 
 import {
@@ -16,6 +16,7 @@ import {
 import { FooterDefault } from "@components/layout/footer";
 import { Link } from "@components/core";
 import { Waves } from "@components/display";
+import { useStateProvider } from "@stores";
 
 export type LayoutDefaultProps = {
   children?: React.ReactNode;
@@ -23,7 +24,7 @@ export type LayoutDefaultProps = {
 };
 
 export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
-  const isLoggedIn = false;
+  const { session } = useStateProvider();
 
   return (
     <Box
@@ -69,9 +70,12 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
         {/* <Link href={`/solutions`}>Solutions</Link> */}
         {/* </DesktopNavigationItem> */}
 
-        {isLoggedIn ? (
+        {session.isLoggedIn() ? (
           <DesktopNavigationItem>
             <Link href="/dashboard">Dashboard</Link>
+            <span onClick={() => session.reset()}>
+              <Button color="brand-red">Logout</Button>
+            </span>
           </DesktopNavigationItem>
         ) : (
           <DesktopNavigationItem>
@@ -88,10 +92,15 @@ export const Content = ({ children, disableLogo }: LayoutDefaultProps) => {
         disableLogo={disableLogo}
       >
         <MobileNavigationList title="Account">
-          {isLoggedIn ? (
-            <MobileNavigationItem>
-              <Link href="/dashboard">Dashboard</Link>
-            </MobileNavigationItem>
+          {session.isLoggedIn() ? (
+            <>
+              <MobileNavigationItem>
+                <Link href="/dashboard">Dashboard</Link>
+              </MobileNavigationItem>
+              <MobileNavigationItem>
+                <Link color="red">Logout</Link>
+              </MobileNavigationItem>
+            </>
           ) : (
             <>
               <MobileNavigationItem>

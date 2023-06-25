@@ -2417,6 +2417,7 @@ __metadata:
     "@lib/quikk": ~0.0.1
     "@lib/schema-validator": ~0.0.1
     "@lib/shared": ~0.0.1
+    "@mantine/notifications": ~6.0.14
     "@ngneat/elf": ~2.3.1
     "@ngneat/elf-entities": ~4.4.4
     "@rollup/plugin-commonjs": ~24.1.0
@@ -2430,6 +2431,7 @@ __metadata:
     ts-node: ~10.9.1
     typescript: ~4.9.4
     valtio: ~1.10.5
+    vite-plugin-ssr: ~0.4.123
   languageName: unknown
   linkType: soft
 
@@ -2511,6 +2513,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/notifications@npm:~6.0.14":
+  version: 6.0.14
+  resolution: "@mantine/notifications@npm:6.0.14"
+  dependencies:
+    "@mantine/utils": 6.0.14
+    react-transition-group: 4.4.2
+  peerDependencies:
+    "@mantine/core": 6.0.14
+    "@mantine/hooks": 6.0.14
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: ef7e7bbd34247d1291415e9fadc2fd53c3709c3b9899598ad146d6399e8c235bdb3b0bd94a489a23ed63d7a43b1e847b0ed79bab2d3d17b6e4e67a69b6da663a
+  languageName: node
+  linkType: hard
+
 "@mantine/ssr@npm:~6.0.10":
   version: 6.0.11
   resolution: "@mantine/ssr@npm:6.0.11"
@@ -2546,6 +2563,15 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
   checksum: 2ed85f45595793b059d5818704f75ad7844e85e2aecf901d65e02a3997b6ad4ac50e5dc4e8e2a52f3554b30426e48ddaaa4ba73627f19c2491340cc5e49feaed
+  languageName: node
+  linkType: hard
+
+"@mantine/utils@npm:6.0.14":
+  version: 6.0.14
+  resolution: "@mantine/utils@npm:6.0.14"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 2e495b80bf39d3e443c17f24cac6c5745a50c13f777383c325dc8a31dd91ddd614f8411a7fdf5268e85a14741dc574c6de15d22e1616ca62e7ebfcccc4eb2e17
   languageName: node
   linkType: hard
 
@@ -2696,13 +2722,17 @@ __metadata:
     "@lib/schema-validator": ~0.0.1
     "@lib/shared": ~0.0.1
     "@lib/stores": ~0.0.1
+    "@lib/utility": ~0.0.1
     "@mantine/carousel": ~6.0.10
     "@mantine/core": ~6.0.10
     "@mantine/form": ~6.0.10
     "@mantine/hooks": ~6.0.10
+    "@mantine/notifications": ~6.0.14
     "@mantine/ssr": ~6.0.10
     "@playwright/test": ~1.28.1
     "@types/compression": ~1.7.2
+    "@types/cookie": ~0.5.1
+    "@types/cookie-parser": ~1
     "@types/express": ~4.17.14
     "@types/node": ~18.11.9
     "@types/react": ~18.0.10
@@ -2710,6 +2740,8 @@ __metadata:
     "@vitejs/plugin-react": ~2.0.1
     appwrite: ~11.0.0
     compression: ~1.7.4
+    cookie: ~0.5.0
+    cookie-parser: ~1.4.6
     date-fns: ~2.30.0
     eslint-plugin-react: latest
     eslint-plugin-react-hooks: ~4.6.0
@@ -2719,6 +2751,7 @@ __metadata:
     react: ~18.2.0
     react-dom: ~18.2.0
     react-icons: ~4.8.0
+    react-toastify: ^9.1.3
     sass: ~1.56.2
     sirv: ~2.0.2
     ts-node: ~10.9.1
@@ -3291,6 +3324,22 @@ __metadata:
   version: 0.5.5
   resolution: "@types/content-disposition@npm:0.5.5"
   checksum: fdf7379db1d509990bcf9a21d85f05aad878596f28b1418f9179f6436cb22513262c670ce88c6055054a7f5804a9303eeacb70aa59a5e11ffdc1434559db9692
+  languageName: node
+  linkType: hard
+
+"@types/cookie-parser@npm:~1":
+  version: 1.4.3
+  resolution: "@types/cookie-parser@npm:1.4.3"
+  dependencies:
+    "@types/express": "*"
+  checksum: f390f3af1b1711190dee2c2ecd9af33af81fbde8d81ee820dadb6fe1e0d80c3faba40af37c6ed36fb88b04b64870f6a021f7e9edceecd17c42fe22abe0af5005
+  languageName: node
+  linkType: hard
+
+"@types/cookie@npm:~0.5.1":
+  version: 0.5.1
+  resolution: "@types/cookie@npm:0.5.1"
+  checksum: 9a8d60fc84797122bc399d6bd330fe5780dc7aab032321de705049ea925339f74658bfa418de483a625d51858770efef58df633ff2e20f1bdf7fbd74a52847e2
   languageName: node
   linkType: hard
 
@@ -4699,6 +4748,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
+  languageName: node
+  linkType: hard
+
 "co-body@npm:^6.0.0, co-body@npm:^6.1.0":
   version: 6.1.0
   resolution: "co-body@npm:6.1.0"
@@ -4871,6 +4927,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-parser@npm:~1.4.6":
+  version: 1.4.6
+  resolution: "cookie-parser@npm:1.4.6"
+  dependencies:
+    cookie: 0.4.1
+    cookie-signature: 1.0.6
+  checksum: 1e5a63aa82e8eb4e02d2977c6902983dee87b02e87ec5ec43ac3cb1e72da354003716570cd5190c0ad9e8a454c9d3237f4ad6e2f16d0902205a96a1c72b77ba5
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
@@ -4878,7 +4944,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.5.0":
+"cookie@npm:0.4.1":
+  version: 0.4.1
+  resolution: "cookie@npm:0.4.1"
+  checksum: bd7c47f5d94ab70ccdfe8210cde7d725880d2fcda06d8e375afbdd82de0c8d3b73541996e9ce57d35f67f672c4ee6d60208adec06b3c5fc94cebb85196084cf8
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.5.0, cookie@npm:~0.5.0":
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
@@ -9513,6 +9586,33 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 87360d4392276d4e87511a73be9b0634b8bcce8f4f648cf659334d993f25ad3d4062f468f1e1944fc614123acae4299580aad00b760c6a96cec190e076f847f5
+  languageName: node
+  linkType: hard
+
+"react-toastify@npm:^9.1.3":
+  version: 9.1.3
+  resolution: "react-toastify@npm:9.1.3"
+  dependencies:
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: e8bd92c5cbf831b43a042644ab9bc69abe6ceb3ce91ba71f5cd2d8b6a2c9885ca52770e1f1ba64c5632607f6df962db344a26c7fba57606faf5aa0e7bfc8535f
+  languageName: node
+  linkType: hard
+
+"react-transition-group@npm:4.4.2":
+  version: 4.4.2
+  resolution: "react-transition-group@npm:4.4.2"
+  dependencies:
+    "@babel/runtime": ^7.5.5
+    dom-helpers: ^5.0.1
+    loose-envify: ^1.4.0
+    prop-types: ^15.6.2
+  peerDependencies:
+    react: ">=16.6.0"
+    react-dom: ">=16.6.0"
+  checksum: b67bf5b3e86dbab72d658b9a52a3589e5960583ab28c7c66272427d8fe30d4c7de422d5046ae96bd2683cdf80cc3264b2516f5ce80cae1dbe6cf3ca6dda392c5
   languageName: node
   linkType: hard
 

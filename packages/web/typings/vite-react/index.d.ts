@@ -1,30 +1,32 @@
-// declare types here
-
 declare module "@lib/vite-react" {
-  import type { FunctionComponent, ReactNode } from "react";
-  import type { PageContextBuiltIn } from "vite-plugin-ssr";
-  import type { PageContextBuiltInClient } from "vite-plugin-ssr/client";
+	import type { FunctionComponent, ReactNode } from "react";
+	import type { PageContextBuiltIn } from "vite-plugin-ssr";
+	import type { PageContextBuiltInClient } from "vite-plugin-ssr/client";
 
-  type PageProps = Record<string, unknown>;
-  type Page = ReactNode;
+	type PageProps = Record<string, unknown>;
+	type Page = ReactNode;
 
-  export type PageContext = {
-    Page: FunctionComponent &
-      Page & {
-        getLayout: (page: ReactNode) => Page;
-      };
-    pageProps?: PageProps;
-    urlPathname: string;
-    exports: {
-      documentProps: {
-        title?: string;
-        description?: string;
-      };
-    };
-  };
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	export type PageCookies = Record<string, any>;
 
-  type PageContextServer = PageContext & PageContextBuiltIn<Page>;
-  type PageContextClient = PageContext & PageContextBuiltInClient<Page>;
+	export type PageContext = {
+		Page: FunctionComponent &
+		Page & {
+			getLayout: (page: ReactNode) => Page;
+		};
+		pageProps?: PageProps;
+		urlPathname: string;
+		cookies: PageCookies;
+		exports: {
+			documentProps: {
+				title?: string;
+				description?: string;
+			};
+		};
+	};
 
-  type PageContext = PageContextClient | PageContextServer;
+	type PageContextServer = PageContext & PageContextBuiltIn<Page>;
+	type PageContextClient = PageContext & PageContextBuiltInClient<Page>;
+
+	type PageContext = PageContextClient | PageContextServer;
 }

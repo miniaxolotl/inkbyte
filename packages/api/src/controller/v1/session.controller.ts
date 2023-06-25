@@ -25,7 +25,8 @@ router.post(
     if (!user) {
       ctx.throw(
         CLIENT_ERROR.UNAUTHORIZED.status,
-        CLIENT_ERROR.UNAUTHORIZED.message,
+        // CLIENT_ERROR.UNAUTHORIZED.message,
+        "Incorrect email and/or password.",
       );
     }
 
