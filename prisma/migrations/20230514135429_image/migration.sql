@@ -11,7 +11,7 @@ CREATE TABLE `Image` (
 	`endpoint` VARCHAR(32) NOT NULL,
 	`region` VARCHAR(32) NOT NULL,
 	`checksum` TEXT NULL,
-	`updated_by` INTEGER UNSIGNED NOT NULL,
+	`updated_by` INTEGER UNSIGNED NULL,
 	`updated` DATETIME(3) NOT NULL,
 	`created` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`deleted` DATETIME(3) NULL,

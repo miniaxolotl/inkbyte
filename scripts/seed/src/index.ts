@@ -1,4 +1,4 @@
-import { PermissionRoleEnum, PermissionRoleMap } from "@lib/shared";
+import { DomainList, PermissionRoleEnum, PermissionRoleMap } from "@lib/shared";
 import { connect_prisma, prisma_db } from "@lib/database";
 
 const seed_roles = async () => {
@@ -23,8 +23,28 @@ const seed_roles = async () => {
   console.log("[end]: seed_roles");
 };
 
+const seed_domains = async () => {
+  console.log("[start]: seed_domains");
+  for (const value of DomainList) {
+    console.log(` - [seed]: ${value}`);
+    await prisma_db.domain.upsert({
+      where: { slug: value },
+      create: {
+        slug: value,
+        updated_by: null,
+      },
+      update: {
+        slug: value,
+        updated_by: null,
+      },
+    });
+  }
+  console.log("[end]: seed_domains");
+};
+
 (async () => {
   await connect_prisma();
   await seed_roles();
+  await seed_domains();
   process.exit(0);
 })();

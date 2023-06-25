@@ -4,6 +4,7 @@ import {
   AccountStore,
   ApiStore,
   BaseRootState,
+  LinkStore,
   SessionStore,
   ToastStore,
 } from "@lib/stores";
@@ -21,6 +22,7 @@ export class RootStore implements BaseRootState {
 
   public api!: ApiStore;
   public account!: AccountStore;
+  public link!: LinkStore;
   public session!: SessionStore;
   public toast!: ToastStore;
 
@@ -30,6 +32,7 @@ export class RootStore implements BaseRootState {
   ) {
     this.api = proxy(new ApiStore());
     this.account = proxy(new AccountStore(this));
+    this.link = proxy(new LinkStore(this));
     this.session = proxy(new SessionStore(this));
     this.toast = proxy(new ToastStore(this));
   }
