@@ -132,7 +132,7 @@ model Link {
   image_id  Int?   @db.UnsignedInt
   long_url  String @db.VarChar(512)
 
-  is_redirect Int     @default(0) @db.UnsignedTinyInt
+  is_tracking Int     @default(0) @db.UnsignedTinyInt
   cta_heading String? @db.Text
   cta_body    String? @db.Text
   cta_action  String? @db.Text

@@ -6,7 +6,7 @@ CREATE TABLE `Link` (
 	`user_id` INTEGER UNSIGNED NULL,
 	`image_id` INTEGER UNSIGNED NULL,
 	`long_url` VARCHAR(512) NOT NULL,
-	`is_redirect` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	`is_tracking` TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	`cta_heading` TEXT NULL,
 	`cta_body` TEXT NULL,
 	`cta_action` TEXT NULL,
