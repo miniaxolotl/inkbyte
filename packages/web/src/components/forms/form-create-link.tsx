@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   BoxProps,
   Button,
+  Collapse,
   Select,
   SelectProps,
   Title,
@@ -24,6 +25,7 @@ import { uuid } from "@lib/utility";
 
 import { useStateProvider, useStore } from "@stores";
 import { LinkModel } from "@lib/shared";
+import { useDisclosure } from "@mantine/hooks";
 
 export type FormCreateLinkProps = BoxProps & {
   children?: React.ReactNode;
@@ -34,7 +36,8 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
   const { link: linkStore, toast } = useStore();
   const { link: linkState } = useStateProvider();
 
-  const [showLinkHistory, setShowLinkHistory] = useState<boolean>(false);
+  const [showLinkHistory, { toggle: toggleShowLinkHistory }] =
+    useDisclosure(false);
   const [linkHistory, setLinkHistory] = useState<LinkModel[]>([]);
 
   useEffect(() => {
@@ -56,7 +59,8 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
       toast.createToast({
         id: toastId,
         heading: "Error",
-        content: "There was an error while creating your link!",
+        content:
+          response.error ?? "There was an error while creating your link!",
       });
     }
   };
@@ -174,7 +178,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
               <Tooltip
                 transitionProps={{ transition: "pop" }}
                 label="View History"
-                onClick={() => setShowLinkHistory(!showLinkHistory)}
+                onClick={() => toggleShowLinkHistory()}
               >
                 <Button
                   color="brand-blue"
@@ -187,7 +191,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
               </Tooltip>
             </InputGroup>
 
-            {created_link && (
+            <Collapse in={!!created_link}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <Title
                   order={3}
@@ -218,9 +222,9 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
                   isUpdating={isUpdating}
                 />
               </Box>
-            )}
+            </Collapse>
 
-            {showLinkHistory && (
+            <Collapse in={showLinkHistory}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <Title
                   order={3}
@@ -242,7 +246,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
                     <LinkHistoryItem key={item.slug} {...item} />
                   ))}
               </Box>
-            )}
+            </Collapse>
           </>
         );
       }}
