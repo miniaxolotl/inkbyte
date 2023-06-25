@@ -37,10 +37,10 @@ export const SessionGuard = (
         const session = await get_session_by_token(authorization_key);
         if (
           session &&
-          !is_session_expired(session) &&
+          !is_session_expired(session as SessionModel) &&
           is_user_verified(session.user)
         ) {
-          update_user_last_ip(session.user_id, ctx.ip);
+          await update_user_last_ip(session.user_id, ctx.ip);
           ctx.state = {
             ...ctx.state,
             session: session,

@@ -1,4 +1,4 @@
-import { BaseUser } from "./user.model";
+import { UserModel } from "./user.model";
 
 //***********************************************
 //* session
@@ -11,7 +11,7 @@ export type BaseSession = {
 };
 
 export type SessionModel = BaseSession & {
-  user: BaseUser;
+  user: UserModel;
   updated: Date;
   created: Date;
   deleted?: Date | null;

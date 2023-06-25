@@ -64,8 +64,8 @@ const BaseInputComponent = (
   ref: Ref<HTMLInputElement>,
 ) => {
   const { showLabel = false, showError = false, value = "" } = props;
-  const [formValue, setFormValue] = useState(value);
   const id = useId();
+  const [formValue, setFormValue] = useState(value);
 
   const label = useMemo(
     () => props.label ?? _.startCase(props.name),
@@ -154,8 +154,16 @@ const BaseInputComponent = (
         id={id}
         name={props.name}
         placeholder={placeholder}
-        size={props.size ?? "xs"}
-        sx={{ ...props.sx, fontSize: 12 }}
+        size="xs"
+        sx={{
+          ...props.sx,
+          fontSize: 12,
+          ".mantine-Input-input": {
+            "@media (max-width: 680px)": {
+              height: 48,
+            },
+          },
+        }}
         className="base-input"
         onChange={onChange}
         onFocus={onFocus}

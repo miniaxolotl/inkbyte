@@ -11,3 +11,6 @@ export type Base = {
 export type IdMap = {
   id: number;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PageCookies = Record<string, any>;

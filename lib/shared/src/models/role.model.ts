@@ -2,7 +2,11 @@
 //* role
 //***********************************************
 
-export type PermissionRole = "admin_user" | "basic_user" | "premium_user";
+export type PermissionRole =
+  | "admin_user"
+  | "disabled"
+  | "basic_user"
+  | "premium_user";
 
 export type BaseRole = {
   id: number;

@@ -40,7 +40,7 @@ export const create_session = async (user_id: number) => {
   return await prisma_db.session.create({
     data: {
       user_id,
-      token: gen_id(24),
+      token: gen_id(48),
       deleted: addDays(new Date(), MAX_SESSION_LENGTH),
     },
     include: {

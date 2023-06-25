@@ -34,8 +34,9 @@ export type HookFormState<
 type HookFormOptions<T extends InputFieldValues> = {
   initialState?: Partial<T>;
   initialErrors?: Partial<T>;
-  handleSubmit?: (values: T, helpers: HookFormState<T>) => void;
+  handleSubmit?: (values: T, helpers: HookFormState<T>) => Promise<void>;
   schema?: ObjectSchema<AnyObject>;
+  hideNotifications?: boolean;
 };
 
 type SubmitError = {
@@ -45,6 +46,7 @@ type SubmitError = {
 
 type HookFormProps<T extends InputFieldValues> = HookFormOptions<T> & {
   children?: (state: HookFormState<T>) => ReactNode;
+  withError?: boolean;
 };
 
 const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
@@ -245,12 +247,9 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     isSubmitting: action.isSubmitting,
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
-    setSubmitting(true);
-    incrementSubmit();
 
     if (schema) {
       setValidating(true);
@@ -261,10 +260,18 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
 
     if (
       Object.keys(state.errors).length ||
+      !Object.keys(state.values).length ||
       !Object.keys(state.touchedFields).length
-    )
+    ) {
       return;
-    if (props.handleSubmit) props.handleSubmit(state.values as T, helpers);
+    }
+
+    setSubmitting(true);
+    incrementSubmit();
+
+    if (props.handleSubmit) {
+      await props.handleSubmit(state.values as T, helpers);
+    }
     setSubmitting(false);
   };
 
@@ -272,20 +279,23 @@ const HookForm = <T extends InputFieldValues>(props: HookFormProps<T>) => {
     <Box
       sx={{
         width: "100%",
-        maxWidth: 680,
+        // maxWidth: 680,
         form: {
           display: "flex",
           flexDirection: "column",
+          placeSelf: "center",
+          justifySelf: "center",
+          alignSelf: "center",
           gap: 16,
         },
         "@media (max-width: 980px)": {
-          maxWidth: 480,
+          // maxWidth: 480,
         },
       }}
     >
       <form onSubmit={handleSubmit}>
         {children && children(helpers)}
-        {state.error && (
+        {props.withError && !!state.error && (
           <Notification
             color="brand-red"
             title={state.error.heading}
@@ -307,10 +317,16 @@ export const useHookForm = <
 ) => {
   type FormComponentProps = {
     children?: (state: HookFormState<T>) => ReactNode;
+    withError?: boolean;
   };
 
-  const FormComponent = ({ children }: FormComponentProps) => {
-    return <HookForm<T> {...options}>{children}</HookForm>;
+  const FormComponent = (props: FormComponentProps) => {
+    const { children } = props;
+    return (
+      <HookForm<T> {...options} {...props}>
+        {children}
+      </HookForm>
+    );
   };
 
   const InputComponent = (props: FormControlProps<T>) => (

@@ -17,7 +17,7 @@ export class Quikk {
   private readonly base_port?: number;
   private readonly base_path?: string;
 
-  private api_token?: string;
+  public api_token: string | null = null;
   private readonly api_token_type: string;
   private readonly api_version?: string;
 
@@ -30,7 +30,7 @@ export class Quikk {
     this.base_port = config.base_port;
     this.base_path = config.base_path;
 
-    this.api_token = config.api_token;
+    this.api_token = config.api_token ?? null;
     this.api_token_type = config.api_token_type || "Basic";
     this.api_version = config.api_version;
 
@@ -45,7 +45,13 @@ export class Quikk {
       .join("/");
   }
 
-  public setApiToken = (token: string) => (this.api_token = token);
+  public setApiToken = (token: string) => {
+    this.api_token = token;
+  };
+
+  public clearToken = () => {
+    this.api_token = null;
+  };
 
   public fetch = async <T = unknown, K = unknown>(
     path: string,
@@ -70,7 +76,7 @@ export class Quikk {
       {
         method: method?.toUpperCase() ?? "GET",
         headers: {
-          ...(formData ? {} : { "content-type": "application/json" }),
+          ...(formData ? {} : { "Content-Type": "application/json" }),
           ...(this.api_token
             ? { Authorization: `${this.api_token_type} ${this.api_token}` }
             : {}),
@@ -92,7 +98,7 @@ export class Quikk {
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
-    | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
+    | { ok: false; data: R | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
   > => {
     const data = await this.fetch<T>(path, {
@@ -142,7 +148,7 @@ export class Quikk {
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
-    | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
+    | { ok: false; data: R | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
   > => {
     const data = await this.fetch<T>(path, {
@@ -192,7 +198,7 @@ export class Quikk {
     path: string,
     { headers, parameters }: GetParams = {},
   ): Promise<
-    | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
+    | { ok: false; data: R | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
   > => {
     const data = await this.fetch<T>(path, {
@@ -240,7 +246,7 @@ export class Quikk {
     path: string,
     { headers, parameters, body, formData }: PostParams<K> = {},
   ): Promise<
-    | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
+    | { ok: false; data: R | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
   > => {
     const data = await this.fetch<T>(path, {
@@ -291,7 +297,7 @@ export class Quikk {
     path: string,
     { headers, parameters }: GetParams = {},
   ): Promise<
-    | { ok: false; data: R | T | null; error: string; status: HTTPStatusCodes }
+    | { ok: false; data: R | null; error: string; status: HTTPStatusCodes }
     | { ok: true; data: T; error: null }
   > => {
     const data = await this.fetch<T>(path, {

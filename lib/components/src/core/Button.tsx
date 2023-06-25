@@ -5,7 +5,7 @@ import {
   ButtonProps as MantineButtonProps,
 } from "@mantine/core";
 
-export type ButtonProps = Partial<MantineButtonProps> & {
+export type ButtonProps = MantineButtonProps & {
   children?: ReactNode;
 };
 
