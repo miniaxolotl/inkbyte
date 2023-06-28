@@ -32,7 +32,7 @@ export const get_link_by_slug = async ({
 
 export const create_link = async (
   payload: LinkCreateSchema,
-  updated_by = null,
+  updated_by: number | null = null,
 ) => {
   const domain = await get_domain_by_slug(payload.domain);
   if (!domain) return null;

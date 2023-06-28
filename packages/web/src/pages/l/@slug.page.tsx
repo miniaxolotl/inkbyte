@@ -52,7 +52,6 @@ export const onBeforeRender = async (props: PageContextServer) => {
 
   const response = await get<LinkModel>(`r/${props.routeParams.slug}`, {
     headers: {
-      Host: "inkbyte.co",
       "Session-Id": props.cookies.session_id,
     },
   });

@@ -41,10 +41,6 @@ router.get(
         CLIENT_ERROR.BAD_REQUEST.message,
       );
     }
-    console.log(origin);
-    console.log(ctx.state);
-    console.log(domain);
-
     const link = await get_link_by_slug({
       slug: ctx.state.path.slug,
       domain_id: domain.id,
