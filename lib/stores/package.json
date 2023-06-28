@@ -23,6 +23,7 @@
     "@lib/quikk": "~0.0.1",
     "@lib/schema-validator": "~0.0.1",
     "@lib/shared": "~0.0.1",
+    "@lib/utility": "~0.0.1",
     "@mantine/notifications": "~6.0.14",
     "@ngneat/elf": "~2.3.1",
     "@ngneat/elf-entities": "~4.4.4",
