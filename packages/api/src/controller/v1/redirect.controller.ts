@@ -34,14 +34,10 @@ router.get(
     >,
   ) => {
     const origin = (ctx.URL.hostname ?? ctx.origin).replace(
-      /^((http|https)(:\/\/))?(www\.)?/,
+      /^((http|https)(:\/\/))?((www)?(api)?\.)?/,
       "",
     );
     const domain = await get_domain_by_slug(origin);
-
-    console.log(origin);
-    console.log(domain);
-    console.log(ctx.URL);
 
     if (!domain) {
       ctx.throw(
