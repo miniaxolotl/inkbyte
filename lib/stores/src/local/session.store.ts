@@ -27,7 +27,7 @@ export class SessionStore implements PersistProxy {
     }
 
     this.session_token = response.data.token;
-    this.rootStore.account.data = response.data.user;
+    this.rootStore.account.account_data = response.data.user;
     this.rootStore.api.api_token = response.data.token;
 
     navigate("/");
