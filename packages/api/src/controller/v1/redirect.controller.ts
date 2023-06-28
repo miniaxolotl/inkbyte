@@ -1,39 +1,71 @@
 import KoaRouter from "koa-router";
 import { ParameterizedContext } from "koa";
 
+import { CLIENT_ERROR, uuid } from "@lib/utility";
 import {
-  LinkCreateSchema,
-  SlugSchema,
-  linkCreateSchema,
-  slugSchema,
-} from "@lib/schema-validator";
-import {
+  HeaderContext,
+  HeaderResolver,
   PathContext,
   PathResolver,
-  SchemaContext,
-  SchemaResolver,
-  create_link,
+  create_link_log,
+  get_domain_by_slug,
   get_link_by_slug,
+  get_links,
 } from "@lib/services";
+import {
+  SessionIdSchema,
+  SlugSchema,
+  sessionIdSchema,
+  slugSchema,
+} from "@lib/schema-validator";
 
 export const route = ["/r"];
 export const router = new KoaRouter();
 
 export const LinkController = { router, route };
 
-router.post(
-  "/",
-  SchemaResolver(linkCreateSchema),
-  async (ctx: ParameterizedContext<SchemaContext<LinkCreateSchema>>) => {
-    ctx.body = await create_link(ctx.state.body);
-    ctx.status = 201;
-  },
-); // {post} /v1/link
-
 router.get(
   "/:slug",
   PathResolver(slugSchema),
-  async (ctx: ParameterizedContext<PathContext<SlugSchema>>) => {
-    ctx.body = await get_link_by_slug(ctx.state.path.slug);
+  HeaderResolver(sessionIdSchema.partial()),
+  async (
+    ctx: ParameterizedContext<
+      PathContext<SlugSchema> & HeaderContext<SessionIdSchema>
+    >,
+  ) => {
+    const origin = ctx.origin.replace(/^((http|https)(:\/\/))?(www\.)?/, "");
+    const domain = await get_domain_by_slug(origin);
+    if (!domain) {
+      ctx.throw(
+        CLIENT_ERROR.BAD_REQUEST.status,
+        CLIENT_ERROR.BAD_REQUEST.message,
+      );
+    }
+    console.log(origin);
+    console.log(ctx.state);
+    console.log(domain);
+
+    const link = await get_link_by_slug({
+      slug: ctx.state.path.slug,
+      domain_id: domain.id,
+    });
+    if (!link) {
+      ctx.throw(CLIENT_ERROR.NOT_FOUND.status, CLIENT_ERROR.NOT_FOUND.message);
+    }
+
+    await create_link_log({
+      link_id: link.id,
+      session_id:
+        ctx.state.headers["session-id"] ?? `${new Date().getTime()}-${uuid()}`,
+      ip_address: ctx.ip,
+      user_agent: ctx.headers["user-agent"],
+      referrer: ctx.headers.referer,
+    });
+
+    ctx.body = link;
   },
 ); // {post} /v1/auth/refresh
+
+router.get("/", async (ctx: ParameterizedContext) => {
+  ctx.body = await get_links();
+}); // {get} /v1/link

@@ -71,7 +71,6 @@ export const onBeforeRender = async (props: PageContextServer) => {
 
   return {
     pageContext: {
-      redirectTo: response.data.long_url,
       pageProps: { slug: props.routeParams.slug },
     },
   };
