@@ -12,13 +12,15 @@ const Context = createContext<RootStore | null>(null);
 type StoreContextProviderProps = {
   children: ReactNode;
   cookies?: PageCookies;
+  referer?: string;
 };
 
 export const StoreProvider: React.FC<StoreContextProviderProps> = ({
   children,
   cookies,
+  referer,
 }) => {
-  const store = useRef(clientStore ?? proxy(new RootStore(cookies)));
+  const store = useRef(clientStore ?? proxy(new RootStore(cookies, referer)));
 
   if (!clientStore) clientStore = store.current;
 

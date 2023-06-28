@@ -16,6 +16,8 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import { renderPage } from "vite-plugin-ssr/server";
 
+import { uuid } from "@lib/utility";
+
 const isProduction = process.env.NODE_ENV === "production";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -43,22 +45,36 @@ const startClient = async () => {
   }
 
   app.get("*", async (req, res, next) => {
-    const pageContextInit = {
+    const pageContextInit: {
+      urlOriginal: string;
+      cookies: string;
+      referer?: string;
+      redirectTo?: string;
+    } = {
       urlOriginal: req.originalUrl,
       cookies: req.cookies,
+      referer: req.headers.referer,
     };
+
+    if (!req.cookies.session_id) {
+      const session_id = `${new Date().getTime()}-${uuid()}`;
+      req.cookies.session_id = session_id;
+      res.cookie("session_id", session_id);
+    }
 
     const pageContext = await renderPage(pageContextInit);
     const { httpResponse } = pageContext;
 
+    if (pageContext.redirectTo) {
+      res.redirect(302, pageContext.redirectTo);
+    }
+
     if (!httpResponse) return next();
 
     const { body, statusCode, contentType, earlyHints } = httpResponse;
-
     if (res.writeEarlyHints) {
       res.writeEarlyHints({ link: earlyHints.map((e) => e.earlyHintLink) });
     }
-
     res.status(statusCode).type(contentType).send(body);
   });
 

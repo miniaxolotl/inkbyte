@@ -26,6 +26,7 @@ import { uuid } from "@lib/utility";
 import { useStateProvider, useStore } from "@stores";
 import { LinkModel } from "@lib/shared";
 import { useDisclosure } from "@mantine/hooks";
+import { useMount } from "@lib/hooks";
 
 export type FormCreateLinkProps = BoxProps & {
   children?: React.ReactNode;
@@ -39,12 +40,15 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
   const [showLinkHistory, { toggle: toggleShowLinkHistory }] =
     useDisclosure(false);
   const [linkHistory, setLinkHistory] = useState<LinkModel[]>([]);
+  const [latestLink, setLatestLink] = useState<LinkModel | null>(null);
 
   useEffect(() => {
-    setLinkHistory(linkState.data as LinkModel[]);
-  }, [linkState.data]);
+    setLinkHistory(linkState.link_history as LinkModel[]);
+  }, [linkState.link_history]);
 
-  const created_link = linkState.created_link;
+  useMount(() => {
+    setLatestLink(linkState.created_link);
+  });
 
   const handleSubmit = async (payload: LinkCreateSchema) => {
     const response = await linkStore.createLink(payload);
@@ -191,7 +195,7 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
               </Tooltip>
             </InputGroup>
 
-            <Collapse in={!!created_link}>
+            <Collapse in={!!latestLink}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <Title
                   order={3}
@@ -206,21 +210,33 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
                 >
                   Created Link
                 </Title>
-                <BaseInput
-                  name="created-link"
-                  value={
-                    created_link
-                      ? `https://${created_link?.domain.slug}/l/${created_link?.slug}`
-                      : ""
-                  }
-                  handleClick={(event) => {
-                    const element = event.target as HTMLInputElement;
-                    element.select();
-                    navigator.clipboard.writeText(element.value);
+                <Box
+                  sx={{
+                    label: { fontSize: 14 },
                   }}
-                  isSubmitting={isSubmitting}
-                  isUpdating={isUpdating}
-                />
+                >
+                  <label>{latestLink?.long_url}</label>
+                  <Tooltip
+                    transitionProps={{ transition: "pop" }}
+                    label="Click to Copy"
+                  >
+                    <BaseInput
+                      name="created-link"
+                      value={
+                        latestLink
+                          ? `https://${latestLink?.domain.slug}/l/${latestLink?.slug}`
+                          : ""
+                      }
+                      handleClick={(event) => {
+                        const element = event.target as HTMLInputElement;
+                        element.select();
+                        navigator.clipboard.writeText(element.value);
+                      }}
+                      isSubmitting={isSubmitting}
+                      isUpdating={isUpdating}
+                    />
+                  </Tooltip>
+                </Box>
               </Box>
             </Collapse>
 

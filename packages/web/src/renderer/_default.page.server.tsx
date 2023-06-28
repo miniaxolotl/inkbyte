@@ -14,31 +14,33 @@ export const passToClient = ["pageProps"];
 const stylesServer = createStylesServer();
 
 export const render = async (pageContext: PageContextServer) => {
-	const {
-		Page,
-		pageProps,
-		urlPathname,
-		cookies,
-		exports: { documentProps = {} },
-	} = pageContext;
+  const {
+    Page,
+    pageProps,
+    urlPathname,
+    cookies,
+    redirectTo,
+    exports: { documentProps = {} },
+  } = pageContext;
 
+  const title = documentProps.title || base_config.appname;
+  const description = documentProps.description || base_config.app_description;
 
-	const title = documentProps.title || base_config.appname;
-	const description = documentProps.description || base_config.app_description;
+  const pageContent = ReactDOMServer.renderToString(
+    <PageShell pageContext={pageContext} cookies={cookies}>
+      <Page {...pageProps} />
+    </PageShell>,
+  );
 
-	const pageContent = ReactDOMServer.renderToString(
-		<PageShell pageContext={pageContext} cookies={cookies}>
-			<Page {...pageProps} />
-		</PageShell>,
-	);
+  if (redirectTo) return { pageContext: { redirectTo } };
 
-	const styles = ReactDOMServer.renderToStaticMarkup(
-		<ServerStyles html={pageContent} server={stylesServer} />,
-	);
+  const styles = ReactDOMServer.renderToStaticMarkup(
+    <ServerStyles html={pageContent} server={stylesServer} />,
+  );
 
-	const openGraphImage = `https://${web_config.host}/assets/logo/default.png`;
+  const openGraphImage = `https://${web_config.host}/assets/logo/default.png`;
 
-	const documentHtml = escapeInject`
+  const documentHtml = escapeInject`
 		<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -80,10 +82,10 @@ export const render = async (pageContext: PageContextServer) => {
       </body>
     </html>`;
 
-	return {
-		documentHtml,
-		pageContext: async () => {
-			return {};
-		},
-	};
+  return {
+    documentHtml,
+    pageContext: async () => {
+      return {};
+    },
+  };
 };

@@ -8,7 +8,7 @@ import { UserLoginSchema, userLoginSchema } from "@lib/schema-validator";
 import { uuid } from "@lib/utility";
 
 import { Link } from "@components/core";
-import { useStore } from "@stores";
+import { useStore } from "@stores/StoreProvider";
 
 export const FormLogin = () => {
   const { session, account, toast } = useStore();
@@ -28,7 +28,7 @@ export const FormLogin = () => {
       toast.createToast({
         id: toastId,
         heading: "Login Successful",
-        content: `Welcome Back ${account.data?.first_name}!`,
+        content: `Welcome Back ${account.account_data?.first_name}!`,
       });
     }
   };
