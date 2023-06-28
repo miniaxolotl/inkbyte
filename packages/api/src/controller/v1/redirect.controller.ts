@@ -33,7 +33,7 @@ router.get(
       PathContext<SlugSchema> & HeaderContext<SessionIdSchema>
     >,
   ) => {
-    const origin = (ctx.origin ?? ctx.URL.hostname).replace(
+    const origin = (ctx.URL.hostname ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?/,
       "",
     );

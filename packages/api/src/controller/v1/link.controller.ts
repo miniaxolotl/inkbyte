@@ -70,7 +70,7 @@ router.get(
   "/:slug",
   PathResolver(slugSchema),
   async (ctx: ParameterizedContext<PathContext<SlugSchema>>) => {
-    const origin = (ctx.origin ?? ctx.URL.hostname).replace(
+    const origin = (ctx.URL.hostname ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?/,
       "",
     );
