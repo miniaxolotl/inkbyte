@@ -39,8 +39,6 @@ export const persistLocalState = <T extends PersistProxy>(
         (acc, key) => ({ ...acc, [key]: state[key] }),
         {},
       );
-      console.log(initialState);
-      console.log(pickedProperties);
 
       localStorage.setItem(state.name, JSON.stringify(pickedProperties));
       initialState.isPersisting = false;
