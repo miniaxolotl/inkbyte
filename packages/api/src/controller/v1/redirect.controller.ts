@@ -33,7 +33,10 @@ router.get(
       PathContext<SlugSchema> & HeaderContext<SessionIdSchema>
     >,
   ) => {
-    const origin = ctx.origin.replace(/^((http|https)(:\/\/))?(www\.)?/, "");
+    const origin = (ctx.origin ?? ctx.URL.hostname).replace(
+      /^((http|https)(:\/\/))?(www\.)?/,
+      "",
+    );
     const domain = await get_domain_by_slug(origin);
     if (!domain) {
       ctx.throw(
