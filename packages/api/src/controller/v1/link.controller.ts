@@ -31,7 +31,9 @@ router.post(
   SchemaResolver(linkCreateSchema),
   SessionGuard({ passthrough: true }),
   async (
-    ctx: ParameterizedContext<SchemaContext<LinkCreateSchema> & SessionContext>,
+    ctx: ParameterizedContext<
+      SchemaContext<LinkCreateSchema> & Partial<SessionContext>
+    >,
   ) => {
     const request = ctx.state.body;
 
@@ -58,7 +60,7 @@ router.post(
 
     ctx.body = await create_link(
       ctx.state.body,
-      ctx.state.session.user_id ?? null,
+      ctx.state.session?.user_id ?? null,
     );
     ctx.status = 201;
   },
