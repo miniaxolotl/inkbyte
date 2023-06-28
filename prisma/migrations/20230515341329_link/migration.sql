@@ -15,9 +15,15 @@ CREATE TABLE `Link` (
 	`created` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 	`deleted` DATETIME(3) NULL,
 	`archived` DATETIME(3) NULL,
-	UNIQUE INDEX `Link_slug_key`(`slug`),
+	UNIQUE INDEX `Link_slug_domain_id_key`(`slug`, `domain_id`),
 	PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE
+	`Link`
+ADD
+	CONSTRAINT `Link_domain_id_fkey` FOREIGN KEY (`domain_id`) REFERENCES `Domain`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE
