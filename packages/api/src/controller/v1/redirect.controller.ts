@@ -38,6 +38,11 @@ router.get(
       "",
     );
     const domain = await get_domain_by_slug(origin);
+
+    console.log(origin);
+    console.log(domain);
+    console.log(ctx.URL);
+
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,
@@ -63,8 +68,8 @@ router.get(
 
     ctx.body = link;
   },
-); // {post} /v1/auth/refresh
+); // {post} /v1/r/:slug
 
 router.get("/", async (ctx: ParameterizedContext) => {
   ctx.body = await get_links();
-}); // {get} /v1/link
+}); // {get} /v1/r
