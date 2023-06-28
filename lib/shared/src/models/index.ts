@@ -1,6 +1,7 @@
 export * from "./domain.model";
 export * from "./image.model";
 export * from "./link.model";
+export * from "./link_log.model";
 export * from "./role.model";
 export * from "./session.model";
 export * from "./shared.model";
