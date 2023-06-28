@@ -11,6 +11,7 @@ dotenv.config({
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
+import { addDays } from "date-fns";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -59,7 +60,10 @@ const startClient = async () => {
     if (!req.cookies.session_id) {
       const session_id = `${new Date().getTime()}-${uuid()}`;
       req.cookies.session_id = session_id;
-      res.cookie("session_id", session_id);
+      res.cookie("session_id", session_id, {
+        path: "/",
+        expires: addDays(new Date(), 30),
+      });
     }
 
     const pageContext = await renderPage(pageContextInit);
