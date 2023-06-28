@@ -18,13 +18,22 @@ export const FormCreateAccount = () => {
     helper: HookFormState<UserCreateSchema>,
   ) => {
     const response = await account.register(payload);
+    const toastId = uuid();
     if (!response.ok) {
       helper.setSubmitError({
         heading: `Error ${response.status}`,
         content: response.data ?? response.error,
       });
+
+      toast.createToast({
+        id: toastId,
+        heading: "Error",
+        content:
+          (response.data as string) ??
+          response.error ??
+          "There was an error while creating your account.",
+      });
     } else {
-      const toastId = uuid();
       toast.createToast({
         id: toastId,
         heading: "Account Created",

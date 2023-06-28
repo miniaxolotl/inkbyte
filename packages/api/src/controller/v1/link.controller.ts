@@ -12,6 +12,8 @@ import {
   PathResolver,
   SchemaContext,
   SchemaResolver,
+  SessionContext,
+  SessionGuard,
   create_link,
   get_domain_by_slug,
   get_link_by_slug,
@@ -27,7 +29,10 @@ export const LinkController = { router, route };
 router.post(
   "/",
   SchemaResolver(linkCreateSchema),
-  async (ctx: ParameterizedContext<SchemaContext<LinkCreateSchema>>) => {
+  SessionGuard({ passthrough: true }),
+  async (
+    ctx: ParameterizedContext<SchemaContext<LinkCreateSchema> & SessionContext>,
+  ) => {
     const request = ctx.state.body;
 
     const domain = await get_domain_by_slug(request.domain);
@@ -44,11 +49,17 @@ router.post(
         domain_id: domain?.id,
       });
       if (existing_link) {
-        ctx.throw(CLIENT_ERROR.CONFLICT.status, CLIENT_ERROR.CONFLICT.message);
+        ctx.throw(
+          CLIENT_ERROR.CONFLICT.status,
+          "A link already exists for the specified alias!",
+        );
       }
     }
 
-    ctx.body = await create_link(ctx.state.body);
+    ctx.body = await create_link(
+      ctx.state.body,
+      ctx.state.session.user_id ?? null,
+    );
     ctx.status = 201;
   },
 ); // {post} /v1/link

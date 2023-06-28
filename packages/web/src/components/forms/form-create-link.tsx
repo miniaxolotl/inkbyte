@@ -57,14 +57,16 @@ export const FormCreateLink = ({ links = [] }: FormCreateLinkProps) => {
       toast.createToast({
         id: toastId,
         heading: "Link Created",
-        content: "Your link has been created!",
+        content: "Your link has been created.",
       });
     } else {
       toast.createToast({
         id: toastId,
         heading: "Error",
         content:
-          response.error ?? "There was an error while creating your link!",
+          (response.data as string) ??
+          response.error ??
+          "There was an error while creating your link.",
       });
     }
   };
