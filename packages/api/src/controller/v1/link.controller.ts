@@ -88,7 +88,6 @@ router.get(
       "",
     );
     const domain = await get_domain_by_slug(origin);
-    console.log(ctx.state.headers);
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,
