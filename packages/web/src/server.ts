@@ -54,9 +54,9 @@ const startClient = async () => {
       redirectTo?: string;
     } = {
       urlOriginal: req.originalUrl,
-      origin: req.hostname || res.get('host') || "",
+      origin: res.get("host") || req.headers.host || "",
       cookies: req.cookies,
-      referer: req.hostname ||res.get('host') || "",
+      referer: res.get("host") || req.headers.host || "",
     };
 
     if (!req.cookies.session_id) {
