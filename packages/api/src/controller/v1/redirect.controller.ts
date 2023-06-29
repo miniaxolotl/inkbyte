@@ -43,6 +43,9 @@ router.get(
     );
     const domain = await get_domain_by_slug(origin);
 
+    console.log(domain);
+    console.log(origin);
+
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,
@@ -54,6 +57,9 @@ router.get(
       slug: ctx.state.path.slug,
       domain_id: domain.id,
     });
+
+    console.log(link);
+
     if (!link) {
       ctx.throw(CLIENT_ERROR.NOT_FOUND.status, CLIENT_ERROR.NOT_FOUND.message);
     }
