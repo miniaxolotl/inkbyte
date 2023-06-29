@@ -6,8 +6,11 @@ export default async function handler(
   response: VercelResponse,
 ) {
   const { url, headers } = request;
-  const origin = headers.origin || request.headers.host || "";
+  const origin = request.headers.host || headers.origin || "";
+  const referer = headers.referer || origin;
 
+  console.log(request.url);
+  console.log(headers);
   console.log("Request to url:", url);
 
   const pageContextInit: {
@@ -17,9 +20,9 @@ export default async function handler(
     cookies: string;
     redirectTo?: string;
   } = {
-    urlOriginal: headers.host || origin,
-    origin: headers.referer || origin,
-    referer: headers.referer || origin,
+    urlOriginal: request.url || origin,
+    origin: origin,
+    referer: origin || referer,
     cookies: JSON.stringify(request.cookies || "{}"),
   };
 
