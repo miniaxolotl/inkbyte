@@ -71,7 +71,7 @@ router.get(
   PathResolver(slugSchema),
   async (ctx: ParameterizedContext<PathContext<SlugSchema>>) => {
     const origin = (ctx.URL.hostname ?? ctx.origin).replace(
-      /^((http|https)(:\/\/))?((www)?(api)?\.)?/,
+      /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
     const domain = await get_domain_by_slug(origin);

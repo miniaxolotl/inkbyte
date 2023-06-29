@@ -34,7 +34,7 @@ router.get(
     >,
   ) => {
     const origin = (ctx.URL.hostname ?? ctx.origin).replace(
-      /^((http|https)(:\/\/))?((www)?(api)?\.)?/,
+      /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
     const domain = await get_domain_by_slug(origin);
