@@ -37,6 +37,8 @@ router.get(
       PathContext<SlugSchema> & HeaderContext<LinkRequestSchema>
     >,
   ) => {
+    console.log(ctx.state);
+
     const origin = (ctx.state.headers["client-origin"] ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",

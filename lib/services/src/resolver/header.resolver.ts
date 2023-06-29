@@ -14,7 +14,6 @@ export const HeaderResolver = <T = unknown>(
   schema: ObjectSchema<yup.AnyObject>,
 ): IMiddleware<HeaderContext<T>> => {
   return async (ctx: ParameterizedContext<HeaderContext<T>>, next: Next) => {
-    console.log(ctx.request.headers);
     const { value, error } = validateSchema<T>(schema, ctx.request.headers, {
       stripUnknown: true,
       abortEarly: false,

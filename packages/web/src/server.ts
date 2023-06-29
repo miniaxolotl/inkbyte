@@ -57,18 +57,11 @@ const startClient = async () => {
     } = {
       urlOriginal: req.originalUrl,
       headers: {
-        origin:
-          res.get("host") ||
-          req.get("origin") ||
-          req.get("hostname") ||
-          req.headers.host ||
-          "",
+        origin: req.hostname || req.originalUrl || req.headers.host || "",
         referer:
           req.headers.referer ||
-          req.get("referer") ||
-          res.get("host") ||
-          req.get("origin") ||
-          req.get("hostname") ||
+          req.hostname ||
+          req.originalUrl ||
           req.headers.host ||
           "",
       },
