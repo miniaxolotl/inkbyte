@@ -13,11 +13,9 @@ import "./PageShell.scss";
 export type PageShellProps = {
   children: React.ReactNode;
   pageContext: PageContext;
+  origin: string;
+  referer: string;
   cookies?: PageCookies;
-  headers: {
-    origin: string;
-    referer: string;
-  };
 };
 
 export const PageShell: React.FC<PageShellProps> = (ctx: PageShellProps) => {

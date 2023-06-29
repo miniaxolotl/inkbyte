@@ -16,10 +16,8 @@ declare module "@lib/vite-react" {
       };
     pageProps?: PageProps;
     urlPathname: string;
-    headers: {
-      referer: string;
-      origin: string;
-    };
+    origin: string;
+    referer: string;
     cookies: PageCookies;
     redirectTo: string;
     exports: {
