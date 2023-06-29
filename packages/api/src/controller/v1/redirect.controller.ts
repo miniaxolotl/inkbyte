@@ -37,12 +37,13 @@ router.get(
       PathContext<SlugSchema> & HeaderContext<LinkRequestSchema>
     >,
   ) => {
+    console.log(ctx.state);
+
     const origin = (ctx.state.headers["client-origin"] ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
     const domain = await get_domain_by_slug(origin);
-
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,

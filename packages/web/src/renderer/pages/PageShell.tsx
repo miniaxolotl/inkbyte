@@ -13,6 +13,8 @@ import "./PageShell.scss";
 export type PageShellProps = {
   children: React.ReactNode;
   pageContext: PageContext;
+  origin: string;
+  referer: string;
   cookies?: PageCookies;
 };
 

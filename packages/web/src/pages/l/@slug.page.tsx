@@ -54,7 +54,7 @@ export const onBeforeRender = async (props: PageContextServer) => {
     headers: {
       "session-id": (props.cookies ?? {}).session_id,
       "client-origin": props.origin,
-      "client-referer": document.referrer || location.hostname,
+      "client-referer": props.referer,
     },
   });
 

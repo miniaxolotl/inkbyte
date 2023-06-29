@@ -49,14 +49,14 @@ const startClient = async () => {
     const pageContextInit: {
       urlOriginal: string;
       origin: string;
+      referer: string;
       cookies: string;
-      referer?: string;
       redirectTo?: string;
     } = {
       urlOriginal: req.originalUrl,
-      origin: (req.headers.hostname as string) || "",
+      origin: req.hostname || req.originalUrl || req.headers.host || "",
+      referer: req.headers.referer || req.hostname || req.originalUrl || "",
       cookies: req.cookies,
-      referer: req.headers.referer,
     };
 
     if (!req.cookies.session_id) {

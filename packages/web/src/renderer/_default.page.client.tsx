@@ -27,13 +27,21 @@ export const render = async (pageContext: PageContextClient) => {
   const {
     Page,
     pageProps,
+    cookies,
+    origin,
+    referer,
     exports: { documentProps = {} },
   } = pageContext;
 
   const title = documentProps.title || web_config.app_title;
 
   const pageContent = (
-    <PageShell pageContext={pageContext}>
+    <PageShell
+      pageContext={pageContext}
+      cookies={cookies}
+      origin={origin}
+      referer={referer}
+    >
       <Page {...pageProps} />
     </PageShell>
   );
