@@ -36,8 +36,8 @@ export const persistState = <T extends PersistProxy>(
 
   if (isServer) return;
 
-  persist(initialState, state, keys);
-  subscribe(state, () => persist(initialState, state, keys), true);
+  persist(state, keys);
+  subscribe(state, () => persist(state, keys), true);
 };
 
 const loadCookies = (serverCookies: PageCookies = {}) => {
@@ -61,14 +61,14 @@ const loadCookie = (cookies: PageCookies = {}, key: string) => {
 };
 
 const persist = <T extends PersistProxy>(
-  initialState: T,
+  // initialState: T,
   state: T,
   keys: (keyof T & string)[],
 ) => {
-  if (!initialState.isHydrated) return;
-  if (initialState.isHydrating) return;
-  if (initialState.isPersisting) return;
-  initialState.isPersisting = true;
+  if (!state.isHydrated) return;
+  if (state.isHydrating) return;
+  if (state.isPersisting) return;
+  state.isPersisting = true;
   const pickedProperties = keys.reduce(
     (acc, key) => ({ ...acc, [key]: state[key] }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,5 +93,5 @@ const persist = <T extends PersistProxy>(
     }
   }
 
-  initialState.isPersisting = false;
+  state.isPersisting = false;
 };

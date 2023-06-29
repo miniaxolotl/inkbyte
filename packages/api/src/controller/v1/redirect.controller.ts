@@ -39,12 +39,18 @@ router.get(
     );
     const domain = await get_domain_by_slug(origin);
 
+    console.log(domain);
+    console.log(origin);
+    console.log(ctx.origin);
+    console.log(ctx.URL);
+
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,
         CLIENT_ERROR.BAD_REQUEST.message,
       );
     }
+
     const link = await get_link_by_slug({
       slug: ctx.state.path.slug,
       domain_id: domain.id,

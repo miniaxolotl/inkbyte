@@ -74,7 +74,14 @@ router.get(
       /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
+
     const domain = await get_domain_by_slug(origin);
+
+    console.log(domain);
+    console.log(origin);
+    console.log(ctx.origin);
+    console.log(ctx.URL);
+
     if (!domain) {
       ctx.throw(
         CLIENT_ERROR.BAD_REQUEST.status,
@@ -82,10 +89,15 @@ router.get(
       );
     }
 
-    ctx.body = await get_link_by_slug({
+    const link = await get_link_by_slug({
       slug: ctx.state.path.slug,
       domain_id: domain.id,
     });
+    if (!link) {
+      ctx.throw(CLIENT_ERROR.NOT_FOUND.status, CLIENT_ERROR.NOT_FOUND.message);
+    }
+
+    ctx.body = link;
   },
 ); // {get} /v1/link/:slug
 
