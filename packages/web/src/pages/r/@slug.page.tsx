@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Container, Text } from "@mantine/core";
 
@@ -14,19 +14,24 @@ type PageProps = {
 
 export const Page = ({ slug }: PageProps) => {
   const { link } = useStore();
+  const [success, setSuccess] = useState(true);
 
   useMount(async () => {
     const response = await link.fetchLink(slug);
     if (response.ok) {
       const data = response.data;
       link.openLink(data.long_url);
+    } else {
+      setSuccess(false);
     }
   });
 
   return (
     <>
       <Container>
-        <Text align="center">opening link...</Text>
+        <Text align="center">
+          {success ? "opening link..." : "error loading link..."}{" "}
+        </Text>
       </Container>
     </>
   );

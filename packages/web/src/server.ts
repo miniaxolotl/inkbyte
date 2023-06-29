@@ -70,16 +70,16 @@ const startClient = async () => {
     const { httpResponse } = pageContext;
 
     if (pageContext.redirectTo) {
-      res.redirect(302, pageContext.redirectTo);
+      return res.redirect(302, pageContext.redirectTo);
+    } else if (!httpResponse) {
+      return next();
+    } else {
+      const { body, statusCode, contentType, earlyHints } = httpResponse;
+      if (res.writeEarlyHints) {
+        res.writeEarlyHints({ link: earlyHints.map((e) => e.earlyHintLink) });
+      }
+      res.status(statusCode).type(contentType).send(body);
     }
-
-    if (!httpResponse) return next();
-
-    const { body, statusCode, contentType, earlyHints } = httpResponse;
-    if (res.writeEarlyHints) {
-      res.writeEarlyHints({ link: earlyHints.map((e) => e.earlyHintLink) });
-    }
-    res.status(statusCode).type(contentType).send(body);
   });
 
   const port = process.env.WEB_PORT || 3020;
