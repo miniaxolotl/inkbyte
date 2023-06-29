@@ -29,6 +29,24 @@ export const persistLocalState = <T extends PersistProxy>(
 
   if (isServer) return;
 
+  const persist = <T extends PersistProxy>(
+    // initialState: T,
+    state: T,
+    keys: (keyof T & string)[],
+  ) => {
+    if (!state.isHydrated) return;
+    if (state.isHydrating) return;
+    if (state.isPersisting) return;
+    state.isPersisting = true;
+    const pickedProperties = keys.reduce(
+      (acc, key) => ({ ...acc, [key]: state[key] }),
+      {},
+    );
+
+    localStorage.setItem(state.name, JSON.stringify(pickedProperties));
+    state.isPersisting = false;
+  };
+
   persist(state, keys);
   subscribe(state, () => persist(state, keys), true);
 };
@@ -40,22 +58,4 @@ const loadLocalStorage = (key: string) => {
   } catch {
     return null;
   }
-};
-
-const persist = <T extends PersistProxy>(
-  // initialState: T,
-  state: T,
-  keys: (keyof T & string)[],
-) => {
-  if (!state.isHydrated) return;
-  if (state.isHydrating) return;
-  if (state.isPersisting) return;
-  state.isPersisting = true;
-  const pickedProperties = keys.reduce(
-    (acc, key) => ({ ...acc, [key]: state[key] }),
-    {},
-  );
-
-  localStorage.setItem(state.name, JSON.stringify(pickedProperties));
-  state.isPersisting = false;
 };

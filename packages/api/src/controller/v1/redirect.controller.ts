@@ -13,9 +13,9 @@ import {
   get_links,
 } from "@lib/services";
 import {
-  SessionIdSchema,
+  LinkRequestSchema,
   SlugSchema,
-  sessionIdSchema,
+  linkRequestSchema,
   slugSchema,
 } from "@lib/schema-validator";
 
@@ -24,16 +24,20 @@ export const router = new KoaRouter();
 
 export const LinkController = { router, route };
 
+router.get("/", async (ctx: ParameterizedContext) => {
+  ctx.body = await get_links();
+}); // {get} /v1/r
+
 router.get(
   "/:slug",
   PathResolver(slugSchema),
-  HeaderResolver(sessionIdSchema.partial()),
+  HeaderResolver(linkRequestSchema),
   async (
     ctx: ParameterizedContext<
-      PathContext<SlugSchema> & HeaderContext<SessionIdSchema>
+      PathContext<SlugSchema> & HeaderContext<LinkRequestSchema>
     >,
   ) => {
-    const origin = (ctx.URL.hostname ?? ctx.origin).replace(
+    const origin = (ctx.state.headers["client-origin"] ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
@@ -60,13 +64,9 @@ router.get(
         ctx.state.headers["session-id"] ?? `${new Date().getTime()}-${uuid()}`,
       ip_address: ctx.ip,
       user_agent: ctx.headers["user-agent"],
-      referrer: ctx.headers.referer,
+      referrer: ctx.state.headers["client-referer"],
     });
 
     ctx.body = link;
   },
 ); // {post} /v1/r/:slug
-
-router.get("/", async (ctx: ParameterizedContext) => {
-  ctx.body = await get_links();
-}); // {get} /v1/r

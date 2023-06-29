@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Container, Text } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 
 import { PageContextServer } from "@lib/vite-react";
 import { useMount } from "@lib/hooks";
@@ -29,9 +29,9 @@ export const Page = ({ slug }: PageProps) => {
   return (
     <>
       <Container>
-        <Text align="center">
-          {success ? "opening link..." : "error loading link..."}{" "}
-        </Text>
+        <Title size="h2" order={2} align="center">
+          {success ? "opening link..." : "error loading link..."}
+        </Title>
       </Container>
     </>
   );

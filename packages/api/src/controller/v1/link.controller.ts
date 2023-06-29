@@ -2,12 +2,8 @@ import KoaRouter from "koa-router";
 import { ParameterizedContext } from "koa";
 
 import {
-  LinkCreateSchema,
-  SlugSchema,
-  linkCreateSchema,
-  slugSchema,
-} from "@lib/schema-validator";
-import {
+  HeaderContext,
+  HeaderResolver,
   PathContext,
   PathResolver,
   SchemaContext,
@@ -19,6 +15,14 @@ import {
   get_link_by_slug,
   get_links,
 } from "@lib/services";
+import {
+  LinkCreateSchema,
+  LinkRequestSchema,
+  SlugSchema,
+  linkCreateSchema,
+  linkRequestSchema,
+  slugSchema,
+} from "@lib/schema-validator";
 import { CLIENT_ERROR } from "@lib/utility";
 
 export const route = ["/link"];
@@ -66,15 +70,23 @@ router.post(
   },
 ); // {post} /v1/link
 
+router.get("/", async (ctx: ParameterizedContext) => {
+  ctx.body = await get_links();
+}); // {get} /v1/link
+
 router.get(
   "/:slug",
   PathResolver(slugSchema),
-  async (ctx: ParameterizedContext<PathContext<SlugSchema>>) => {
-    const origin = (ctx.URL.hostname ?? ctx.origin).replace(
+  HeaderResolver(linkRequestSchema),
+  async (
+    ctx: ParameterizedContext<
+      PathContext<SlugSchema> & HeaderContext<LinkRequestSchema>
+    >,
+  ) => {
+    const origin = (ctx.state.headers["client-origin"] ?? ctx.origin).replace(
       /^((http|https)(:\/\/))?(www\.)?(api\.)?/,
       "",
     );
-
     const domain = await get_domain_by_slug(origin);
 
     if (!domain) {
@@ -95,7 +107,3 @@ router.get(
     ctx.body = link;
   },
 ); // {get} /v1/link/:slug
-
-router.get("/", async (ctx: ParameterizedContext) => {
-  ctx.body = await get_links();
-}); // {get} /v1/link

@@ -5,11 +5,12 @@ import { LinkModel } from "@lib/shared";
 
 import { PersistProxy, persistLocalState, persistState } from "../middleware";
 import { BaseRootState } from "../core";
+import { uuid } from "@lib/utility";
 
 export class LinkStore implements PersistProxy {
   public readonly rootStore: BaseRootState;
   public link_history: LinkModel[] = [];
-  public session_id: string | null = null;
+  public session_id: string | null = `${new Date().getTime()}-${uuid()}`;
   public created_link: LinkModel | null = null;
 
   isPersisting = false;
@@ -43,7 +44,8 @@ export class LinkStore implements PersistProxy {
     const response = await this.rootStore.api.get<LinkModel>(`r/${slug}`, {
       headers: {
         "Session-Id": this.session_id ?? "",
-        Referer: this.rootStore.referer ?? document.location.hostname,
+        "Client-Origin": location.hostname,
+        "Client-Referer": document.referrer || location.hostname,
       },
     });
     if (!response.ok) return response;
