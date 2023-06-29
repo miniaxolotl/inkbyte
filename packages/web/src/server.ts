@@ -48,27 +48,31 @@ const startClient = async () => {
   app.get("*", async (req, res, next) => {
     const pageContextInit: {
       urlOriginal: string;
-      origin: string;
+      headers: {
+        origin: string;
+        referer: string;
+      };
       cookies: string;
-      referer?: string;
       redirectTo?: string;
     } = {
       urlOriginal: req.originalUrl,
-      origin:
-        res.get("host") ||
-        req.get("origin") ||
-        req.get("hostname") ||
-        req.headers.host ||
-        "",
+      headers: {
+        origin:
+          res.get("host") ||
+          req.get("origin") ||
+          req.get("hostname") ||
+          req.headers.host ||
+          "",
+        referer:
+          req.headers.referer ||
+          req.get("referer") ||
+          res.get("host") ||
+          req.get("origin") ||
+          req.get("hostname") ||
+          req.headers.host ||
+          "",
+      },
       cookies: req.cookies,
-      referer:
-        req.headers.referer ||
-        req.get("referer") ||
-        res.get("host") ||
-        req.get("origin") ||
-        req.get("hostname") ||
-        req.headers.host ||
-        "",
     };
 
     if (!req.cookies.session_id) {

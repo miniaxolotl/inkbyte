@@ -9,7 +9,7 @@ import { PageContextServer } from "@lib/vite-react";
 
 import { PageShell } from "./pages";
 
-export const passToClient = ["pageProps"];
+export const passToClient = ["pageProps", "cookies", "headers"];
 
 const stylesServer = createStylesServer();
 
@@ -19,6 +19,7 @@ export const render = async (pageContext: PageContextServer) => {
     pageProps,
     urlPathname,
     cookies,
+    headers,
     redirectTo,
     exports: { documentProps = {} },
   } = pageContext;
@@ -27,7 +28,7 @@ export const render = async (pageContext: PageContextServer) => {
   const description = documentProps.description || base_config.app_description;
 
   const pageContent = ReactDOMServer.renderToString(
-    <PageShell pageContext={pageContext} cookies={cookies}>
+    <PageShell pageContext={pageContext} cookies={cookies} headers={headers}>
       <Page {...pageProps} />
     </PageShell>,
   );

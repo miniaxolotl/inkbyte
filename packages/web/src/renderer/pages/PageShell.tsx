@@ -14,6 +14,10 @@ export type PageShellProps = {
   children: React.ReactNode;
   pageContext: PageContext;
   cookies?: PageCookies;
+  headers: {
+    origin: string;
+    referer: string;
+  };
 };
 
 export const PageShell: React.FC<PageShellProps> = (ctx: PageShellProps) => {

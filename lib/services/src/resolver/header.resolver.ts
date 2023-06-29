@@ -19,8 +19,6 @@ export const HeaderResolver = <T = unknown>(
       stripUnknown: true,
       abortEarly: false,
     });
-    console.log(error);
-    console.log(value);
     if (error || !value) {
       ctx.status = CLIENT_ERROR.BAD_REQUEST.status;
       ctx.body = error || CLIENT_ERROR.BAD_REQUEST.message;
