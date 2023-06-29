@@ -53,7 +53,7 @@ export const onBeforeRender = async (props: PageContextServer) => {
   const response = await get<LinkModel>(`r/${props.routeParams.slug}`, {
     headers: {
       "session-id": (props.cookies ?? {}).session_id,
-      "client-origin": location.hostname,
+      "client-origin": props.origin,
       "client-referer": document.referrer || location.hostname,
     },
   });

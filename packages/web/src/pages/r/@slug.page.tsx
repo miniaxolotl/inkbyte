@@ -10,9 +10,10 @@ import { useStore } from "@stores";
 
 type PageProps = {
   slug: string;
+  origin: string;
 };
 
-export const Page = ({ slug }: PageProps) => {
+export const Page = ({ slug, origin }: PageProps) => {
   const { link } = useStore();
   const [success, setSuccess] = useState(true);
 
@@ -20,7 +21,7 @@ export const Page = ({ slug }: PageProps) => {
     const response = await link.fetchLink(slug);
     if (response.ok) {
       const data = response.data;
-      link.openLink(data.long_url);
+      link.openLink(data.long_url, { origin });
     } else {
       setSuccess(false);
     }
@@ -44,7 +45,7 @@ Page.getLayout = (page: React.ReactNode) => {
 export const onBeforeRender = async (props: PageContextServer) => {
   return {
     pageContext: {
-      pageProps: { slug: props.routeParams.slug },
+      pageProps: { slug: props.routeParams.slug, origin: props.origin },
     },
   };
 };

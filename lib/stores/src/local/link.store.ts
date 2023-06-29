@@ -40,11 +40,11 @@ export class LinkStore implements PersistProxy {
     );
   }
 
-  async fetchLink(slug: string) {
+  async fetchLink(slug: string, { origin }: { origin?: string } = {}) {
     const response = await this.rootStore.api.get<LinkModel>(`r/${slug}`, {
       headers: {
         "Session-Id": this.session_id ?? "",
-        "Client-Origin": location.hostname,
+        "Client-Origin": origin ?? location.hostname,
         "Client-Referer": document.referrer || location.hostname,
       },
     });

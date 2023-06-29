@@ -48,11 +48,13 @@ const startClient = async () => {
   app.get("*", async (req, res, next) => {
     const pageContextInit: {
       urlOriginal: string;
+      origin: string;
       cookies: string;
       referer?: string;
       redirectTo?: string;
     } = {
       urlOriginal: req.originalUrl,
+      origin: (req.headers.hostname as string) || "",
       cookies: req.cookies,
       referer: req.headers.referer,
     };
