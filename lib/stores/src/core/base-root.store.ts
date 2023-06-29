@@ -16,4 +16,5 @@ export interface BaseRootState {
   readonly link: LinkStore;
   readonly toast: ToastStore;
   readonly cookies?: PageCookies;
+  readonly referer?: string;
 }

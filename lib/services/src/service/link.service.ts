@@ -14,9 +14,15 @@ export const get_links = async () => {
   });
 }; // get_links
 
-export const get_link_by_slug = async (slug: string) => {
+export const get_link_by_slug = async ({
+  slug,
+  domain_id,
+}: {
+  slug: string;
+  domain_id: number;
+}) => {
   return await prisma_db.link.findUnique({
-    where: { slug },
+    where: { slug_domain_id: { slug, domain_id } },
     include: {
       domain: true,
       image: true,
@@ -26,11 +32,11 @@ export const get_link_by_slug = async (slug: string) => {
 
 export const create_link = async (
   payload: LinkCreateSchema,
-  updated_by = null,
+  updated_by: number | null = null,
 ) => {
   const domain = await get_domain_by_slug(payload.domain);
   if (!domain) return null;
-  const links = await prisma_db.link.create({
+  const link = await prisma_db.link.create({
     data: {
       domain_id: domain.id,
       long_url: payload.long_url,
@@ -42,5 +48,5 @@ export const create_link = async (
       image: true,
     },
   });
-  return links;
+  return link;
 }; // get_links

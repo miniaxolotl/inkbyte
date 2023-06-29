@@ -128,7 +128,7 @@ model Domain {
 
 model Link {
   id        Int    @default(autoincrement()) @db.UnsignedInt
-  slug      String @unique @db.VarChar(24)
+  slug      String @db.VarChar(24)
   domain_id Int    @db.UnsignedInt
   user_id   Int?   @db.UnsignedInt
   image_id  Int?   @db.UnsignedInt
@@ -152,11 +152,13 @@ model Link {
   link_log LinkLog[]
 
   @@id([id])
+  @@unique([slug, domain_id])
 }
 
 model LinkLog {
   link_id    Int    @db.UnsignedInt
-  session_id String @unique @db.VarChar(256)
+  session_id String @db.VarChar(256)
+  view_count Int    @default(1) @db.UnsignedInt
 
   ip_address String? @db.VarChar(128)
   user_agent String? @db.VarChar(256)

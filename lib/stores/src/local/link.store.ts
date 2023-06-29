@@ -3,12 +3,14 @@ import { ref } from "valtio";
 import { LinkCreateSchema } from "@lib/schema-validator";
 import { LinkModel } from "@lib/shared";
 
-import { PersistProxy, persistState } from "../middleware";
+import { PersistProxy, persistLocalState, persistState } from "../middleware";
 import { BaseRootState } from "../core";
+import { uuid } from "@lib/utility";
 
 export class LinkStore implements PersistProxy {
   public readonly rootStore: BaseRootState;
-  public data: LinkModel[] = [];
+  public link_history: LinkModel[] = [];
+  public session_id: string | null = `${new Date().getTime()}-${uuid()}`;
   public created_link: LinkModel | null = null;
 
   isPersisting = false;
@@ -17,7 +19,8 @@ export class LinkStore implements PersistProxy {
 
   constructor(rootStore: BaseRootState, public readonly name = "link") {
     this.rootStore = ref(rootStore);
-    persistState(this, ["data"], rootStore.cookies);
+    persistLocalState(this, ["link_history", "created_link"]);
+    persistState(this, ["session_id"]);
   }
 
   async createLink(payload: LinkCreateSchema) {
@@ -26,17 +29,25 @@ export class LinkStore implements PersistProxy {
       { body: payload },
     );
     if (!response.ok) return response;
-    this.data.push(response.data);
+    this.link_history.push(response.data);
     this.created_link = response.data;
     return response;
   }
 
   removeLink(slug: string) {
-    this.data = this.data.filter((value) => !(value.slug === slug));
+    this.link_history = this.link_history.filter(
+      (value) => !(value.slug === slug),
+    );
   }
 
-  async fetchLink(slug: string) {
-    const response = await this.rootStore.api.get<LinkModel>(`link/${slug}`);
+  async fetchLink(slug: string, { origin }: { origin?: string } = {}) {
+    const response = await this.rootStore.api.get<LinkModel>(`r/${slug}`, {
+      headers: {
+        "Session-Id": this.session_id ?? "",
+        "Client-Origin": origin ?? location.hostname,
+        "Client-Referer": document.referrer || location.hostname,
+      },
+    });
     if (!response.ok) return response;
     return response;
   }
@@ -46,6 +57,6 @@ export class LinkStore implements PersistProxy {
   }
 
   public async reset() {
-    this.data = [];
+    this.link_history = [];
   }
 }

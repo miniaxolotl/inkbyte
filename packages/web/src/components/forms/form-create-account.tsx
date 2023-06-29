@@ -3,14 +3,43 @@ import React from "react";
 import { Box, Button, Checkbox } from "@mantine/core";
 import { FiLock, FiMail } from "react-icons/fi/index.js";
 
-import { InputGroup, useHookForm } from "@lib/hook-form";
+import { HookFormState, InputGroup, useHookForm } from "@lib/hook-form";
 import { UserCreateSchema, userCreateSchema } from "@lib/schema-validator";
+import { uuid } from "@lib/utility";
 
 import { Link } from "@components/core";
+import { useStore } from "@stores/StoreProvider";
 
 export const FormCreateAccount = () => {
-  const handleSubmit = async () => {
-    console.log("submit form!");
+  const { account, toast } = useStore();
+
+  const handleSubmit = async (
+    payload: UserCreateSchema,
+    helper: HookFormState<UserCreateSchema>,
+  ) => {
+    const response = await account.register(payload);
+    const toastId = uuid();
+    if (!response.ok) {
+      helper.setSubmitError({
+        heading: `Error ${response.status}`,
+        content: response.data ?? response.error,
+      });
+
+      toast.createToast({
+        id: toastId,
+        heading: "Error",
+        content:
+          (response.data as string) ??
+          response.error ??
+          "There was an error while creating your account.",
+      });
+    } else {
+      toast.createToast({
+        id: toastId,
+        heading: "Account Created",
+        content: `Thank-you for joining InkByte ${account.account_data?.first_name}!`,
+      });
+    }
   };
 
   const { HookForm, InputComponent } = useHookForm<UserCreateSchema>({

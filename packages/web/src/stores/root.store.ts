@@ -28,6 +28,7 @@ export class RootStore implements BaseRootState {
 
   constructor(
     public readonly cookies?: PageCookies,
+    public readonly referer?: string,
     public readonly name = "root-store",
   ) {
     this.api = proxy(new ApiStore());
