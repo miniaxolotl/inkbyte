@@ -29,7 +29,7 @@
     "@ngneat/elf-entities": "~4.4.4",
     "immer": "~9.0.21",
     "valtio": "~1.10.5",
-    "vite-plugin-ssr": "~0.4.123"
+    "vite-plugin-ssr": "~0.4.132"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "~24.1.0",
