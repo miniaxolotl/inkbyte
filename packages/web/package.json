@@ -48,6 +48,7 @@
     "@mantine/notifications": "~6.0.14",
     "@mantine/ssr": "~6.0.10",
     "@playwright/test": "~1.28.1",
+    "@vercel/node": "~2.15.3",
     "appwrite": "~11.0.0",
     "compression": "~1.7.4",
     "cookie": "~0.5.0",
@@ -79,8 +80,8 @@
     "sass": "~1.56.2",
     "ts-node": "~10.9.1",
     "typescript": "~5.0.2",
-    "vite": "~4.2.1",
-    "vite-plugin-pwa": "~0.14.7",
-    "vite-plugin-ssr": "~0.4.123"
+    "vite": "~4.3.9",
+    "vite-plugin-pwa": "~0.16.4",
+    "vite-plugin-ssr": "~0.4.132"
   }
 }
