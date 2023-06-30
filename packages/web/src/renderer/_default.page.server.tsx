@@ -9,7 +9,13 @@ import { PageContextServer } from "@lib/vite-react";
 
 import { PageShell } from "./pages";
 
-export const passToClient = ["pageProps", "cookies", "origin", "referer"];
+export const passToClient = [
+  "pageProps",
+  "cookies",
+  "origin",
+  "referer",
+  "userAgent",
+];
 
 const stylesServer = createStylesServer();
 
