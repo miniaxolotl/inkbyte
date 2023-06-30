@@ -22,6 +22,7 @@ export const render = async (pageContext: PageContextServer) => {
     origin,
     referer,
     redirectTo,
+    userAgent,
     exports: { documentProps = {} },
   } = pageContext;
 
@@ -34,6 +35,7 @@ export const render = async (pageContext: PageContextServer) => {
       cookies={cookies}
       origin={origin}
       referer={referer}
+      userAgent={userAgent}
     >
       <Page {...pageProps} />
     </PageShell>,

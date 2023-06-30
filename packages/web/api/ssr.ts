@@ -19,11 +19,13 @@ export default async function handler(
     referer: string;
     cookies: string;
     redirectTo?: string;
+    userAgent?: string;
   } = {
     urlOriginal: request.url || origin,
     origin: origin,
     referer: origin || referer,
     cookies: JSON.stringify(request.cookies || "{}"),
+    userAgent: request.headers["user-agent"],
   };
 
   const pageContext = await renderPage(pageContextInit);

@@ -11,17 +11,19 @@ import { useStore } from "@stores";
 type PageProps = {
   slug: string;
   origin: string;
+  referer: string;
+  userAgent: string;
 };
 
-export const Page = ({ slug, origin }: PageProps) => {
+export const Page = ({ slug, origin, referer }: PageProps) => {
   const { link } = useStore();
   const [success, setSuccess] = useState(true);
 
   useMount(async () => {
-    const response = await link.fetchLink(slug);
+    const response = await link.fetchLink(slug, { origin, referer });
     if (response.ok) {
       const data = response.data;
-      link.openLink(data.long_url, { origin });
+      link.openLink(data.long_url);
     } else {
       setSuccess(false);
     }
@@ -45,7 +47,12 @@ Page.getLayout = (page: React.ReactNode) => {
 export const onBeforeRender = async (props: PageContextServer) => {
   return {
     pageContext: {
-      pageProps: { slug: props.routeParams.slug, origin: props.origin },
+      pageProps: {
+        slug: props.routeParams.slug,
+        origin: props.origin,
+        referer: props.referer,
+        userAgent: props.userAgent,
+      },
     },
   };
 };

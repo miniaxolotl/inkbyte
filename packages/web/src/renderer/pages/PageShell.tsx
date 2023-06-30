@@ -15,6 +15,7 @@ export type PageShellProps = {
   pageContext: PageContext;
   origin: string;
   referer: string;
+  userAgent: string;
   cookies?: PageCookies;
 };
 
