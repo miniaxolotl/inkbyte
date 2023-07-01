@@ -2,7 +2,7 @@
   "name": "inkbyte",
   "private": true,
   "version": "0.0.1",
-  "packageManager": "yarn@3.3.1",
+  "packageManager": "yarn@3.6.1",
   "license": "GPL-3.0",
   "author": "Elias Mawa <elias@emawa.io>",
   "homepage": "https://github.com/celestialstag/inkbyte#readme",
@@ -14,7 +14,7 @@
     "url": "https://github.com/celestialstag/inkbyte/issues"
   },
   "engines": {
-    "node": ">16.14.0 <17.0.0"
+    "node": ">18.16.1 <19.0.0"
   },
   "resolutions": {
     "@emotion/react": "11.10.5",
@@ -78,7 +78,7 @@
   "devDependencies": {
     "@types/jest": "~29.2.5",
     "@types/lodash": "~4.14.191",
-    "@types/node": "~16.18.1",
+    "@types/node": "~18.16.1",
     "@typescript-eslint/eslint-plugin": "~5.58.0",
     "@typescript-eslint/parser": "~5.58.0",
     "eslint": "~8.31.0",
@@ -87,6 +87,6 @@
     "jest": "~29.3.1",
     "ts-jest": "~29.1.0",
     "ts-node": "~10.9.1",
-    "typescript": "~5.0.4"
+    "typescript": "~5.1.6"
   }
 }
