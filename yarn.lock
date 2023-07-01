@@ -2472,14 +2472,11 @@ __metadata:
     "@lib/shared": ~0.0.1
     "@lib/utility": ~0.0.1
     "@mantine/notifications": ~6.0.14
-    "@ngneat/elf": ~2.3.1
-    "@ngneat/elf-entities": ~4.4.4
     "@rollup/plugin-commonjs": ~24.1.0
     "@rollup/plugin-node-resolve": ~15.0.1
     "@rollup/plugin-terser": ~0.4.1
     "@rollup/plugin-typescript": ~10.0.1
     eslint-plugin-react-hooks: ~4.6.0
-    immer: ~9.0.21
     rollup: ~3.10.0
     rollup-plugin-dts: ~5.3.0
     ts-node: ~10.9.1
@@ -2645,22 +2642,6 @@ __metadata:
   bin:
     node-pre-gyp: bin/node-pre-gyp
   checksum: 1a98db05d955b74dad3814679593df293b9194853698f3f5f1ed00ecd93128cdd4b14fb8767fe44ac6981ef05c23effcfdc88710e7c1de99ccb6f647890597c8
-  languageName: node
-  linkType: hard
-
-"@ngneat/elf-entities@npm:~4.4.4":
-  version: 4.4.4
-  resolution: "@ngneat/elf-entities@npm:4.4.4"
-  checksum: 512c6820d67ef0605fd22db1ab875fa8186bd1f042c3088ea6efbc0962fbb860f36de8e06ccb05b8a0208ea4e38f3d59fe0c8f5be519ecfd4aed234c04cd50d8
-  languageName: node
-  linkType: hard
-
-"@ngneat/elf@npm:~2.3.1":
-  version: 2.3.1
-  resolution: "@ngneat/elf@npm:2.3.1"
-  peerDependencies:
-    rxjs: ">=7.0.0"
-  checksum: 4c4bb403fac4103d87ce126e16d8143adf6910025c2dab7dad46de703420fe9a8636f4eb142f67a03a82981e40191208945069b9ef024d97f04811561c49d8df
   languageName: node
   linkType: hard
 
