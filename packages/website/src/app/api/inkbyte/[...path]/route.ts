@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 export const maxDuration = 30;
 
 const allowed =
-  /^(auth\/session|domains|links(?:\/[0-9a-f-]+)?|analytics\/(?:overview|links\/[0-9a-f-]+))$/;
+  /^(auth\/session|domains|links(?:\/[0-9a-f-]+)?|analytics\/(?:overview|links\/[0-9a-f-]+)|bio(?:\/items(?:\/[0-9a-f-]+)?)?|public\/links\/[a-zA-Z0-9_-]+|public\/bio\/[a-z0-9-]+|qr)$/;
 
 async function forward(
   request: NextRequest,
@@ -48,19 +48,24 @@ async function forward(
     (origin.protocol !== "https:" &&
       !(
         origin.protocol === "http:" &&
-        ["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname)
+        ["localhost", "127.0.0.1", "[::1]", "api"].includes(origin.hostname)
       ))
   ) {
     return fail(503, "Invalid API configuration");
   }
 
   try {
-    const content =
-      request.method === "GET" ? undefined : await request.text();
+    const content = request.method === "GET" ? undefined : await request.text();
     if (content && Buffer.byteLength(content) > 64 * 1024) {
       return fail(413, "Request body is too large");
     }
     const target = new URL(`/api/v1/${path}`, origin.origin);
+    // Preserve QR customisation and domain selectors.
+    for (const [key, value] of request.nextUrl.searchParams.entries()) {
+      if (["slug", "domain", "size", "margin", "dark", "light"].includes(key)) {
+        target.searchParams.set(key, value);
+      }
+    }
     const upstream = await fetch(target, {
       method: request.method,
       headers: {
@@ -70,10 +75,7 @@ async function forward(
       body: content,
       redirect: "error",
       cache: "no-store",
-      signal: AbortSignal.any([
-        request.signal,
-        AbortSignal.timeout(15000),
-      ]),
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
     });
     const outgoing = new Headers(headers);
     for (const name of [
@@ -81,6 +83,7 @@ async function forward(
       "content-disposition",
       "content-length",
       "retry-after",
+      "cache-control",
     ]) {
       const value = upstream.headers.get(name);
       if (value) outgoing.set(name, value);
@@ -97,6 +100,7 @@ async function forward(
 export {
   forward as GET,
   forward as POST,
+  forward as PUT,
   forward as PATCH,
   forward as DELETE,
 };

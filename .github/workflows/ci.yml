@@ -40,6 +40,7 @@ jobs:
     env:
       SITE_URL: https://inkbyte.app
       INKBYTE_API_URL: http://localhost:26090
+      NEXT_PUBLIC_VERCEL_INSIGHTS_ENABLED: "true"
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
       CLERK_SECRET_KEY: sk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
     steps:

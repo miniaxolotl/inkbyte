@@ -1,21 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f5f4ef;
-  --color-paper-raised: #fbfaf7;
-  --color-ink: #16161a;
+  /* Legacy InkByte palette, refined. */
+  --color-paper: #f2f2f2;
+  --color-paper-raised: #fbfbfa;
+  --color-ink: #262626;
   --color-ink-soft: #55555f;
-  --color-ink-faint: #86868f;
-  --color-rule: #d9d7cf;
-  --color-rose: #c9527b;
-  --color-rose-deep: #9c3c60;
-  --color-sky: #2f6f9f;
-  --color-moss: #4b6b3c;
-  --color-amber: #b8792a;
+  --color-ink-faint: #6d6d77;
+  --color-rule: #dededb;
+  --color-cerulean: #276d8b;
+  --color-cerulean-deep: #194e64;
+  --color-navy: #0c2641;
+  --color-rose: #cc637f;
+  --color-rose-deep: #af4864;
+  --color-green: #6e8d59;
+  --color-peach: #cc724c;
 
-  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque",
-    ui-sans-serif, system-ui, sans-serif;
-  --font-body: "DM Sans Variable", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Secular One", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Open Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -28,12 +30,32 @@
 
   body {
     min-height: 100dvh;
-    background-image:
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--color-rose) 7%, transparent) 0,
-        transparent 22rem
-      );
+    isolation: isolate;
+    line-height: 1.6;
+  }
+  button,
+  summary {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: wait;
+  }
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+  input[type="checkbox"] {
+    accent-color: var(--color-cerulean);
+    width: 1rem;
+    height: 1rem;
+  }
+  :disabled {
+    cursor: not-allowed;
   }
 
   ::selection {
@@ -42,7 +64,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-rose);
+    outline: 2px solid var(--color-cerulean);
     outline-offset: 3px;
   }
 }
@@ -52,26 +74,23 @@
     background: var(--color-paper-raised);
     border: 1px solid var(--color-rule);
     border-radius: 0.75rem;
-  }
-
-  .ink-rule {
-    border-top: 1px solid var(--color-rule);
+    box-shadow: 0 2px 8px rgb(12 38 65 / 0.04);
   }
 
   .ink-label {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
   }
 
   .ink-input {
     width: 100%;
     border: 1px solid var(--color-rule);
     border-radius: 0.5rem;
-    background: var(--color-paper-raised);
+    background: white;
+    min-height: 2.75rem;
     padding: 0.625rem 0.75rem;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--color-ink);
     transition: border-color 120ms ease;
   }
@@ -89,22 +108,31 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    min-height: 2.5rem;
     border-radius: 0.5rem;
-    background: var(--color-ink);
-    color: var(--color-paper-raised);
-    padding: 0.625rem 1rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
+    background: var(--color-cerulean);
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     transition: background-color 120ms ease;
   }
 
   .ink-button:hover {
-    background: var(--color-rose-deep);
+    background: var(--color-cerulean-deep);
   }
 
   .ink-button:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+  }
+
+  .ink-button-rose {
+    background: var(--color-rose);
+  }
+
+  .ink-button-rose:hover {
+    background: var(--color-rose-deep);
   }
 
   .ink-button-quiet {
@@ -114,17 +142,55 @@
   }
 
   .ink-button-quiet:hover {
-    background: var(--color-paper);
+    background: white;
     color: var(--color-ink);
   }
+}
+
+/* Preserve the original wave as a quiet, non-obstructing footer detail. */
+.ink-wave {
+  display: block;
+  width: 100%;
+  height: 5rem;
+  pointer-events: none;
+}
+
+dialog::backdrop {
+  background: rgb(12 38 65 / 0.55);
+}
+dialog {
+  margin: auto;
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+}
+.ink-error {
+  border: 1px solid #e6bac7;
+  border-radius: 0.5rem;
+  background: #fcf1f4;
+  padding: 0.75rem 1rem;
+  color: #81334c;
+  font-size: 0.875rem;
+}
+.ink-success {
+  border-radius: 0.5rem;
+  background: #eef4e9;
+  padding: 0.75rem 1rem;
+  color: #3c542d;
+  font-size: 0.875rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-wave {
+    content: url("/assets/display/wave-static.svg");
   }
 }

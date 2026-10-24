@@ -123,6 +123,10 @@ export const websiteEnvironmentSchema = z
       .default("http://localhost:26090"),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().startsWith("pk_").optional(),
     CLERK_SECRET_KEY: z.string().startsWith("sk_").optional(),
+    NEXT_PUBLIC_VERCEL_INSIGHTS_ENABLED: z
+      .enum(["true", "false"])
+      .default("false"),
+    SITE_NOINDEX: z.enum(["true", "false"]).default("false"),
   })
   .superRefine((env, ctx) => {
     if (

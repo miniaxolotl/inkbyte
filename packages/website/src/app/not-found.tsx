@@ -1,9 +1,20 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 text-center">
-      <p className="ink-label">404</p>
+    <main
+      id="main-content"
+      className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-6 py-12 text-center"
+    >
+      <Image
+        src="/assets/logo/default.svg"
+        alt="InkByte"
+        width={96}
+        height={96}
+        className="mb-6"
+      />
+      <p className="ink-label">Page not found</p>
       <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-ink">
         That page does not exist.
       </h1>
@@ -13,6 +24,6 @@ export default function NotFound() {
       <Link href="/" className="ink-button mt-8">
         Back to InkByte
       </Link>
-    </div>
+    </main>
   );
 }

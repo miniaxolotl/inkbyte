@@ -3,6 +3,8 @@ import "@fontsource/secular-one";
 import "@fontsource/open-sans/400.css";
 import "@fontsource/open-sans/600.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
+import { WebsiteInsights } from "@/components/website-insights";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   creator: site.creator,
   publisher: site.creator,
   category: "productivity",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: "/assets/logo/default.svg" },
   keywords: [
     "url shortener",
     "link shortener",
@@ -43,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f4ef",
+  themeColor: "#f2f2f2",
   colorScheme: "light",
 };
 
@@ -54,11 +56,37 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <a
+          href="#main-content"
+          className="sr-only fixed left-4 top-4 z-50 rounded bg-paper-raised p-3 text-cerulean focus:not-sr-only"
+        >
+          Skip to content
+        </a>
         {publishableKey ? (
-          <ClerkProvider publishableKey={publishableKey}>{children}</ClerkProvider>
+          <ClerkProvider
+            publishableKey={publishableKey}
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+            signInFallbackRedirectUrl="/dashboard"
+            signUpFallbackRedirectUrl="/dashboard"
+            appearance={{
+              variables: {
+                colorPrimary: "#276d8b",
+                colorBackground: "#fbfbfa",
+                colorForeground: "#262626",
+                borderRadius: "0.75rem",
+                fontFamily: '"Open Sans", system-ui, sans-serif',
+              },
+            }}
+          >
+            {children}
+          </ClerkProvider>
         ) : (
           children
         )}
+        <Suspense fallback={null}>
+          <WebsiteInsights />
+        </Suspense>
       </body>
     </html>
   );

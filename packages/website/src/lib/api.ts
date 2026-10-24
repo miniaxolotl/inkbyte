@@ -1,8 +1,11 @@
+import "server-only";
 import type {
   AnalyticsOverview,
   ApiEnvelope,
   LinkAnalytics,
   LinkSummary,
+  PublicBioItem,
+  PublicBioPage,
   PublicDomain,
   PublicUser,
 } from "@lib/shared";
@@ -20,16 +23,13 @@ export class DashboardApiError extends Error {
 }
 
 type RequestOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   token?: string | null;
   signal?: AbortSignal;
 };
 
-const apiOrigin =
-  process.env.INKBYTE_API_URL ??
-  (process.env.VERCEL_ENV ? `https://${process.env.VERCEL_ENV}.inkbyte.app` : null) ??
-  "http://localhost:26090";
+const apiOrigin = process.env.INKBYTE_API_URL ?? "http://localhost:26090";
 
 /** Server-side API caller. The website talks to the API directly. */
 export async function api<T>(
@@ -42,11 +42,17 @@ export async function api<T>(
       "content-type": "application/json",
       ...(options.token ? { authorization: `Bearer ${options.token}` } : {}),
     },
-    ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
-    ...(options.signal ? { signal: options.signal } : {}),
+    ...(options.body === undefined
+      ? {}
+      : { body: JSON.stringify(options.body) }),
+    signal: AbortSignal.any([
+      ...(options.signal ? [options.signal] : []),
+      AbortSignal.timeout(15000),
+    ]),
     cache: "no-store",
   });
 
+  if (response.status === 204) return null as T;
   const payload = (await response.json()) as ApiEnvelope<T>;
   if (!payload.success) {
     throw new DashboardApiError(
@@ -64,9 +70,10 @@ export const fetchDomains = (signal?: AbortSignal) =>
   );
 
 export const fetchSession = (token: string, signal?: AbortSignal) =>
-  api<{ user: PublicUser | null }>("/api/v1/auth/session", { token, signal }).then(
-    (data) => data.user,
-  );
+  api<{ user: PublicUser | null }>("/api/v1/auth/session", {
+    token,
+    signal,
+  }).then((data) => data.user);
 
 export const fetchLinks = (token: string, signal?: AbortSignal) =>
   api<{ links: LinkSummary[] }>("/api/v1/links", { token, signal }).then(
@@ -123,3 +130,36 @@ export const fetchLinkAnalytics = (
     token,
     signal,
   }).then((data) => data.analytics);
+
+export const fetchBio = (token: string, signal?: AbortSignal) =>
+  api<{ bio: PublicBioPage | null }>("/api/v1/bio", { token, signal }).then(
+    (data) => data.bio,
+  );
+
+export const saveBio = (
+  token: string,
+  input: {
+    handle: string;
+    heading?: string;
+    bio?: string;
+    isPublished?: boolean;
+  },
+) =>
+  api<{ bio: PublicBioPage }>("/api/v1/bio", {
+    method: "PUT",
+    token,
+    body: input,
+  }).then((data) => data.bio);
+
+export const addBioItem = (
+  token: string,
+  input: { label: string; url: string },
+) =>
+  api<{ items: PublicBioItem[] }>("/api/v1/bio/items", {
+    method: "POST",
+    token,
+    body: input,
+  }).then((data) => data.items);
+
+export const removeBioItem = (token: string, id: string) =>
+  api<null>(`/api/v1/bio/items/${id}`, { method: "DELETE", token });
