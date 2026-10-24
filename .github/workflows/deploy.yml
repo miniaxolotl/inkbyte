@@ -143,6 +143,7 @@ jobs:
           set -euo pipefail
           test -n "${API_ORIGIN:-}"
           for attempt in $(seq 1 30); do
+            echo "Checking API readiness (attempt ${attempt}/30)"
             if curl --fail --silent --show-error "${API_ORIGIN}/health/ready" > /dev/null; then
               echo "API is ready"
               exit 0
