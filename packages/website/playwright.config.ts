@@ -34,6 +34,10 @@ export default defineConfig({
       env: {
         INKBYTE_API_URL: `http://127.0.0.1:${fixturePort}`,
         SITE_URL: `http://127.0.0.1:${port}`,
+        // Browser tests run with accounts disabled so they never depend on
+        // the Clerk dev instance. Signed-out behaviour is what they assert.
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "",
+        CLERK_SECRET_KEY: "",
       },
     },
   ],
