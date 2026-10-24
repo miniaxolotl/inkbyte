@@ -22,10 +22,10 @@ Run the API and website together:
 pnpm dev
 ```
 
-| Service  | URL                     |
-| -------- | ----------------------- |
-| Website  | <http://localhost:3000> |
-| API      | <http://localhost:26090> |
+| Service | URL                      |
+| ------- | ------------------------ |
+| Website | <http://localhost:3000>  |
+| API     | <http://localhost:26090> |
 
 ## Workspace layout
 
@@ -108,8 +108,7 @@ bash scripts/ci/run-actionlint.sh
 ## Troubleshooting
 
 **`SSL mode 'require' is treated as an alias for 'verify-full'`**
-This is a `pg` warning, not an error. It appears with Neon connection
-strings.
+Use `sslmode=verify-full` explicitly in Neon URLs; the API verifies certificates.
 
 **`relation ... is not assignable to type 'RelationType'`**
 Objection 4 expects the relation class, not a string. Use
@@ -120,5 +119,27 @@ The bootstrap is doing its job. Point `TEST_DATABASE_URL` at a dedicated
 disposable database.
 
 **A redirect returns 404**
-The slug must exist on the requested domain. The public resolver picks the
-first configured domain when the request host is not a known short domain.
+The slug must exist on the requested domain. Only loopback development hosts
+may fall back to the first configured domain; arbitrary unknown hosts are
+rejected. Both `inkbyte.ca` and `inkb.ca` must be attached to the website host.
+
+## UI verification
+
+`pnpm test:website` covers public routes, canonical/legacy redirects, CTA pages,
+bio links, narrow-phone layout and history states against a fixture API. Real
+Clerk account flows still need the dedicated instance secret key and a test
+account. Never add an authentication bypass to capture dashboard screenshots.
+The live public-only development preview for this task runs on port 3315; its
+local API on 26091 rejects all account operations.
+
+To test the consent-gated Vercel integrations like CI does:
+
+```bash
+NEXT_PUBLIC_VERCEL_INSIGHTS_ENABLED=true pnpm build:website
+NEXT_PUBLIC_VERCEL_INSIGHTS_ENABLED=true pnpm test:website
+```
+
+The browser suite stubs collector scripts instead of sending test data to Vercel.
+It checks no script loads before consent, that private bio routes stay excluded,
+and that GPC overrides a saved opt-in. The positive opt-in test is skipped when
+the optional build flag is intentionally disabled.

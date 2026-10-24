@@ -5,17 +5,19 @@ you control, and every click is recorded so you can see what actually works.
 
 This repository is a pnpm monorepo:
 
-| Path              | What it is                                                   |
-| ----------------- | ------------------------------------------------------------ |
-| `packages/api`    | Hono API over PostgreSQL (Knex + Objection)                  |
-| `packages/website`| Next.js 16 App Router site with the dashboard                 |
-| `lib/config`      | zod-validated environment for the API and the website        |
-| `lib/database`    | Database connection, Objection models and migrations         |
-| `lib/shared`      | Shared contracts, error type and Zod schemas                 |
-| `tests`           | `node:test` suites running against a disposable database     |
+| Path               | What it is                                               |
+| ------------------ | -------------------------------------------------------- |
+| `packages/api`     | Hono API over PostgreSQL (Knex + Objection)              |
+| `packages/website` | Next.js 16 App Router site with the dashboard            |
+| `lib/config`       | zod-validated environment for the API and the website    |
+| `lib/database`     | Database connection, Objection models and migrations     |
+| `lib/shared`       | Shared contracts, error type and Zod schemas             |
+| `tests`            | `node:test` suites running against a disposable database |
 
-Accounts are handled by Clerk. The database is PostgreSQL; production runs on
-Neon.
+Accounts are handled by Clerk. PostgreSQL is hosted on Neon; the API targets
+DigitalOcean App Platform and the website targets Vercel. The main domain is
+`inkbyte.ca`; `inkb.ca` is the short domain. Production rollout is pending the
+remaining provider credentials and verification.
 
 ## Requirements
 
@@ -49,6 +51,7 @@ Neon.
 4. Create the schema and the default domains:
 
    ```bash
+   pnpm env:check
    pnpm db:migrate
    pnpm db:seed
    ```
@@ -90,6 +93,21 @@ before the API starts.
 - [Deployment](documentation/deploy.md) — Neon, Clerk and the production
   pipeline.
 - [Architecture](documentation/architecture.md) — how the pieces fit together.
+- [Environment and Doppler](documentation/environment.md) — variable validation,
+  private operator copies and outstanding setup requirements.
+- [UI refinements](documentation/ui.md) — page behaviour, screenshots and
+  authenticated-verification limits.
+
+## Features
+
+- Domain-scoped short links with editable destinations, pausing and soft deletion.
+- SVG QR codes that continue working after destination updates.
+- Published link-in-bio pages with individually tracked items.
+- Optional CTA interstitials with impression and continuation counts.
+- Signed visitor cookies, bot filtering, privacy-limited referrers and analytics.
+
+The website retains the original squid artwork, typography and palette with a
+quieter responsive layout. Screenshots are in `documentation/screenshots/`.
 
 ## License
 

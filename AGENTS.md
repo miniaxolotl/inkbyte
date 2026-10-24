@@ -11,7 +11,7 @@ managed by Clerk; the database runs on Neon in production.
 - **`packages/api/`** — Hono API (`@miniaxolotl/inkbyte-server`): health,
   session, link, redirect and analytics routes.
 - **`packages/website/`** — Next.js 16 App Router site (`website`): landing
-  page, Clerk sign-in/up, dashboard and the public `/r/[slug]` resolver.
+  page, Clerk sign-in/up, dashboard, bio/CTA pages and canonical/legacy short-link resolvers.
 - **`lib/config/`** — zod-validated server and website environment.
 - **`lib/database/`** — Knex, Objection models and forward-only migrations.
 - **`lib/shared/`** — API envelope, domain errors and Zod contracts.
