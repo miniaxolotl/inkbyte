@@ -87,6 +87,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: bash scripts/ci/run-actionlint.sh
+      - run: node --test scripts/deploy/*.test.mjs
+      - run: node --test scripts/*.test.mjs
       - run: pnpm check-types
       - run: pnpm build
       - run: pnpm test:db:setup

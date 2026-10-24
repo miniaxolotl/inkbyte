@@ -9,10 +9,12 @@ x-runtime: &runtime
   DATABASE_STATEMENT_TIMEOUT_MS: ${DATABASE_STATEMENT_TIMEOUT_MS:-10000}
   API_ORIGIN: ${API_ORIGIN:-http://localhost:26090}
   SITE_URL: ${SITE_URL:-http://localhost:3000}
-  CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set the Clerk secret key}
-  CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:?Set the Clerk publishable key}
-  CLERK_ISSUER: ${CLERK_ISSUER:?Set the Clerk issuer, for example https://clerk.example.com}
-  DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkbyte.app,inkbyte.co}
+  # The API validates these at boot, so Postgres alone can run without Clerk.
+  CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+  CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
+  CLERK_ISSUER: ${CLERK_ISSUER:-}
+  TRACKING_SECRET: ${TRACKING_SECRET:-}
+  DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkb.ca,inkbyte.ca}
 
 services:
   # Local development database. Production uses Neon; see documentation/deploy.md.
@@ -59,7 +61,7 @@ services:
     environment:
       MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inkbyte}}
       DATABASE_SSL: ${DATABASE_SSL:-disable}
-      DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkbyte.app,inkbyte.co}
+      DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkb.ca,inkbyte.ca}
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -97,8 +99,8 @@ services:
       HOSTNAME: 0.0.0.0
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       INKBYTE_API_URL: ${INKBYTE_API_URL:-http://api:26090}
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:?Set the Clerk publishable key}
-      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set the Clerk secret key}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
     ports:
       - "${WEB_PORT:-3000}:3000"
     depends_on:

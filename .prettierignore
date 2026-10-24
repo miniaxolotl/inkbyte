@@ -11,3 +11,5 @@ coverage/
 
 .DS_Store
 *.log
+secrets.md
+secres.md

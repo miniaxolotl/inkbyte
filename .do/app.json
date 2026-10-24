@@ -4,7 +4,7 @@
   "disable_edge_cache": true,
   "domains": [
     {
-      "domain": "api.inkbyte.app",
+      "domain": "api.inkbyte.ca",
       "type": "PRIMARY",
       "minimum_tls_version": "1.2"
     }

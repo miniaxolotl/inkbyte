@@ -10,7 +10,7 @@ import { parseArgs } from "node:util";
 const { AbortSignal, fetch, structuredClone } = globalThis;
 
 const template = JSON.parse(
-  await readFile(new URL("../../.do/app.json", import.meta.url), "utf8"),
+  await readFile(new URL("../../../.do/app.json", import.meta.url), "utf8"),
 );
 
 function imageDigest(value) {
@@ -47,7 +47,7 @@ export function createAppSpec(env) {
   httpsOrigin(issuer);
 
   const secrets = Object.fromEntries(
-    ["CLERK_SECRET_KEY", "DATABASE_URL"].map((key) => [
+    ["CLERK_SECRET_KEY", "DATABASE_URL", "TRACKING_SECRET"].map((key) => [
       key,
       required(env, key),
     ]),
@@ -56,6 +56,10 @@ export function createAppSpec(env) {
     secrets.CLERK_SECRET_KEY,
     /^sk_live_/,
     "Use a production Clerk secret key",
+  );
+  assert(
+    secrets.TRACKING_SECRET.length >= 32,
+    "TRACKING_SECRET must have at least 32 characters",
   );
   const publishableKey = required(env, "CLERK_PUBLISHABLE_KEY");
   assert.match(publishableKey, /^pk_live_/);
@@ -79,7 +83,7 @@ export function createAppSpec(env) {
     SITE_URL: siteUrl,
     CLERK_ISSUER: issuer,
     CLERK_PUBLISHABLE_KEY: publishableKey,
-    DEFAULT_DOMAINS: env.DEFAULT_DOMAINS ?? "inkbyte.app,inkbyte.co",
+    DEFAULT_DOMAINS: env.DEFAULT_DOMAINS ?? "inkb.ca,inkbyte.ca",
   };
 
   const service = spec.services[0];
@@ -97,8 +101,7 @@ export function createAppSpec(env) {
       type: "SECRET",
     })),
   ];
-  if (env.INKBYTE_IMAGE_DIGEST)
-    service.image.digest = imageDigest(env.INKBYTE_IMAGE_DIGEST);
+  service.image.digest = imageDigest(required(env, "INKBYTE_IMAGE_DIGEST"));
   return spec;
 }
 
