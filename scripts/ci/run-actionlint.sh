@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v shellcheck >/dev/null 2>&1; then
+  echo "ShellCheck is required for complete workflow linting. Install it and retry." >&2
+  exit 1
+fi
+
 version="1.7.12"
 platform="$(uname -s)"
 architecture="$(uname -m)"

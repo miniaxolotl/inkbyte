@@ -18,7 +18,7 @@ test("a remote database cannot disable TLS", () => {
   assert.throws(() =>
     readServerEnvironment({
       ...valid,
-      DATABASE_URL: "postgresql://inkbyte:fixture@host.neon.tech/db",
+      DATABASE_URL: "postgresql://database.invalid/inkbyte",
       DATABASE_SSL: "disable",
     }),
   );

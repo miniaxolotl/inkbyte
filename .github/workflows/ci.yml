@@ -38,11 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SITE_URL: https://inkbyte.app
+      SITE_URL: https://inkbyte.ca
       INKBYTE_API_URL: http://localhost:26090
       NEXT_PUBLIC_VERCEL_INSIGHTS_ENABLED: "true"
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
-      CLERK_SECRET_KEY: sk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
+      # Public/fixture acceptance deliberately runs without hosted account keys.
+      SITE_NOINDEX: "true"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

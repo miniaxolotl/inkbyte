@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { Buffer } from "node:buffer";
+import { randomBytes } from "node:crypto";
+import { URL } from "node:url";
 import { test } from "node:test";
 import {
   createAppSpec,
@@ -8,6 +10,12 @@ import {
 } from "./src/digitalocean.mjs";
 
 const digest = `sha256:${"a".repeat(64)}`;
+// Never points to a real provider. An ephemeral password exercises validation
+// without committing credential-shaped remote URLs for secret scanners.
+const database = new URL(
+  "postgresql://inkbyte_api@database.invalid/inkbyte?sslmode=verify-full",
+);
+database.password = randomBytes(24).toString("hex");
 const env = {
   API_ORIGIN: "https://api.inkbyte.ca",
   SITE_URL: "https://inkbyte.ca",
@@ -15,8 +23,7 @@ const env = {
   CLERK_PUBLISHABLE_KEY: `pk_live_${Buffer.from("clerk.inkbyte.ca$").toString("base64")}`,
   CLERK_SECRET_KEY: "sk_live_fixture_only",
   TRACKING_SECRET: "fixture-tracking-secret-with-32-characters",
-  DATABASE_URL:
-    "postgresql://inkbyte_api:fixture@host.neon.tech/db?sslmode=verify-full",
+  DATABASE_URL: database.toString(),
   INKBYTE_IMAGE_DIGEST: digest,
 };
 
