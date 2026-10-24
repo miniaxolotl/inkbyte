@@ -35,7 +35,8 @@ The dedicated `_web` configs now synchronize safe website configuration to
 Vercel Development/Preview/Production through the existing Bramble Labs
 integration. Root configs containing database and infrastructure credentials
 are never synchronized to Vercel. DigitalOcean/GitHub setup is separate.
-See [environment.md](environment.md) before adding the pending Clerk references.
+See [environment.md](environment.md) for the configured production Clerk pair
+and the separate development/preview configuration requirements.
 
 ### Neon
 
@@ -63,11 +64,17 @@ The seed adds/updates domains without deleting retained legacy domains or links.
 
 ### Clerk
 
-The dedicated development application is provisioned. Its secret key must be
-copied from the Clerk dashboard; the connector deliberately does not return
-secret keys. Production is **not** provisioned or DNS-verified yet. Configure
-the production instance for `inkbyte.ca`, register authorized origins, and put
-its keys and issuer into `prd`. Do not reuse Grove/Fern credentials.
+The existing InkByte application now has a dedicated production instance on
+`inkbyte.ca`. Its keys and fixed issuer are stored in Doppler, the complete
+website pair is referenced by `prd_web`, and GitHub production has the required
+website keys. Five DNS-only Cloudflare CNAMEs are verified. The authentication
+domain serves its signing keys over verified HTTPS; Clerk reports DNS, email
+and both authentication and hosted account-portal TLS complete. See
+[Clerk production setup](clerk-production.md) for resources and verification.
+
+The local preview remains public-only. Never put production keys on localhost
+or reuse another product's Clerk credentials. The official authenticated CLI can
+retrieve keys privately; no key value belongs in documentation or diagnostics.
 
 The API verifies RS256 session tokens against the fixed issuer, requires a
 session ID and matches the authorized-party claim to `SITE_URL`. The website

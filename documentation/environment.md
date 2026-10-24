@@ -64,12 +64,12 @@ infrastructure credentials are absent from every Vercel target.
 Public config is unmasked so dynamic sync stores it as readable Vercel Config,
 not as a one-way Secret that local prebuilt deployment cannot retrieve.
 
-Unconfigured Clerk keys are deliberately omitted from the website configs:
-the first sync attempt with blank credentials failed, and its empty placeholder
-was removed without touching existing user configuration. Once an environment's
-dedicated keys are valid, add `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and
-`CLERK_SECRET_KEY` references to that environment's `_web` config, keeping the
-secret key masked. The deploy preflight checks those target keys are present.
+Development/preview Clerk keys remain deliberately omitted while those targets
+run public-only. Production now has matching `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+and `CLERK_SECRET_KEY` references in `prd_web`, pointing to its own live instance;
+the server key stays masked/sensitive. The initial blank-reference setup failure
+is historical, not the current production configuration. The deploy preflight
+checks those target keys are present.
 
 Verified during this rebuild:
 
@@ -78,9 +78,12 @@ Verified during this rebuild:
 - Development Clerk application:
   `app_3L9lKNz2Cu9t2wGOBtdoet1IyL6`. The development publishable key and
   issuer are stored; its **secret key still needs dashboard retrieval**.
-- Production Clerk instance/keys and the DigitalOcean app/persistent deployment
-  token are **not configured**. Clerk development-key creation is waiting on the
-  owner's passkey verification in its dashboard.
+- Production Clerk instance `ins_3LA3ks5sniRZYkfCzm30Adc91Bv` is provisioned.
+  Its keys/issuer are stored privately and delivered to the production targets;
+  DNS, mail and both domain certificates are verified complete by Clerk.
+  See [clerk-production.md](clerk-production.md).
+- DigitalOcean app/persistent deployment credentials are **not configured**.
+  Local preview/development authentication remains intentionally unconfigured.
 - Vercel project `prj_EUrWTWEukjkxx3tANxhxwYFGAvnC` exists in Bramble Labs
   (`team_laf9rnD2nve33edSTfwW5LTQ`), with Next.js, Node 24 and
   `packages/website` configured. Both purchased domains are attached and the
@@ -106,5 +109,6 @@ build and eligible visits before its dashboard can show real data.
 
 The GitHub production environment now has the intended Vercel project/team IDs,
 public origins and encrypted direct Neon migration URL. Its prior protection
-rules and any existing values were preserved. Persistent CI tokens and
-production Clerk credentials remain pending.
+rules and any existing values were preserved. Production Clerk keys are now
+configured; persistent deployment tokens and the remaining infrastructure
+requirements are still pending.

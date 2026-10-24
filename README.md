@@ -99,6 +99,8 @@ before the API starts.
   authenticated-verification limits.
 - [Security verification](documentation/security.md) — test-fixture findings,
   metadata/privacy boundaries and production acceptance limits.
+- [Clerk production](documentation/clerk-production.md) — identity resources,
+  DNS records, credential delivery and provider verification status.
 
 ## Features
 
