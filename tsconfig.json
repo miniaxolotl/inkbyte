@@ -9,8 +9,12 @@
   "include": [
     "lib/*/src/**/*.ts",
     "packages/api/src/**/*.ts",
-    "scripts/**/*.ts",
     "tests/src/**/*.ts"
   ],
-  "exclude": ["node_modules", "packages/website"]
+  "exclude": [
+    "node_modules",
+    "packages/website",
+    "scripts/database/src",
+    "scripts/screenshots/src"
+  ]
 }

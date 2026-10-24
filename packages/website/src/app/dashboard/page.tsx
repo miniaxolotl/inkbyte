@@ -10,6 +10,12 @@ export const dynamic = "force-dynamic";
 const number = new Intl.NumberFormat("en-CA");
 
 export default async function DashboardPage() {
+  const configured = Boolean(
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+      process.env.CLERK_SECRET_KEY,
+  );
+  if (!configured) redirect("/sign-in?redirect_url=/dashboard");
+
   const session = await auth();
   if (!session.userId) redirect("/sign-in?redirect_url=/dashboard");
 

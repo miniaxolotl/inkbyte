@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   creator: site.creator,
   publisher: site.creator,
   category: "productivity",
+  icons: { icon: "/icon.svg" },
   keywords: [
     "url shortener",
     "link shortener",

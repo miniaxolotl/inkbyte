@@ -1,36 +1,117 @@
-version: "3.6"
+name: inkbyte
+
+x-runtime: &runtime
+  NODE_ENV: production
+  PORT: 26090
+  DATABASE_SSL: ${DATABASE_SSL:-disable}
+  DATABASE_POOL_MAX: ${DATABASE_POOL_MAX:-8}
+  DATABASE_ACQUIRE_TIMEOUT_MS: ${DATABASE_ACQUIRE_TIMEOUT_MS:-2000}
+  DATABASE_STATEMENT_TIMEOUT_MS: ${DATABASE_STATEMENT_TIMEOUT_MS:-10000}
+  API_ORIGIN: ${API_ORIGIN:-http://localhost:26090}
+  SITE_URL: ${SITE_URL:-http://localhost:3000}
+  CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set the Clerk secret key}
+  CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:?Set the Clerk publishable key}
+  CLERK_ISSUER: ${CLERK_ISSUER:?Set the Clerk issuer, for example https://clerk.example.com}
+  DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkbyte.app,inkbyte.co}
 
 services:
-  maria:
-    image: mariadb:10.7.1-focal
+  # Local development database. Production uses Neon; see documentation/deploy.md.
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-inkbyte}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate a local database password}
     ports:
-      - "${DB_PORT:-3306}:${DB_PORT:-3306}"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - ./data/mariadb:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      - "MYSQL_DATABASE=${MYSQL_SCHEMA}"
-      - "MYSQL_USER=${MYSQL_USER}"
-      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
-      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${POSTGRES_DB:-inkbyte}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - database
 
-  mongo:
-    image: mongo:latest
-    restart: always
-    ports:
-      - "${MONGO_PORT:-27017}:${MONGO_PORT:-27017}"
-    volumes:
-      - ./data/mongodb:/data/db
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: inkbyte-api:local
+    command: ["node", "dist/migrate.js"]
     environment:
-      - "MONGO_INITDB_DATABASE=${MYSQL_SCHEMA}"
-      - "MONGO_INITDB_ROOT_USERNAME=${MYSQL_USER}"
-      - "MONGO_INITDB_ROOT_PASSWORD=${MYSQL_PASSWORD}"
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inkbyte}}
+      DATABASE_SSL: ${DATABASE_SSL:-disable}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - database
 
-  meilisearch:
-    image: getmeili/meilisearch:latest
-    restart: always
-    ports:
-      - "${MEILISEARCH_PORT:-7700}:${MEILISEARCH_PORT:-7700}"
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: inkbyte-api:local
+    command: ["node", "dist/seed.js"]
     environment:
-      - "MEILI_MASTER_KEY=${MEILISEARCH_MASTER_KEY}"
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inkbyte}}
+      DATABASE_SSL: ${DATABASE_SSL:-disable}
+      DEFAULT_DOMAINS: ${DEFAULT_DOMAINS:-inkbyte.app,inkbyte.co}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    networks:
+      - database
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: inkbyte-api:local
+    restart: unless-stopped
+    environment:
+      <<: *runtime
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-inkbyte}}
+    ports:
+      - "127.0.0.1:${API_PORT:-26090}:26090"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    networks:
+      - database
+      - inkbyte
+
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile.website
+    image: inkbyte-website:local
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      INKBYTE_API_URL: ${INKBYTE_API_URL:-http://api:26090}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:?Set the Clerk publishable key}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:?Set the Clerk secret key}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - inkbyte
+
+networks:
+  database:
+    internal: true
+  inkbyte:
+    driver: bridge
+
+volumes:
+  postgres-data:

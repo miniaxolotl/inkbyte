@@ -34,12 +34,9 @@ for (const name of selected) {
       js: 'import { createRequire as __inkbyteCreateRequire } from "node:module"; const require = __inkbyteCreateRequire(import.meta.url);',
     },
     // Runtime dependencies stay external; workspace packages are bundled in.
-    external: [
-      ...Object.keys(pkg.dependencies ?? {}),
-      "@lib/config",
-      "@lib/database",
-      "@lib/shared",
-    ],
+    external: Object.keys(pkg.dependencies ?? {}).filter(
+      (name) => !name.startsWith("@lib/"),
+    ),
     logLevel: "info",
   });
 }

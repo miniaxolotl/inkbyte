@@ -1,25 +1,18 @@
-.DS_Store
 node_modules/
+dist/
+.next/
+test-results/
+playwright-report/
 coverage/
-**/build/
 **/dist/
 **/.next/
 **/*.tsbuildinfo
+
 .env
 .env.*
 !.env.example
 !.env*.example
 
-# Yarn leftovers from the previous stack
-/.yarn/*
-!/.yarn/patches
-!/.yarn/plugins
-!/.yarn/releases
-!/.yarn/sdks
-/.pnp.*
-
-/.vscode/
-/secrets.md
-/logs/
-/plans/
-/worktrees/
+.DS_Store
+*.log
+secrets.md

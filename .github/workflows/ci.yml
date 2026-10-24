@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [development, production]
+  pull_request:
+    branches: [development, production]
+  workflow_dispatch:
+    inputs:
+      promotion_pr:
+        description: Frozen promotion PR number (omit for source CI)
+        type: string
+        default: ""
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  ci-gate:
+    name: CI Gate
+    if: always()
+    needs: [website, contracts, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: jq -e 'all(.[]; .result == "success")' <<< "$RESULTS"
+
+  website:
+    name: Website
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: https://inkbyte.app
+      INKBYTE_API_URL: http://localhost:26090
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
+      CLERK_SECRET_KEY: sk_test_Y2xlcmsuaW5rYnl0ZS5jbGVyay5hY2NvdW50cy5kZXYk
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0; pnpm 10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:website
+      - run: pnpm check-types:website
+      - run: pnpm build:website
+      - run: pnpm --filter website exec playwright install --with-deps chromium
+      - run: pnpm test:website
+
+  contracts:
+    name: TypeScript Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TEST_DATABASE_URL: postgresql://postgres:inkbyte_test@127.0.0.1:5432/inkbyte_test
+      DATABASE_SSL: disable
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: inkbyte_test
+          POSTGRES_PASSWORD: inkbyte_test
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U postgres -d inkbyte_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0; pnpm 10
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm check-types
+      - run: pnpm build
+      - run: pnpm test:db:setup
+      - run: pnpm test
+
+  image:
+    name: Container Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: Dockerfile.api
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: Dockerfile.website
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

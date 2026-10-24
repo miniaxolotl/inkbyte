@@ -1,0 +1,27 @@
+name: Source Release
+on:
+  push:
+    branches: [development]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-please-development
+  cancel-in-progress: false
+jobs:
+  release-please:
+    if: github.repository == 'miniaxolotl/inkbyte' && github.ref == 'refs/heads/development' && github.ref_protected == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0; release-please 17.6.0
+        id: release
+        with:
+          token: ${{ github.token }}
+          target-branch: development
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
