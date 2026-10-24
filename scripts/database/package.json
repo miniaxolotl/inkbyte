@@ -1,0 +1,17 @@
+{
+  "name": "@script/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "InkByte database tooling",
+  "scripts": {
+    "test-bootstrap": "tsx src/test-bootstrap.ts"
+  },
+  "devDependencies": {
+    "@lib/database": "workspace:*",
+    "@lib/eslint-config": "workspace:*",
+    "@lib/typescript-config": "workspace:*",
+    "tsx": "~4.23.15",
+    "typescript": "~6.0.3"
+  }
+}
