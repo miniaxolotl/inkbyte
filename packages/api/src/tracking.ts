@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 
 export const VISITOR_COOKIE = "inkbyte_vid";
 const VISITOR_TTL_SECONDS = 60 * 60 * 24 * 365;
