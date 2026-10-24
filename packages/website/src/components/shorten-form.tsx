@@ -10,6 +10,7 @@ type Props = {
   domains: Array<{ slug: string }>;
   authenticated: boolean;
   defaultDomain?: string;
+  compact?: boolean;
 };
 
 type CreatedLink = {
@@ -67,6 +68,7 @@ export const ShortenForm = ({
   domains,
   authenticated,
   defaultDomain,
+  compact = false,
 }: Props) => {
   const router = useRouter();
   const [longUrl, setLongUrl] = useState("");
@@ -227,87 +229,93 @@ export const ShortenForm = ({
           />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="ink-label" htmlFor="domain">
-              Domain
-            </label>
-            <select
-              id="domain"
-              name="domain"
-              className="ink-input mt-2"
-              disabled={!domains.length}
-              value={domain}
-              onChange={(event) => setDomain(event.target.value)}
-            >
-              {!domains.length ? <option value="">Unavailable</option> : null}
-              {domains.map((entry) => (
-                <option key={entry.slug} value={entry.slug}>
-                  {entry.slug}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="ink-label" htmlFor="custom-slug">
-              Custom alias
-            </label>
-            <input
-              id="custom-slug"
-              name="customSlug"
-              type="text"
-              placeholder="Optional"
-              maxLength={64}
-              className="ink-input mt-2"
-              value={customSlug}
-              onChange={(event) => setCustomSlug(event.target.value)}
-            />
-          </div>
-        </div>
-        <details className="rounded-lg border border-rule p-3">
-          <summary className="text-sm font-semibold text-ink-soft">
-            Call to action{" "}
+        <details open={!compact} className="ink-link-options">
+          <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-ink-soft">
+            Link options{" "}
             <span className="font-normal text-ink-faint">(optional)</span>
           </summary>
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="ink-label" htmlFor="cta-heading">
-                Call to action
+              <label className="ink-label" htmlFor="domain">
+                Domain
+              </label>
+              <select
+                id="domain"
+                name="domain"
+                className="ink-input mt-2"
+                disabled={!domains.length}
+                value={domain}
+                onChange={(event) => setDomain(event.target.value)}
+              >
+                {!domains.length ? <option value="">Unavailable</option> : null}
+                {domains.map((entry) => (
+                  <option key={entry.slug} value={entry.slug}>
+                    {entry.slug}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="ink-label" htmlFor="custom-slug">
+                Custom alias
               </label>
               <input
-                id="cta-heading"
-                name="ctaHeading"
+                id="custom-slug"
+                name="customSlug"
                 type="text"
                 placeholder="Optional"
-                maxLength={120}
+                maxLength={64}
                 className="ink-input mt-2"
-                value={ctaHeading}
-                onChange={(event) => setCtaHeading(event.target.value)}
+                value={customSlug}
+                onChange={(event) => setCustomSlug(event.target.value)}
               />
             </div>
-            <p className="text-xs leading-relaxed text-ink-faint">
-              A call to action shows a short interstitial before the destination
-              loads, and its conversion is measured in your dashboard.
-            </p>
-            <label className="text-sm text-ink-soft">
-              Message
-              <textarea
-                className="ink-input mt-1"
-                value={ctaBody}
-                onChange={(event) => setCtaBody(event.target.value)}
-                maxLength={600}
-              />
-            </label>
-            <label className="text-sm text-ink-soft">
-              Button text
-              <input
-                className="ink-input mt-1"
-                value={ctaAction}
-                onChange={(event) => setCtaAction(event.target.value)}
-                maxLength={48}
-              />
-            </label>
           </div>
+          <details className="rounded-lg border border-rule p-3">
+            <summary className="text-sm font-semibold text-ink-soft">
+              Call to action{" "}
+              <span className="font-normal text-ink-faint">(optional)</span>
+            </summary>
+            <div className="mt-3 flex flex-col gap-3">
+              <div>
+                <label className="ink-label" htmlFor="cta-heading">
+                  Call to action
+                </label>
+                <input
+                  id="cta-heading"
+                  name="ctaHeading"
+                  type="text"
+                  placeholder="Optional"
+                  maxLength={120}
+                  className="ink-input mt-2"
+                  value={ctaHeading}
+                  onChange={(event) => setCtaHeading(event.target.value)}
+                />
+              </div>
+              <p className="text-xs leading-relaxed text-ink-faint">
+                Show a short message before the link opens. Choose what it says
+                and the button people use to continue.
+              </p>
+              <label className="text-sm text-ink-soft">
+                Message
+                <textarea
+                  className="ink-input mt-1"
+                  value={ctaBody}
+                  onChange={(event) => setCtaBody(event.target.value)}
+                  maxLength={600}
+                />
+              </label>
+              <label className="text-sm text-ink-soft">
+                Button text
+                <input
+                  className="ink-input mt-1"
+                  value={ctaAction}
+                  onChange={(event) => setCtaAction(event.target.value)}
+                  maxLength={48}
+                />
+              </label>
+            </div>
+          </details>
         </details>
 
         <label className="flex items-center gap-2 text-sm text-ink-soft">

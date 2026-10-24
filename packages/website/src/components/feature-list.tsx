@@ -1,76 +1,47 @@
-import { BarChart3, Globe, Link2 } from "lucide-react";
-import { CheckCircle2 } from "lucide-react";
+import { BarChart3, Globe, Link2, QrCode } from "lucide-react";
 
 type Feature = {
   title: string;
   description: string;
-  benefits: string[];
   icon: React.ReactNode;
 };
 
 const features: Feature[] = [
   {
-    title: "Link Shortener",
+    title: "Links you can remember",
     description:
-      "Shorten any link, pick your own alias, and put it on a domain you control.",
-    benefits: [
-      "Custom links that match your brand",
-      "Bring your own domain",
-      "Aliases that stay reserved",
-    ],
+      "Choose a short name that makes sense for what you’re sharing. Less clutter in a message, more room for what matters.",
     icon: <Link2 aria-hidden size={20} />,
   },
   {
-    title: "Analytics & Tracking",
+    title: "A QR code when you need it",
     description:
-      "Every click is recorded — views, unique visitors, referrers, countries, cities and devices.",
-    benefits: [
-      "Real numbers, not estimates",
-      "Bot and preview filtering",
-      "QR codes for every link",
-    ],
-    icon: <BarChart3 aria-hidden size={20} />,
+      "Take a link off the screen. Download its QR code for invitations, posters, packaging and the things you put out into the world.",
+    icon: <QrCode aria-hidden size={22} />,
   },
   {
-    title: "Link in Bio",
+    title: "Your favourites, together",
     description:
-      "One page for every link that matters, with each item tracked like a short link.",
-    benefits: [
-      "Customizable landing page",
-      "Easy-to-manage multiple links",
-      "Analytics on every tap",
-    ],
+      "Make one page for the things you want people to find. Share it in your profile instead of choosing just one link.",
     icon: <Globe aria-hidden size={20} />,
+  },
+  {
+    title: "See what gets opened",
+    description:
+      "Check how often your links are opened, change where they lead, or pause them when their moment has passed. You stay in control.",
+    icon: <BarChart3 aria-hidden size={22} />,
   },
 ];
 
 export const FeatureList = () => (
-  <div className="grid w-full gap-6 md:grid-cols-3">
+  <div className="grid w-full gap-x-14 gap-y-10 sm:grid-cols-2">
     {features.map((feature) => (
-      <article key={feature.title} className="ink-card flex flex-col p-5">
-        <h3 className="flex items-center gap-2 font-display text-lg text-cerulean">
-          {feature.icon}
-          {feature.title}
-        </h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
+      <article key={feature.title} className="border-t border-rule pt-6">
+        <span className="mb-4 inline-flex text-cerulean">{feature.icon}</span>
+        <h3 className="font-display text-xl text-ink">{feature.title}</h3>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-soft">
           {feature.description}
         </p>
-        <div className="my-4 border-t border-rule" />
-        <h4 className="font-display text-sm text-ink">
-          Features &amp; Benefits
-        </h4>
-        <ul className="mt-2 flex flex-col gap-2">
-          {feature.benefits.map((benefit) => (
-            <li key={benefit} className="flex items-center gap-2 text-sm">
-              <CheckCircle2
-                aria-hidden
-                size={16}
-                className="shrink-0 text-green"
-              />
-              {benefit}
-            </li>
-          ))}
-        </ul>
       </article>
     ))}
   </div>

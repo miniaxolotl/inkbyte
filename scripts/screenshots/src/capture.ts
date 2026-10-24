@@ -46,11 +46,13 @@ for (const shot of shots) {
   );
   await page.evaluate(() => document.fonts.ready);
   if (shot.name === "features-desktop")
-    await page.getByText("Learn more", { exact: true }).click();
+    await page
+      .locator('section[aria-labelledby="features-title"]')
+      .evaluate((element) => element.scrollIntoView({ block: "start" }));
   await page.waitForTimeout(400);
   await page.screenshot({
     path: `${directory}/${shot.name}.png`,
-    fullPage: shot.name.includes("desktop"),
+    fullPage: shot.name.includes("desktop") && shot.name !== "features-desktop",
   });
   console.log(`captured ${shot.name}`);
   await context.close();

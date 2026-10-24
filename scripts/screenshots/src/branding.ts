@@ -97,7 +97,7 @@ try {
     h1{font:64px/1.15 display;margin:28px 0 16px}p{font-size:23px;line-height:1.5;max-width:570px;margin:0;color:#55555f}
     .brand{font:32px display;color:#276d8b}.squid{width:300px;height:300px;object-fit:contain}
     .wave{position:absolute;bottom:48px;width:1200px;height:70px}footer{position:absolute;bottom:0;background:#0c2641;color:#fff;width:100%;height:56px;padding:8px 80px;font:22px body}
-    </style></head><body><main><section><div class="brand">InkByte</div><h1>Short links.<br>Clear insights.</h1><p>Your links, QR codes and click reports.<br>All in one place.</p></section><img class="squid" alt="" src="data:image/svg+xml;base64,${source.toString("base64")}"></main><img class="wave" alt="" src="data:image/svg+xml;base64,${wave.toString("base64")}"><footer>inkbyte.ca</footer></body></html>`);
+    </style></head><body><main><section><div class="brand">InkByte</div><h1>A little link.<br>A lot to share.</h1><p>Long links made easy to share.<br>Your links, QR codes and click reports.</p></section><img class="squid" alt="" src="data:image/svg+xml;base64,${source.toString("base64")}"></main><img class="wave" alt="" src="data:image/svg+xml;base64,${wave.toString("base64")}"><footer>inkbyte.ca</footer></body></html>`);
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: resolve(assets, "social-card.png") });
 } finally {

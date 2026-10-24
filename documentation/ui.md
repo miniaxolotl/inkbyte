@@ -8,8 +8,10 @@ are collapsed, and the wave is a static footer detail rather than a backdrop.
 
 ## Pages
 
-- Landing: centered logo and shortener, domain/alias controls, optional CTA
-  details, local history, copy feedback and clear account requirements.
+- Landing: a split editorial hero alongside the actual shortener, an explicitly
+  labelled named-link example with the original squid, visible benefits and a
+  three-step sharing introduction. Optional link controls are collapsed, while
+  history, copy feedback and account requirements remain available.
 - Accounts: consistent centered layouts, Clerk-themed controls, and an honest
   unavailable state when keys are missing.
 - Dashboard: mobile-safe navigation/table, actual analytics, unavailable-data
@@ -21,6 +23,11 @@ are collapsed, and the wave is a static footer detail rather than a backdrop.
 - Help/privacy: native disclosure controls and explicit analytics preferences.
 - Errors/loading: actionable retry states, semantic status announcements,
   keyboard focus and a skip link.
+
+The landing questions and `/help` share short, high-level consumer answers.
+They cover making links, QR codes, click counts and changing destinations,
+without implementation terminology. Marketing does not invent pricing, customer
+counts or working demo aliases. Numbered steps describe a real sharing sequence.
 
 Native QR/privacy dialogs contain focus, support Escape and restore focus on
 close. Touch targets are larger, labels remain readable, layouts are tested at
@@ -51,6 +58,7 @@ HEAD/prefetch requests are not counted as clicks.
 See the [screenshot index](screenshots/README.md). Browser tests cover public
 pages, narrow-phone layout, canonical/legacy redirects, bio domain retention,
 CTA routing, history feedback and Vercel consent/privacy boundaries. Real
-signed-in browser journeys remain gated by the dedicated Clerk secret key and
-the owner's passkey verification. Source/API verification is not presented as
-production authentication acceptance.
+signed-in browser journeys remain separate acceptance on the intended deployed
+domain with its appropriate keys. Production identity setup is documented in
+[clerk-production.md](clerk-production.md); production keys are never used locally.
+Source/API verification is not presented as production authentication acceptance.

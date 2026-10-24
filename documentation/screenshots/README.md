@@ -9,7 +9,7 @@ layout and static footer wave.
 | ------------------------------------------ | ----------------------------- |
 | [Landing desktop](landing-desktop.png)     | `/`, 1440px                   |
 | [Landing phone](landing-mobile.png)        | `/`, 390px                    |
-| [Feature details](features-desktop.png)    | `/`, details expanded         |
+| [Feature details](features-desktop.png)    | `/`, visible benefits section |
 | [Help](help-desktop.png)                   | `/help`                       |
 | [Privacy](privacy-desktop.png)             | `/privacy`                    |
 | [Sign-in setup state](sign-in-desktop.png) | `/sign-in`, Clerk unavailable |

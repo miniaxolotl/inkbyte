@@ -179,6 +179,147 @@ dialog {
   font-size: 0.875rem;
 }
 
+/* Landing-only layout: an editorial introduction beside the actual product. */
+.ink-home-wrap {
+  width: min(calc(100% - 2.5rem), 72rem);
+  margin-inline: auto;
+}
+.ink-home-hero {
+  display: grid;
+  grid-template-areas: "copy" "composer" "example";
+  gap: 2.5rem;
+  padding-block: 2.5rem 3.5rem;
+}
+.ink-home-copy {
+  grid-area: copy;
+  min-width: 0;
+}
+.ink-home-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5.2vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.ink-home-composer {
+  grid-area: composer;
+  align-self: center;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  border-radius: 1rem;
+  background: var(--color-paper-raised);
+  box-shadow: 0 12px 32px rgb(12 38 65 / 0.055);
+}
+.ink-home-composer > form {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.ink-home-example {
+  grid-area: example;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  min-width: 0;
+}
+.ink-home-reasons {
+  display: grid;
+  gap: 1rem;
+  border-block: 1px solid var(--color-rule);
+  padding-block: 1.5rem;
+}
+.ink-home-reasons li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+}
+.ink-home-section {
+  padding-block: 3.5rem;
+}
+.ink-home-section-heading {
+  display: grid;
+  gap: 1.25rem;
+}
+.ink-home-section-heading h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.875rem, 3.3vw, 2.5rem);
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+.ink-home-section-heading > p {
+  max-width: 34rem;
+  color: var(--color-ink-soft);
+  line-height: 1.8;
+}
+.ink-home-steps {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+.ink-home-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.ink-home-step-number {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-rule);
+  border-radius: 50%;
+  color: var(--color-cerulean);
+  font-family: var(--font-display);
+}
+.ink-home-callout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  border-radius: 1.25rem;
+  background: var(--color-navy);
+  padding: 2rem;
+  color: white;
+}
+@media (min-width: 48rem) {
+  .ink-home-wrap {
+    width: min(calc(100% - 4rem), 72rem);
+  }
+  .ink-home-reasons,
+  .ink-home-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .ink-home-section {
+    padding-block: 5rem;
+  }
+  .ink-home-section-heading {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: end;
+  }
+  .ink-home-callout {
+    flex-direction: row;
+    align-items: center;
+    padding: 3rem;
+  }
+}
+@media (min-width: 64rem) {
+  .ink-home-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+    grid-template-areas: "copy composer" "example composer";
+    gap: 2rem 4rem;
+    padding-block: 4.5rem 4rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
