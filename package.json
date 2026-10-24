@@ -4,7 +4,7 @@
   "type": "module",
   "author": "Bramble Labs Inc.",
   "version": "0.1.0",
-  "description": "InkByte — short links, QR codes and link analytics.",
+  "description": "InkByte — short links with click analytics.",
   "license": "MIT",
   "packageManager": "pnpm@10.33.2",
   "repository": {

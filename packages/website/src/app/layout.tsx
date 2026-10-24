@@ -20,7 +20,6 @@ export const metadata: Metadata = {
     "link shortener",
     "link analytics",
     "custom domain",
-    "qr codes",
     "InkByte",
   ],
   robots: {

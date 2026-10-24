@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "InkByte — short links, QR codes and link analytics.",
+  "description": "InkByte — short links with click analytics.",
   "engines": {
     "node": ">=24.0.0"
   },
