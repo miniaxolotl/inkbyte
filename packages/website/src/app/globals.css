@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f5f4ef;
+  --color-paper-raised: #fbfaf7;
+  --color-ink: #16161a;
+  --color-ink-soft: #55555f;
+  --color-ink-faint: #86868f;
+  --color-rule: #d9d7cf;
+  --color-rose: #c9527b;
+  --color-rose-deep: #9c3c60;
+  --color-sky: #2f6f9f;
+  --color-moss: #4b6b3c;
+  --color-amber: #b8792a;
+
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque",
+    ui-sans-serif, system-ui, sans-serif;
+  --font-body: "DM Sans Variable", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-image:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-rose) 7%, transparent) 0,
+        transparent 22rem
+      );
+  }
+
+  ::selection {
+    background: var(--color-rose);
+    color: white;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-rose);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  .ink-card {
+    background: var(--color-paper-raised);
+    border: 1px solid var(--color-rule);
+    border-radius: 0.75rem;
+  }
+
+  .ink-rule {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .ink-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  .ink-input {
+    width: 100%;
+    border: 1px solid var(--color-rule);
+    border-radius: 0.5rem;
+    background: var(--color-paper-raised);
+    padding: 0.625rem 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    transition: border-color 120ms ease;
+  }
+
+  .ink-input::placeholder {
+    color: var(--color-ink-faint);
+  }
+
+  .ink-input:hover {
+    border-color: var(--color-ink-faint);
+  }
+
+  .ink-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    background: var(--color-ink);
+    color: var(--color-paper-raised);
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: background-color 120ms ease;
+  }
+
+  .ink-button:hover {
+    background: var(--color-rose-deep);
+  }
+
+  .ink-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .ink-button-quiet {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-rule);
+  }
+
+  .ink-button-quiet:hover {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

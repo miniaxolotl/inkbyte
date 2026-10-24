@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { Hono } from "hono";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { cors } from "hono/cors";
 import { ZodError } from "zod";
 import type { Knex } from "@lib/database";
@@ -235,7 +236,10 @@ export function createApp(deps: AppDependencies) {
     }
     if (error instanceof InkbyteError) {
       if (error.status === 401) c.header("WWW-Authenticate", "Bearer");
-      return c.json(errorResponse(error, requestId), error.status);
+      return c.json(
+        errorResponse(error, requestId),
+        error.status as ContentfulStatusCode,
+      );
     }
     // Never leak SQL, parameters or credentials to clients.
     console.error(

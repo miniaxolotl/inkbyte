@@ -24,7 +24,8 @@
     "build:website": "pnpm --filter website build",
     "start": "pnpm --filter @miniaxolotl/inkbyte-server start",
     "start:website": "pnpm --filter website start",
-    "lint": "eslint lib packages/api/src packages/website/src scripts tests/src",
+    "lint": "eslint lib packages/api/src scripts tests/src",
+    "lint:website": "pnpm --filter website lint",
     "lint:fix": "pnpm lint --fix",
     "check-types": "tsc --noEmit && pnpm --filter website typecheck",
     "test": "pnpm --filter @monorepo/tests test",
@@ -44,7 +45,7 @@
     "@lib/typescript-config": "workspace:*",
     "@types/node": "~24.19.2",
     "esbuild": "~0.28.2",
-    "eslint": "~10.13.0",
+    "eslint": "~9.39.5",
     "prettier": "~3.9.10",
     "tsx": "~4.23.15",
     "typescript": "~6.0.3"
