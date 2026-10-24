@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/bricolage-grotesque";
-import "@fontsource-variable/dm-sans";
+import "@fontsource/secular-one";
+import "@fontsource/open-sans/400.css";
+import "@fontsource/open-sans/600.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { site } from "@/lib/site";
 import "./globals.css";

@@ -58,6 +58,52 @@ export const migrations = [
       throw new Error("Use a forward migration; rolling back would erase data");
     },
   },
+  {
+    name: "20261024_002_bio_qr_cta_geo",
+    async up(db: Knex) {
+      await db.raw(`
+        ALTER TABLE links
+          ADD COLUMN cta_heading text,
+          ADD COLUMN cta_body text,
+          ADD COLUMN cta_action text;
+
+        ALTER TABLE link_events
+          ADD COLUMN city text,
+          ADD COLUMN region text,
+          ADD COLUMN device text,
+          ADD COLUMN event_type text NOT NULL DEFAULT 'view'
+            CHECK (event_type IN ('view', 'cta_click'));
+
+        CREATE TABLE bio_pages (
+          id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+          handle text NOT NULL UNIQUE,
+          heading text NOT NULL DEFAULT '',
+          bio text NOT NULL DEFAULT '',
+          is_published boolean NOT NULL DEFAULT true,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          updated_at timestamptz NOT NULL DEFAULT now(),
+          deleted_at timestamptz
+        );
+
+        CREATE TABLE bio_items (
+          id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          bio_page_id uuid NOT NULL REFERENCES bio_pages(id) ON DELETE CASCADE,
+          link_id uuid NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+          label text NOT NULL,
+          position integer NOT NULL DEFAULT 0,
+          is_active boolean NOT NULL DEFAULT true,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          updated_at timestamptz NOT NULL DEFAULT now(),
+          deleted_at timestamptz
+        );
+        CREATE INDEX bio_items_page_idx ON bio_items (bio_page_id, position);
+      `);
+    },
+    async down() {
+      throw new Error("Use a forward migration; rolling back would erase data");
+    },
+  },
 ];
 
 export const migrationSource: Knex.MigrationSource<

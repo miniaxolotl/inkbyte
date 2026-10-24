@@ -98,6 +98,9 @@ export const linkCreateSchema = z.object({
   customSlug: slugSchema.optional(),
   title: z.string().trim().max(120).optional(),
   isTracking: z.boolean().default(true),
+  ctaHeading: z.string().trim().max(120).optional(),
+  ctaBody: z.string().trim().max(600).optional(),
+  ctaAction: z.string().trim().max(48).optional(),
 });
 
 export const linkUpdateSchema = z.object({
@@ -105,10 +108,79 @@ export const linkUpdateSchema = z.object({
   title: z.string().trim().max(120).nullable().optional(),
   isTracking: z.boolean().optional(),
   isActive: z.boolean().optional(),
+  ctaHeading: z.string().trim().max(120).nullable().optional(),
+  ctaBody: z.string().trim().max(600).nullable().optional(),
+  ctaAction: z.string().trim().max(48).nullable().optional(),
 });
+
+export type LinkCta = {
+  heading: string;
+  body: string;
+  action: string;
+};
+
+/** A call-to-action interstitial shown before the destination loads. */
+export function linkCta(link: {
+  ctaHeading: string | null;
+  ctaBody: string | null;
+  ctaAction: string | null;
+}): LinkCta | null {
+  if (!link.ctaHeading) return null;
+  return {
+    heading: link.ctaHeading,
+    body: link.ctaBody ?? "",
+    action: link.ctaAction || "Continue",
+  };
+}
 
 export type LinkCreateInput = z.infer<typeof linkCreateSchema>;
 export type LinkUpdateInput = z.infer<typeof linkUpdateSchema>;
+
+export const bioHandleSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(1)
+  .max(64)
+  .regex(
+    /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/,
+    "Use letters, numbers and dashes",
+  );
+
+export const bioUpsertSchema = z.object({
+  handle: bioHandleSchema,
+  heading: z.string().trim().max(120).default(""),
+  bio: z.string().trim().max(600).default(""),
+  isPublished: z.boolean().default(true),
+});
+
+export const bioItemCreateSchema = z.object({
+  label: z.string().trim().min(1).max(120),
+  url: longUrlSchema,
+});
+
+export const bioItemUpdateSchema = z.object({
+  label: z.string().trim().min(1).max(120).optional(),
+  url: longUrlSchema.optional(),
+  position: z.number().int().min(0).max(999).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type PublicBioItem = {
+  id: string;
+  label: string;
+  url: string;
+  slug: string;
+  position: number;
+};
+
+export type PublicBioPage = {
+  handle: string;
+  heading: string;
+  bio: string;
+  isPublished: boolean;
+  items: PublicBioItem[];
+};
 
 /** Identity of the signed-in Clerk user, as resolved by the API. */
 export type Principal = {
@@ -142,6 +214,7 @@ export type PublicLink = {
   createdAt: string;
   domain: PublicDomain;
   shortUrl: string;
+  cta: LinkCta | null;
 };
 
 export type LinkSummary = PublicLink & {
@@ -153,8 +226,11 @@ export type AnalyticsOverview = {
   links: number;
   totalViews: number;
   uniqueVisitors: number;
+  organicViews: number;
   viewsLast7Days: number;
   viewsLast30Days: number;
+  ctaViews: number;
+  ctaClicks: number;
   topLinks: Array<{
     id: string;
     slug: string;
@@ -165,6 +241,8 @@ export type AnalyticsOverview = {
   }>;
   referrers: Array<{ referrer: string | null; views: number }>;
   countries: Array<{ country: string | null; views: number }>;
+  cities: Array<{ city: string | null; views: number }>;
+  devices: Array<{ device: string; views: number }>;
   dailyViews: Array<{ day: string; views: number }>;
 };
 
@@ -172,7 +250,12 @@ export type LinkAnalytics = {
   link: PublicLink;
   views: number;
   uniqueVisitors: number;
+  organicViews: number;
+  ctaViews: number;
+  ctaClicks: number;
   referrers: Array<{ referrer: string | null; views: number }>;
   countries: Array<{ country: string | null; views: number }>;
+  cities: Array<{ city: string | null; views: number }>;
+  devices: Array<{ device: string; views: number }>;
   dailyViews: Array<{ day: string; views: number }>;
 };

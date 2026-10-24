@@ -323,7 +323,7 @@ describe("redirects", () => {
     assert.equal(events[0].userAgent, "test-agent");
   });
 
-  it("counts repeat visits from the same visitor as one unique visitor", async () => {
+  it("records three visits and settles on a single cookie identity", async () => {
     const { auth: authHeader } = await signUp();
     const created = await createLink(authHeader, {
       longUrl: "https://example.com/destination",
@@ -333,21 +333,22 @@ describe("redirects", () => {
     const createdBody = (await created.json()) as {
       data: { link: { slug: string } };
     };
+    const userAgent = "Mozilla/5.0 (Windows NT 10.0)";
 
+    let cookie: string | null = null;
     for (let index = 0; index < 3; index += 1) {
       const response = await app.request(
         `/r/${createdBody.data.link.slug}?domain=inkbyte.app`,
-        { headers: { "x-visitor-id": "visitor-1" } },
+        { headers: { "user-agent": userAgent, ...(cookie ? { cookie } : {}) } },
       );
       assert.equal(response.status, 302);
+      const setCookie = response.headers.get("set-cookie");
+      if (setCookie) cookie = setCookie.split(";")[0] ?? cookie;
     }
 
     const events = await db("link_events");
     assert.equal(events.length, 3);
-    assert.equal(
-      new Set(events.map((row: { visitorId: string }) => row.visitorId)).size,
-      1,
-    );
+    assert.equal(new Set(events.map((row) => row.visitorId)).size, 1);
   });
 
   it("does not record clicks for untracked links", async () => {
@@ -391,29 +392,326 @@ describe("redirects", () => {
     );
     assert.equal(response.status, 404);
   });
-});
 
-describe("analytics", () => {
-  it("summarises the owner's links and clicks", async () => {
+  it("collapses repeat visits behind one server-issued visitor cookie", async () => {
     const { auth: authHeader } = await signUp();
     const created = await createLink(authHeader, {
       longUrl: "https://example.com/destination",
       domain: "inkbyte.app",
-      customSlug: "tracked",
+      customSlug: "cookie",
+    });
+    const createdBody = (await created.json()) as {
+      data: { link: { slug: string } };
+    };
+    const slug = createdBody.data.link.slug;
+
+    const first = await app.request(`/r/${slug}?domain=inkbyte.app`, {
+      headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" },
+    });
+    assert.equal(first.status, 302);
+    const setCookie = first.headers.get("set-cookie");
+    assert.match(setCookie ?? "", /inkbyte_vid=/);
+    assert.match(setCookie ?? "", /HttpOnly/i);
+    const cookie = setCookie?.split(";")[0] ?? "";
+
+    for (let index = 0; index < 2; index += 1) {
+      const repeat = await app.request(`/r/${slug}?domain=inkbyte.app`, {
+        headers: {
+          cookie,
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0)",
+        },
+      });
+      assert.equal(repeat.status, 302);
+    }
+
+    const events = await db("link_events");
+    assert.equal(events.length, 3);
+    assert.equal(new Set(events.map((row) => row.visitorId)).size, 1);
+  });
+
+  it("ignores client-supplied visitor headers", async () => {
+    const { auth: authHeader } = await signUp();
+    const created = await createLink(authHeader, {
+      longUrl: "https://example.com/destination",
+      domain: "inkbyte.app",
+      customSlug: "spoof",
+    });
+    const createdBody = (await created.json()) as {
+      data: { link: { slug: string } };
+    };
+
+    await app.request(`/r/${createdBody.data.link.slug}?domain=inkbyte.app`, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0)",
+        "x-visitor-id": "attacker-chosen-id",
+        "x-forwarded-for": "203.0.113.10",
+      },
+    });
+
+    const events = await db("link_events");
+    assert.equal(events.length, 1);
+    assert.notEqual(events[0].visitorId, "attacker-chosen-id");
+  });
+
+  it("redirects bots without recording them", async () => {
+    const { auth: authHeader } = await signUp();
+    const created = await createLink(authHeader, {
+      longUrl: "https://example.com/destination",
+      domain: "inkbyte.app",
+      customSlug: "bots",
+    });
+    const createdBody = (await created.json()) as {
+      data: { link: { slug: string } };
+    };
+
+    const response = await app.request(
+      `/r/${createdBody.data.link.slug}?domain=inkbyte.app`,
+      { headers: { "user-agent": "facebookexternalhit/1.1" } },
+    );
+    assert.equal(response.status, 302);
+    const events = await db("link_events");
+    assert.equal(events.length, 0);
+  });
+
+  it("captures device and edge geo headers", async () => {
+    const { auth: authHeader } = await signUp();
+    const created = await createLink(authHeader, {
+      longUrl: "https://example.com/destination",
+      domain: "inkbyte.app",
+      customSlug: "geo",
+    });
+    const createdBody = (await created.json()) as {
+      data: { link: { slug: string } };
+    };
+
+    await app.request(`/r/${createdBody.data.link.slug}?domain=inkbyte.app`, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+        "cf-ipcountry": "CA",
+        "cf-ipcity": "Calgary",
+        "cf-ipregion": "Alberta",
+      },
+    });
+
+    const [event] = await db("link_events");
+    assert.equal(event.device, "mobile");
+    assert.equal(event.country, "CA");
+    assert.equal(event.city, "Calgary");
+    assert.equal(event.region, "Alberta");
+  });
+});
+
+describe("interstitials and QR codes", () => {
+  it("exposes public link metadata without recording a click", async () => {
+    const { auth: authHeader } = await signUp();
+    await createLink(authHeader, {
+      longUrl: "https://example.com/cta",
+      domain: "inkbyte.app",
+      customSlug: "meta",
+      ctaHeading: "Heads up",
+      ctaBody: "You are about to leave InkByte.",
+      ctaAction: "Take me there",
+    });
+
+    const response = await app.request(
+      "/api/v1/public/links/meta?domain=inkbyte.app",
+    );
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as {
+      data: {
+        link: {
+          longUrl: string;
+          cta: { heading: string; action: string } | null;
+        };
+      };
+    };
+    assert.equal(body.data.link.longUrl, "https://example.com/cta");
+    assert.equal(body.data.link.cta?.heading, "Heads up");
+    assert.equal(body.data.link.cta?.action, "Take me there");
+
+    const events = await db("link_events");
+    assert.equal(events.length, 0);
+  });
+
+  it("records a cta_click when the interstitial continue link is used", async () => {
+    const { auth: authHeader } = await signUp();
+    await createLink(authHeader, {
+      longUrl: "https://example.com/cta",
+      domain: "inkbyte.app",
+      customSlug: "interstitial",
+      ctaHeading: "Heads up",
+    });
+
+    await app.request("/r/interstitial?domain=inkbyte.app", {
+      headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" },
+    });
+    await app.request("/r/interstitial?domain=inkbyte.app&e=cta_click", {
+      headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" },
+    });
+
+    const events = await db("link_events").orderBy("eventType");
+    assert.equal(events.length, 2);
+    assert.equal(events[0].eventType, "cta_click");
+    assert.equal(events[1].eventType, "view");
+  });
+
+  it("renders a QR code for an existing link", async () => {
+    const { auth: authHeader } = await signUp();
+    await createLink(authHeader, {
+      longUrl: "https://example.com/qr",
+      domain: "inkbyte.app",
+      customSlug: "coded",
+    });
+
+    const response = await app.request(
+      "/api/v1/qr?slug=coded&domain=inkbyte.app&size=256",
+    );
+    assert.equal(response.status, 200);
+    assert.match(
+      response.headers.get("content-type") ?? "",
+      /image\/svg\+xml/,
+    );
+    const svg = await response.text();
+    assert.match(svg, /<svg/);
+  });
+
+  it("refuses a QR code for an unknown link", async () => {
+    const response = await app.request(
+      "/api/v1/qr?slug=missing&domain=inkbyte.app",
+    );
+    assert.equal(response.status, 404);
+  });
+});
+
+describe("link-in-bio pages", () => {
+  it("creates a page, adds items and publishes it publicly", async () => {
+    const { auth: authHeader } = await signUp();
+
+    const created = await app.request("/api/v1/bio", {
+      method: "PUT",
+      headers: { authorization: authHeader, "content-type": "application/json" },
+      body: JSON.stringify({
+        handle: "ada",
+        heading: "Ada Lovelace",
+        bio: "Analyst & metaphysician.",
+      }),
+    });
+    assert.equal(created.status, 200);
+
+    const item = await app.request("/api/v1/bio/items", {
+      method: "POST",
+      headers: { authorization: authHeader, "content-type": "application/json" },
+      body: JSON.stringify({
+        label: "Website",
+        url: "https://example.com/ada",
+      }),
+    });
+    assert.equal(item.status, 201);
+    const itemBody = (await item.json()) as {
+      data: { items: Array<{ id: string; url: string; slug: string }> };
+    };
+    assert.equal(itemBody.data.items.length, 1);
+    assert.equal(itemBody.data.items[0]?.url, "https://example.com/ada");
+
+    const publicPage = await app.request("/api/v1/public/bio/ada");
+    assert.equal(publicPage.status, 200);
+    const pageBody = (await publicPage.json()) as {
+      data: { bio: { heading: string; items: unknown[] } };
+    };
+    assert.equal(pageBody.data.bio.heading, "Ada Lovelace");
+    assert.equal(pageBody.data.bio.items.length, 1);
+
+    // Bio item clicks flow through the standard redirect and are tracked.
+    const redirect = await app.request(
+      `/r/${itemBody.data.items[0]?.slug}?domain=inkbyte.app`,
+      { headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" } },
+    );
+    assert.equal(redirect.status, 302);
+    assert.equal(
+      redirect.headers.get("location"),
+      "https://example.com/ada",
+    );
+  });
+
+  it("rejects a handle owned by another account", async () => {
+    const first = await signUp("first@example.com");
+    const second = await signUp("second@example.com");
+
+    const created = await app.request("/api/v1/bio", {
+      method: "PUT",
+      headers: {
+        authorization: first.auth,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ handle: "taken" }),
+    });
+    assert.equal(created.status, 200);
+
+    const conflict = await app.request("/api/v1/bio", {
+      method: "PUT",
+      headers: {
+        authorization: second.auth,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ handle: "taken" }),
+    });
+    assert.equal(conflict.status, 409);
+    const body = (await conflict.json()) as { error: { code: string } };
+    assert.equal(body.error.code, "handle_taken");
+  });
+
+  it("removes an item and its underlying link", async () => {
+    const { auth: authHeader } = await signUp();
+    await app.request("/api/v1/bio", {
+      method: "PUT",
+      headers: { authorization: authHeader, "content-type": "application/json" },
+      body: JSON.stringify({ handle: "remover" }),
+    });
+    const item = await app.request("/api/v1/bio/items", {
+      method: "POST",
+      headers: { authorization: authHeader, "content-type": "application/json" },
+      body: JSON.stringify({ label: "Go", url: "https://example.com" }),
+    });
+    const itemBody = (await item.json()) as {
+      data: { items: Array<{ id: string; slug: string }> };
+    };
+    const itemId = itemBody.data.items[0]?.id;
+    const slug = itemBody.data.items[0]?.slug;
+
+    const deleted = await app.request(`/api/v1/bio/items/${itemId}`, {
+      method: "DELETE",
+      headers: { authorization: authHeader },
+    });
+    assert.equal(deleted.status, 204);
+
+    const redirect = await app.request(`/r/${slug}?domain=inkbyte.app`);
+    assert.equal(redirect.status, 404);
+  });
+});
+
+describe("analytics", () => {
+  it("counts organic views, devices and cities", async () => {
+    const { auth: authHeader } = await signUp();
+    const created = await createLink(authHeader, {
+      longUrl: "https://example.com/destination",
+      domain: "inkbyte.app",
+      customSlug: "enriched",
     });
     const createdBody = (await created.json()) as {
       data: { link: { id: string; slug: string } };
     };
 
-    for (const visitor of ["visitor-1", "visitor-2"]) {
-      await app.request(`/r/${createdBody.data.link.slug}?domain=inkbyte.app`, {
-        headers: {
-          "x-visitor-id": visitor,
-          referer: "https://news.example.com",
-          "cf-ipcountry": "CA",
-        },
-      });
-    }
+    await app.request(`/r/${createdBody.data.link.slug}?domain=inkbyte.app`, {
+      headers: {
+        "user-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)",
+        referer: "https://news.example.com",
+        "cf-ipcountry": "CA",
+        "cf-ipcity": "Calgary",
+      },
+    });
+    await app.request(`/r/${createdBody.data.link.slug}?domain=inkbyte.app`, {
+      headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" },
+    });
 
     const overview = await app.request("/api/v1/analytics/overview", {
       headers: { authorization: authHeader },
@@ -422,24 +720,27 @@ describe("analytics", () => {
     const overviewBody = (await overview.json()) as {
       data: {
         overview: {
-          links: number;
           totalViews: number;
-          uniqueVisitors: number;
-          topLinks: Array<{ slug: string; views: number }>;
-          referrers: Array<{ referrer: string | null; views: number }>;
-          countries: Array<{ country: string | null; views: number }>;
+          organicViews: number;
+          countries: Array<{ country: string | null }>;
+          cities: Array<{ city: string | null; views: number }>;
+          devices: Array<{ device: string; views: number }>;
         };
       };
     };
-    assert.equal(overviewBody.data.overview.links, 1);
     assert.equal(overviewBody.data.overview.totalViews, 2);
-    assert.equal(overviewBody.data.overview.uniqueVisitors, 2);
-    assert.equal(overviewBody.data.overview.topLinks[0]?.slug, "tracked");
-    assert.equal(
-      overviewBody.data.overview.referrers[0]?.referrer,
-      "https://news.example.com",
-    );
+    assert.equal(overviewBody.data.overview.organicViews, 1);
     assert.equal(overviewBody.data.overview.countries[0]?.country, "CA");
+    assert.equal(overviewBody.data.overview.cities[0]?.city, "Calgary");
+    assert.equal(overviewBody.data.overview.cities[0]?.views, 1);
+    const mobile = overviewBody.data.overview.devices.find(
+      (entry) => entry.device === "mobile",
+    );
+    const desktop = overviewBody.data.overview.devices.find(
+      (entry) => entry.device === "desktop",
+    );
+    assert.equal(mobile?.views, 1);
+    assert.equal(desktop?.views, 1);
 
     const detail = await app.request(
       `/api/v1/analytics/links/${createdBody.data.link.id}`,
@@ -447,10 +748,10 @@ describe("analytics", () => {
     );
     assert.equal(detail.status, 200);
     const detailBody = (await detail.json()) as {
-      data: { analytics: { views: number; uniqueVisitors: number } };
+      data: { analytics: { organicViews: number; devices: unknown[] } };
     };
-    assert.equal(detailBody.data.analytics.views, 2);
-    assert.equal(detailBody.data.analytics.uniqueVisitors, 2);
+    assert.equal(detailBody.data.analytics.organicViews, 1);
+    assert.equal(detailBody.data.analytics.devices.length, 2);
   });
 
   it("does not leak another user's analytics", async () => {

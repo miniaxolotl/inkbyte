@@ -6,17 +6,32 @@ import { ZodError } from "zod";
 import type { Knex } from "@lib/database";
 import {
   InkbyteError,
+  bioItemCreateSchema,
+  bioItemUpdateSchema,
+  bioUpsertSchema,
   errorResponse,
   linkCreateSchema,
+  linkCta,
   linkUpdateSchema,
   type AnalyticsOverview,
   type LinkAnalytics,
   type LinkSummary,
   type Principal,
+  type PublicBioItem,
+  type PublicBioPage,
   type PublicDomain,
   type PublicLink,
 } from "@lib/shared";
 import { bearerToken, type TokenVerifier } from "./auth.ts";
+import { qrOptions, renderQr } from "./qr.ts";
+import { RateLimiter, clientKey } from "./rate-limit.ts";
+import {
+  isBot,
+  parseDevice,
+  resolveGeo,
+  resolveVisitor,
+  visitorCookieHeader,
+} from "./tracking.ts";
 
 const SLUG_ALPHABET = "abcdefghijkmnopqrstuvwxyz23456789";
 const SHORT_SLUG_LENGTH = 7;
@@ -63,6 +78,9 @@ type LinkRow = {
   title: string | null;
   isTracking: boolean;
   isActive: boolean;
+  ctaHeading: string | null;
+  ctaBody: string | null;
+  ctaAction: string | null;
   createdAt: Date;
   domainId: string;
   domainSlug: string;
@@ -80,6 +98,8 @@ type AggregateRow = {
   total?: string | number;
   unique?: string | number;
   count?: string | number;
+  organic?: string | number;
+  ctaClicks?: string | number;
 };
 
 type TopLinkRow = {
@@ -94,6 +114,8 @@ type TopLinkRow = {
 type BreakdownRow = {
   referrer?: string | null;
   country?: string | null;
+  city?: string | null;
+  device?: string | null;
   views?: string | number;
 };
 
@@ -129,6 +151,7 @@ const toPublicLink = (
     isDefault: row.domainIsDefault,
   },
   shortUrl: `${protocol}://${row.domainSlug}/${row.slug}`,
+  cta: linkCta(row),
 });
 
 export function createApp(deps: AppDependencies) {
@@ -142,6 +165,9 @@ export function createApp(deps: AppDependencies) {
     "links.title",
     "links.is_tracking",
     "links.is_active",
+    "links.cta_heading",
+    "links.cta_body",
+    "links.cta_action",
     "links.created_at",
     "links.domain_id",
     "domains.slug as domain_slug",
@@ -151,6 +177,9 @@ export function createApp(deps: AppDependencies) {
   const protocol: "http" | "https" = deps.siteUrl.startsWith("https://")
     ? "https"
     : "http";
+
+  const createLimiter = new RateLimiter(30, 60_000);
+  const redirectLimiter = new RateLimiter(120, 60_000);
 
   const requirePrincipal = async (c: {
     req: { raw: Request };
@@ -203,6 +232,31 @@ export function createApp(deps: AppDependencies) {
     return created!.id;
   };
 
+  const requireRateLimit = (limiter: RateLimiter, request: Request) => {
+    const result = limiter.consume(clientKey(request));
+    if (!result.allowed) {
+      return {
+        error: new InkbyteError(
+          "rate_limited",
+          "Too many requests. Try again shortly.",
+          429,
+          result.retryAfterSeconds || 60,
+        ),
+        retryAfter: result.retryAfterSeconds,
+      };
+    }
+    return { error: null as InkbyteError | null, retryAfter: 0 };
+  };
+
+  const fetchLinkRow = (slug: string, domainSlug: string) =>
+    db("links")
+      .join("domains", "domains.id", "links.domain_id")
+      .where("links.slug", slug)
+      .where("domains.slug", domainSlug)
+      .whereNull("links.deletedAt")
+      .select(linkSelect)
+      .first() as Promise<LinkRow | undefined>;
+
   app.use("*", async (c, next) => {
     c.set("requestId", randomUUID());
     c.header("X-Request-ID", c.get("requestId"));
@@ -216,7 +270,7 @@ export function createApp(deps: AppDependencies) {
     "*",
     cors({
       origin: deps.siteUrl,
-      allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+      allowMethods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
       allowHeaders: ["Authorization", "Content-Type", "X-Visitor-Id"],
       exposeHeaders: ["WWW-Authenticate", "X-Request-ID"],
       credentials: true,
@@ -236,11 +290,14 @@ export function createApp(deps: AppDependencies) {
     }
     if (error instanceof InkbyteError) {
       if (error.status === 401) c.header("WWW-Authenticate", "Bearer");
+      if (error.status === 429)
+        c.header("Retry-After", String(error.details ?? 60));
       return c.json(
         errorResponse(error, requestId),
         error.status as ContentfulStatusCode,
       );
     }
+    // Never leak SQL, parameters or credentials to clients.
     // Never leak SQL, parameters or credentials to clients.
     console.error(
       JSON.stringify({ status: "error", requestId, code: "unavailable" }),
@@ -321,6 +378,7 @@ export function createApp(deps: AppDependencies) {
       .join("links", "links.id", "link_events.linkId")
       .where({ "links.userId": userId })
       .whereNull("links.deletedAt")
+      .where({ eventType: "view" })
       .groupBy("link_events.linkId")
       .select("link_events.linkId")
       .countDistinct({ views: "link_events.visitorId" })
@@ -346,6 +404,8 @@ export function createApp(deps: AppDependencies) {
 
   app.post("/api/v1/links", async (c) => {
     const principal = await requirePrincipal(c);
+    const limited = requireRateLimit(createLimiter, c.req.raw);
+    if (limited.error) throw limited.error;
     const payload = linkCreateSchema.parse(await c.req.json());
     const userId = await resolveUser(principal);
 
@@ -360,17 +420,21 @@ export function createApp(deps: AppDependencies) {
       );
     }
 
-    const slug = payload.customSlug ?? generateSlug();
-    const conflict = (await db("links")
-      .where({ domainId: domain.id, slug })
-      .whereNull("deletedAt")
-      .first("id")) as { id: string } | undefined;
-    if (conflict) {
-      throw new InkbyteError(
-        "slug_taken",
-        "That alias is already in use",
-        409,
-      );
+    let slug = payload.customSlug ?? generateSlug();
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const conflict = (await db("links")
+        .where({ domainId: domain.id, slug })
+        .whereNull("deletedAt")
+        .first("id")) as { id: string } | undefined;
+      if (!conflict) break;
+      if (payload.customSlug) {
+        throw new InkbyteError(
+          "slug_taken",
+          "That alias is already in use",
+          409,
+        );
+      }
+      slug = generateSlug();
     }
 
     await db("links").insert({
@@ -380,17 +444,16 @@ export function createApp(deps: AppDependencies) {
       longUrl: payload.longUrl,
       title: payload.title ?? null,
       isTracking: payload.isTracking,
+      ctaHeading: payload.ctaHeading ?? null,
+      ctaBody: payload.ctaBody ?? null,
+      ctaAction: payload.ctaAction ?? null,
     });
 
-    const row = (await db("links")
-      .join("domains", "domains.id", "links.domain_id")
-      .where("links.slug", slug)
-      .where({ "links.domainId": domain.id })
-      .whereNull("links.deletedAt")
-      .select(linkSelect)
-      .first()) as unknown as LinkRow;
-
-    return c.json({ success: true, data: { link: toPublicLink(row, protocol) } }, 201);
+    const row = await fetchLinkRow(slug, payload.domain);
+    return c.json(
+      { success: true, data: { link: toPublicLink(row!, protocol) } },
+      201,
+    );
   });
 
   app.get("/api/v1/links/:id", async (c) => {
@@ -417,7 +480,9 @@ export function createApp(deps: AppDependencies) {
     const owned = (await db("links")
       .where({ id: c.req.param("id"), userId })
       .whereNull("deletedAt")
-      .first("id")) as { id: string } | undefined;
+      .first("id", "domainId")) as
+      | { id: string; domainId: string }
+      | undefined;
     if (!owned) {
       throw new InkbyteError("not_found", "Link not found", 404);
     }
@@ -431,15 +496,34 @@ export function createApp(deps: AppDependencies) {
           ? { isTracking: payload.isTracking }
           : {}),
         ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+        ...(payload.ctaHeading !== undefined
+          ? { ctaHeading: payload.ctaHeading }
+          : {}),
+        ...(payload.ctaBody !== undefined ? { ctaBody: payload.ctaBody } : {}),
+        ...(payload.ctaAction !== undefined
+          ? { ctaAction: payload.ctaAction }
+          : {}),
         updatedAt: new Date(),
       });
 
-    const row = (await db("links")
-      .join("domains", "domains.id", "links.domain_id")
-      .where("links.id", owned.id)
-      .select(linkSelect)
-      .first()) as unknown as LinkRow;
-    return c.json({ success: true, data: { link: toPublicLink(row, protocol) } });
+    const domainSlug = (
+      (await db("domains").where({ id: owned.domainId }).first("slug")) as {
+        slug: string;
+      }
+    ).slug;
+    const row = await fetchLinkRow(
+      c.req.param("id"),
+      domainSlug,
+    ).then((found) =>
+      found?.id === owned.id
+        ? found
+        : (db("links")
+            .join("domains", "domains.id", "links.domain_id")
+            .where("links.id", owned.id)
+            .select(linkSelect)
+            .first() as Promise<LinkRow | undefined>),
+    );
+    return c.json({ success: true, data: { link: toPublicLink(row!, protocol) } });
   });
 
   app.delete("/api/v1/links/:id", async (c) => {
@@ -455,39 +539,366 @@ export function createApp(deps: AppDependencies) {
     return c.body(null, 204);
   });
 
-  app.get("/r/:slug", async (c) => {
-    const domainSlug = c.req.query("domain") ?? deps.defaultDomains[0];
-    const row = (await db("links")
-      .join("domains", "domains.id", "links.domain_id")
-      .where("links.slug", c.req.param("slug"))
-      .where("domains.slug", domainSlug)
-      .whereNull("links.deletedAt")
-      .where("links.isActive", true)
-      .select("links.id", "links.longUrl", "links.isTracking")
-      .first()) as
-      | { id: string; longUrl: string; isTracking: boolean }
-      | undefined;
+  /**
+   * Public link metadata for interstitials and previews. Does not record a
+   * click; the redirect endpoint is the only place a view is counted.
+   */
+  app.get("/api/v1/public/links/:slug", async (c) => {
+    const domainSlug =
+      c.req.query("domain") ?? deps.defaultDomains[0] ?? "inkbyte.app";
+    const row = await fetchLinkRow(c.req.param("slug"), domainSlug);
+    if (!row || !row.isActive) {
+      throw new InkbyteError("not_found", "Link not found", 404);
+    }
+    return c.json({
+      success: true,
+      data: {
+        link: {
+          slug: row.slug,
+          longUrl: row.longUrl,
+          domain: domainSlug,
+          cta: linkCta(row),
+        },
+      },
+    });
+  });
 
-    if (!row) {
+  app.get("/r/:slug", async (c) => {
+    const limited = requireRateLimit(redirectLimiter, c.req.raw);
+    if (limited.error) throw limited.error;
+    const domainSlug = c.req.query("domain") ?? deps.defaultDomains[0] ?? "";
+    const row = await fetchLinkRow(c.req.param("slug"), domainSlug);
+    if (!row || !row.isActive) {
       throw new InkbyteError("not_found", "Link not found", 404);
     }
 
-    if (row.isTracking) {
-      const visitorId =
-        c.req.header("x-visitor-id") ??
-        c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
-        "anonymous";
+    const isHttps = c.req.header("x-forwarded-proto") === "https";
+    const userAgent = c.req.header("user-agent") ?? null;
+
+    if (row.isTracking && !isBot(userAgent)) {
+      const { visitorId, existingCookie } = resolveVisitor(c.req.raw);
+      const geo = resolveGeo(c.req.raw);
+      const eventType =
+        c.req.query("e") === "cta_click" && row.ctaHeading
+          ? "cta_click"
+          : "view";
       await db("link_events").insert({
         linkId: row.id,
         visitorId: visitorId.slice(0, 256),
         referrer: c.req.header("referer")?.slice(0, 1024) ?? null,
-        userAgent: c.req.header("user-agent")?.slice(0, 512) ?? null,
-        country: c.req.header("cf-ipcountry")?.slice(0, 8) ?? null,
+        userAgent: userAgent?.slice(0, 512) ?? null,
+        country: geo.country,
+        city: geo.city,
+        region: geo.region,
+        device: parseDevice(userAgent),
+        eventType,
+      });
+      if (!existingCookie) {
+        c.header(
+          "Set-Cookie",
+          visitorCookieHeader(visitorId, isHttps),
+        );
+      }
+    }
+
+    c.header("Cache-Control", "no-store");
+    return c.redirect(row.longUrl, 302);
+  });
+
+  /** QR code for a short link, rendered on demand as an SVG. */
+  app.get("/api/v1/qr", async (c) => {
+    const options = qrOptions(new URL(c.req.url).searchParams);
+    const domainSlug = c.req.query("domain") ?? deps.defaultDomains[0] ?? "";
+    const row = await fetchLinkRow(c.req.query("slug") ?? "", domainSlug);
+    if (!row || !row.isActive) {
+      throw new InkbyteError("not_found", "Link not found", 404);
+    }
+    const svg = await renderQr(
+      `${protocol}://${domainSlug}/${row.slug}`,
+      options,
+    );
+    c.header("Content-Type", "image/svg+xml");
+    c.header("Cache-Control", "public, max-age=3600");
+    return c.body(svg, 200);
+  });
+
+  const bioScope = (userId: string) =>
+    db("bio_pages")
+      .where({ userId })
+      .whereNull("deletedAt");
+
+  const bioItemsFor = async (pageId: string): Promise<PublicBioItem[]> => {
+    const rows = (await db("bio_items")
+      .join("links", "links.id", "bio_items.linkId")
+      .join("domains", "domains.id", "links.domain_id")
+      .where({ "bio_items.bioPageId": pageId })
+      .whereNull("bio_items.deletedAt")
+      .where("bio_items.isActive", true)
+      .orderBy("bio_items.position", "asc")
+      .select(
+        "bio_items.id",
+        "bio_items.label",
+        "bio_items.position",
+        "links.longUrl",
+        "links.slug",
+      )) as Array<{
+      id: string;
+      label: string;
+      position: number;
+      longUrl: string;
+      slug: string;
+    }>;
+    return rows.map((row) => ({
+      id: row.id,
+      label: row.label,
+      url: row.longUrl,
+      slug: row.slug,
+      position: row.position,
+    }));
+  };
+
+  app.get("/api/v1/bio", async (c) => {
+    const principal = await requirePrincipal(c);
+    const userId = await resolveUser(principal);
+    const page = (await bioScope(userId).first()) as
+      | {
+          id: string;
+          handle: string;
+          heading: string;
+          bio: string;
+          isPublished: boolean;
+        }
+      | undefined;
+    const items = page ? await bioItemsFor(page.id) : [];
+    const body: PublicBioPage | null = page
+      ? {
+          handle: page.handle,
+          heading: page.heading,
+          bio: page.bio,
+          isPublished: page.isPublished,
+          items,
+        }
+      : null;
+    return c.json({ success: true, data: { bio: body } });
+  });
+
+  app.put("/api/v1/bio", async (c) => {
+    const principal = await requirePrincipal(c);
+    const userId = await resolveUser(principal);
+    const payload = bioUpsertSchema.parse(await c.req.json());
+
+    const handleTaken = (await db("bio_pages")
+      .where({ handle: payload.handle })
+      .whereNot({ userId })
+      .whereNull("deletedAt")
+      .first("id")) as { id: string } | undefined;
+    if (handleTaken) {
+      throw new InkbyteError("handle_taken", "That handle is in use", 409);
+    }
+
+    const existing = (await bioScope(userId).first("id")) as
+      | { id: string }
+      | undefined;
+    if (existing) {
+      await db("bio_pages").where({ id: existing.id }).update({
+        handle: payload.handle,
+        heading: payload.heading,
+        bio: payload.bio,
+        isPublished: payload.isPublished,
+        updatedAt: new Date(),
+      });
+    } else {
+      await db("bio_pages").insert({
+        userId,
+        handle: payload.handle,
+        heading: payload.heading,
+        bio: payload.bio,
+        isPublished: payload.isPublished,
       });
     }
 
-    return c.redirect(row.longUrl, 302);
+    const page = (await bioScope(userId).first()) as {
+      id: string;
+      handle: string;
+      heading: string;
+      bio: string;
+      isPublished: boolean;
+    };
+    const items = await bioItemsFor(page.id);
+    return c.json({
+      success: true,
+      data: {
+        bio: {
+          handle: page.handle,
+          heading: page.heading,
+          bio: page.bio,
+          isPublished: page.isPublished,
+          items,
+        },
+      },
+    });
   });
+
+  app.post("/api/v1/bio/items", async (c) => {
+    const principal = await requirePrincipal(c);
+    const userId = await resolveUser(principal);
+    const payload = bioItemCreateSchema.parse(await c.req.json());
+
+    const page = (await bioScope(userId).first()) as
+      | { id: string }
+      | undefined;
+    if (!page) {
+      throw new InkbyteError(
+        "bio_missing",
+        "Create your link-in-bio page first",
+        400,
+      );
+    }
+
+    const domain = (await db("domains")
+      .where({ isDefault: true })
+      .first("id")) as { id: string } | undefined;
+    if (!domain) {
+      throw new InkbyteError("unknown_domain", "No default domain", 500);
+    }
+
+    let slug = generateSlug();
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const conflict = (await db("links")
+        .where({ domainId: domain.id, slug })
+        .whereNull("deletedAt")
+        .first("id")) as { id: string } | undefined;
+      if (!conflict) break;
+      slug = generateSlug();
+    }
+
+    const [link] = (await db("links")
+      .insert({
+        slug,
+        domainId: domain.id,
+        userId,
+        longUrl: payload.url,
+        title: payload.label,
+      })
+      .returning("id")) as Array<{ id: string }>;
+
+    const position = (await db("bio_items")
+      .where({ bioPageId: page.id })
+      .whereNull("deletedAt")
+      .count({ next: "*" })) as unknown as Array<{ next?: string | number }>;
+
+    await db("bio_items").insert({
+      bioPageId: page.id,
+      linkId: link!.id,
+      label: payload.label,
+      position: Number(position[0]?.next ?? 0),
+    });
+
+    const items = await bioItemsFor(page.id);
+    return c.json({ success: true, data: { items } }, 201);
+  });
+
+  app.patch("/api/v1/bio/items/:id", async (c) => {
+    const principal = await requirePrincipal(c);
+    const userId = await resolveUser(principal);
+    const payload = bioItemUpdateSchema.parse(await c.req.json());
+
+    const item = (await db("bio_items")
+      .join("bio_pages", "bio_pages.id", "bio_items.bioPageId")
+      .where({ "bio_items.id": c.req.param("id") })
+      .where({ "bio_pages.userId": userId })
+      .whereNull("bio_items.deletedAt")
+      .first("bio_items.id", "bio_items.linkId")) as
+      | { id: string; linkId: string }
+      | undefined;
+    if (!item) {
+      throw new InkbyteError("not_found", "Item not found", 404);
+    }
+
+    await db("bio_items").where({ id: item.id }).update({
+      ...(payload.label !== undefined ? { label: payload.label } : {}),
+      ...(payload.position !== undefined ? { position: payload.position } : {}),
+      ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+      updatedAt: new Date(),
+    });
+    if (payload.url) {
+      await db("links").where({ id: item.linkId }).update({
+        longUrl: payload.url,
+        updatedAt: new Date(),
+      });
+    }
+
+    const page = (await bioScope(userId).first("id")) as { id: string };
+    const items = await bioItemsFor(page.id);
+    return c.json({ success: true, data: { items } });
+  });
+
+  app.delete("/api/v1/bio/items/:id", async (c) => {
+    const principal = await requirePrincipal(c);
+    const userId = await resolveUser(principal);
+    const item = (await db("bio_items")
+      .join("bio_pages", "bio_pages.id", "bio_items.bioPageId")
+      .where({ "bio_items.id": c.req.param("id") })
+      .where({ "bio_pages.userId": userId })
+      .whereNull("bio_items.deletedAt")
+      .first("bio_items.id", "bio_items.linkId")) as
+      | { id: string; linkId: string }
+      | undefined;
+    if (!item) {
+      throw new InkbyteError("not_found", "Item not found", 404);
+    }
+    await db("bio_items").where({ id: item.id }).update({
+      deletedAt: new Date(),
+    });
+    await db("links").where({ id: item.linkId }).update({
+      deletedAt: new Date(),
+      updatedAt: new Date(),
+    });
+    return c.body(null, 204);
+  });
+
+  /** Public link-in-bio page used by the website renderer. */
+  app.get("/api/v1/public/bio/:handle", async (c) => {
+    const page = (await db("bio_pages")
+      .where({ handle: c.req.param("handle") })
+      .whereNull("deletedAt")
+      .first()) as
+      | {
+          id: string;
+          heading: string;
+          bio: string;
+          isPublished: boolean;
+        }
+      | undefined;
+    if (!page || !page.isPublished) {
+      throw new InkbyteError("not_found", "Page not found", 404);
+    }
+    const items = await bioItemsFor(page.id);
+    return c.json({
+      success: true,
+      data: {
+        bio: {
+          handle: c.req.param("handle"),
+          heading: page.heading,
+          bio: page.bio,
+          isPublished: page.isPublished,
+          items,
+        },
+      },
+    });
+  });
+
+  const analyticsBreakdown = async (
+    scope: Knex.QueryBuilder,
+    column: "referrer" | "country" | "city" | "device",
+  ) =>
+    (await scope
+      .clone()
+      .where({ eventType: "view" })
+      .groupBy(`link_events.${column}`)
+      .select(`link_events.${column}`, db.raw("count(*) as views"))
+      .orderBy("views", "desc")
+      .limit(10)) as unknown as BreakdownRow[];
 
   app.get("/api/v1/analytics/overview", async (c) => {
     const principal = await requirePrincipal(c);
@@ -506,8 +917,29 @@ export function createApp(deps: AppDependencies) {
 
     const totals = (await scope
       .clone()
+      .where({ eventType: "view" })
       .countDistinct({ unique: "link_events.visitorId" })
       .count({ total: "*" })
+      .first()) as AggregateRow;
+
+    const organic = (await scope
+      .clone()
+      .where({ eventType: "view" })
+      .whereNull("link_events.referrer")
+      .count({ organic: "*" })
+      .first()) as AggregateRow;
+
+    const ctaViews = (await scope
+      .clone()
+      .where({ eventType: "view" })
+      .whereNotNull("links.ctaHeading")
+      .count({ total: "*" })
+      .first()) as AggregateRow;
+
+    const ctaClicks = (await scope
+      .clone()
+      .where({ eventType: "cta_click" })
+      .count({ ctaClicks: "*" })
       .first()) as AggregateRow;
 
     const since = (days: number) =>
@@ -515,17 +947,20 @@ export function createApp(deps: AppDependencies) {
 
     const last7 = (await scope
       .clone()
+      .where({ eventType: "view" })
       .where("link_events.createdAt", ">=", since(7))
       .count({ count: "*" })
       .first()) as AggregateRow;
     const last30 = (await scope
       .clone()
+      .where({ eventType: "view" })
       .where("link_events.createdAt", ">=", since(30))
       .count({ count: "*" })
       .first()) as AggregateRow;
 
     const topLinks = (await scope
       .clone()
+      .where({ eventType: "view" })
       .groupBy("links.id", "links.slug", "links.title", "links.longUrl")
       .select(
         "links.id",
@@ -538,28 +973,14 @@ export function createApp(deps: AppDependencies) {
       .orderBy("views", "desc")
       .limit(10)) as unknown as TopLinkRow[];
 
-    const referrers = (await scope
-      .clone()
-      .groupBy("link_events.referrer")
-      .select(
-        "link_events.referrer",
-        db.raw("count(*) as views"),
-      )
-      .orderBy("views", "desc")
-      .limit(10)) as unknown as BreakdownRow[];
-
-    const countries = (await scope
-      .clone()
-      .groupBy("link_events.country")
-      .select(
-        "link_events.country",
-        db.raw("count(*) as views"),
-      )
-      .orderBy("views", "desc")
-      .limit(10)) as unknown as BreakdownRow[];
+    const referrers = await analyticsBreakdown(scope, "referrer");
+    const countries = await analyticsBreakdown(scope, "country");
+    const cities = await analyticsBreakdown(scope, "city");
+    const devices = await analyticsBreakdown(scope, "device");
 
     const dailyViews = (await scope
       .clone()
+      .where({ eventType: "view" })
       .groupByRaw("date_trunc('day', link_events.created_at)")
       .select(
         db.raw("date_trunc('day', link_events.created_at) as day"),
@@ -571,8 +992,11 @@ export function createApp(deps: AppDependencies) {
       links: Number(linkCount?.count ?? 0),
       totalViews: Number(totals?.total ?? 0),
       uniqueVisitors: Number(totals?.unique ?? 0),
+      organicViews: Number(organic?.organic ?? 0),
       viewsLast7Days: Number(last7?.count ?? 0),
       viewsLast30Days: Number(last30?.count ?? 0),
+      ctaViews: Number(ctaViews?.total ?? 0),
+      ctaClicks: Number(ctaClicks?.ctaClicks ?? 0),
       topLinks: topLinks.map((row) => ({
         id: row.id,
         slug: row.slug,
@@ -587,6 +1011,14 @@ export function createApp(deps: AppDependencies) {
       })),
       countries: countries.map((row) => ({
         country: row.country ?? null,
+        views: Number(row.views ?? 0),
+      })),
+      cities: cities.map((row) => ({
+        city: row.city ?? null,
+        views: Number(row.views ?? 0),
+      })),
+      devices: devices.map((row) => ({
+        device: row.device ?? "other",
         views: Number(row.views ?? 0),
       })),
       dailyViews: dailyViews.map((row) => ({
@@ -616,29 +1048,39 @@ export function createApp(deps: AppDependencies) {
     const scope = db("link_events").where("link_events.linkId", row.id);
     const totals = (await scope
       .clone()
+      .where({ eventType: "view" })
       .countDistinct({ unique: "link_events.visitorId" })
       .count({ total: "*" })
       .first()) as AggregateRow;
-    const referrers = (await scope
+    const organic = (await scope
       .clone()
-      .groupBy("link_events.referrer")
-      .select(
-        "link_events.referrer",
-        db.raw("count(*) as views"),
-      )
-      .orderBy("views", "desc")
-      .limit(10)) as unknown as BreakdownRow[];
-    const countries = (await scope
+      .where({ eventType: "view" })
+      .whereNull("link_events.referrer")
+      .count({ organic: "*" })
+      .first()) as AggregateRow;
+    const ctaClicks = (await scope
       .clone()
-      .groupBy("link_events.country")
-      .select(
-        "link_events.country",
-        db.raw("count(*) as views"),
-      )
-      .orderBy("views", "desc")
-      .limit(10)) as unknown as BreakdownRow[];
+      .where({ eventType: "cta_click" })
+      .count({ ctaClicks: "*" })
+      .first()) as AggregateRow;
+    // The link row is already resolved; a view counts toward CTA impressions
+    // only when this link actually renders an interstitial.
+    const ctaViews = row.ctaHeading
+      ? ((await scope
+          .clone()
+          .where({ eventType: "view" })
+          .count({ total: "*" })
+          .first()) as AggregateRow)
+      : null;
+
+    const referrers = await analyticsBreakdown(scope, "referrer");
+    const countries = await analyticsBreakdown(scope, "country");
+    const cities = await analyticsBreakdown(scope, "city");
+    const devices = await analyticsBreakdown(scope, "device");
+
     const dailyViews = (await scope
       .clone()
+      .where({ eventType: "view" })
       .groupByRaw("date_trunc('day', link_events.created_at)")
       .select(
         db.raw("date_trunc('day', link_events.created_at) as day"),
@@ -650,12 +1092,23 @@ export function createApp(deps: AppDependencies) {
       link: toPublicLink(row, protocol),
       views: Number(totals?.total ?? 0),
       uniqueVisitors: Number(totals?.unique ?? 0),
+      organicViews: Number(organic?.organic ?? 0),
+      ctaViews: Number(ctaViews?.total ?? 0),
+      ctaClicks: Number(ctaClicks?.ctaClicks ?? 0),
       referrers: referrers.map((entry) => ({
         referrer: entry.referrer ?? null,
         views: Number(entry.views ?? 0),
       })),
       countries: countries.map((entry) => ({
         country: entry.country ?? null,
+        views: Number(entry.views ?? 0),
+      })),
+      cities: cities.map((entry) => ({
+        city: entry.city ?? null,
+        views: Number(entry.views ?? 0),
+      })),
+      devices: devices.map((entry) => ({
+        device: entry.device ?? "other",
         views: Number(entry.views ?? 0),
       })),
       dailyViews: dailyViews.map((entry) => ({
