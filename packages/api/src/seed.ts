@@ -1,14 +1,13 @@
 import { closeDatabase, createDatabase } from "@lib/database";
 
-const url =
-  process.env.MIGRATION_DATABASE_URL ?? process.env.DATABASE_URL;
+const url = process.env.MIGRATION_DATABASE_URL ?? process.env.DATABASE_URL;
 if (!url) {
   throw new Error(
     "MIGRATION_DATABASE_URL or DATABASE_URL is required to seed domains",
   );
 }
 
-const domains = (process.env.DEFAULT_DOMAINS ?? "inkbyte.app,inkbyte.co")
+const domains = (process.env.DEFAULT_DOMAINS ?? "inkb.ca,inkbyte.ca")
   .split(",")
   .map((entry) => entry.trim().toLowerCase())
   .filter(Boolean);

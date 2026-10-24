@@ -1,10 +1,9 @@
 import { closeDatabase, createDatabase } from "@lib/database";
 
-const url =
-  process.env.MIGRATION_DATABASE_URL ?? process.env.DATABASE_URL;
+const url = process.env.MIGRATION_DATABASE_URL;
 if (!url) {
   throw new Error(
-    "MIGRATION_DATABASE_URL or DATABASE_URL is required to run migrations",
+    "MIGRATION_DATABASE_URL is required; runtime credentials cannot run migrations",
   );
 }
 

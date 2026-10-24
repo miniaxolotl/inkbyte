@@ -55,6 +55,24 @@ export const slugSchema = z
   .regex(
     /^[a-zA-Z0-9](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/,
     "Use letters, numbers, dashes and underscores",
+  )
+  .refine(
+    (value) =>
+      ![
+        "api",
+        "dashboard",
+        "help",
+        "sign-in",
+        "sign-up",
+        "r",
+        "l",
+        "b",
+        "visit",
+        "favicon.ico",
+        "robots.txt",
+        "sitemap.xml",
+      ].includes(value.toLowerCase()),
+    "That alias is reserved for the website",
   );
 
 export const domainSchema = z
@@ -171,6 +189,7 @@ export type PublicBioItem = {
   label: string;
   url: string;
   slug: string;
+  domain: string;
   position: number;
 };
 

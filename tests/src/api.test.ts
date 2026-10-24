@@ -146,6 +146,66 @@ describe("sessions", () => {
 });
 
 describe("links", () => {
+  it("reserves a custom alias atomically under concurrent creation", async () => {
+    const { auth: authorization } = await signUp();
+    const payload = {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "concurrent",
+    };
+    const results = await Promise.all([
+      createLink(authorization, payload),
+      createLink(authorization, payload),
+    ]);
+    assert.deepEqual(results.map((r) => r.status).sort(), [201, 409]);
+  });
+  it("bounds JSON request bodies before parsing", async () => {
+    const { auth: authorization } = await signUp();
+    const response = await createLink(authorization, {
+      longUrl: `https://example.com/${"x".repeat(70000)}`,
+      domain: "inkbyte.app",
+    });
+    assert.equal(response.status, 413);
+  });
+  it("keeps deleted aliases reserved instead of failing with a database error", async () => {
+    const { auth: authorization } = await signUp();
+    const created = await createLink(authorization, {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "reserved-alias",
+    });
+    const payload = (await created.json()) as {
+      data: { link: { id: string } };
+    };
+    await app.request(`/api/v1/links/${payload.data.link.id}`, {
+      method: "DELETE",
+      headers: { authorization },
+    });
+    const repeated = await createLink(authorization, {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "reserved-alias",
+    });
+    assert.equal(repeated.status, 409);
+  });
+
+  it("rejects aliases that collide with website routes", async () => {
+    const { auth: authorization } = await signUp();
+    const response = await createLink(authorization, {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "dashboard",
+    });
+    assert.equal(response.status, 400);
+  });
+
+  it("returns a validation error for a malformed link identifier", async () => {
+    const { auth: authorization } = await signUp();
+    const response = await app.request("/api/v1/links/not-a-uuid", {
+      headers: { authorization },
+    });
+    assert.equal(response.status, 400);
+  });
   it("creates a link owned by the current user", async () => {
     const { auth: authHeader } = await signUp();
     const response = await createLink(authHeader, {
@@ -157,7 +217,10 @@ describe("links", () => {
     const body = (await response.json()) as {
       data: { link: { slug: string; longUrl: string; shortUrl: string } };
     };
-    assert.equal(body.data.link.longUrl, "https://example.com/a/very/long/path");
+    assert.equal(
+      body.data.link.longUrl,
+      "https://example.com/a/very/long/path",
+    );
     assert.match(body.data.link.slug, /^[a-z0-9]{7}$/);
     assert.equal(
       body.data.link.shortUrl,
@@ -567,10 +630,7 @@ describe("interstitials and QR codes", () => {
       "/api/v1/qr?slug=coded&domain=inkbyte.app&size=256",
     );
     assert.equal(response.status, 200);
-    assert.match(
-      response.headers.get("content-type") ?? "",
-      /image\/svg\+xml/,
-    );
+    assert.match(response.headers.get("content-type") ?? "", /image\/svg\+xml/);
     const svg = await response.text();
     assert.match(svg, /<svg/);
   });
@@ -589,7 +649,10 @@ describe("link-in-bio pages", () => {
 
     const created = await app.request("/api/v1/bio", {
       method: "PUT",
-      headers: { authorization: authHeader, "content-type": "application/json" },
+      headers: {
+        authorization: authHeader,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({
         handle: "ada",
         heading: "Ada Lovelace",
@@ -600,7 +663,10 @@ describe("link-in-bio pages", () => {
 
     const item = await app.request("/api/v1/bio/items", {
       method: "POST",
-      headers: { authorization: authHeader, "content-type": "application/json" },
+      headers: {
+        authorization: authHeader,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({
         label: "Website",
         url: "https://example.com/ada",
@@ -608,10 +674,13 @@ describe("link-in-bio pages", () => {
     });
     assert.equal(item.status, 201);
     const itemBody = (await item.json()) as {
-      data: { items: Array<{ id: string; url: string; slug: string }> };
+      data: {
+        items: Array<{ id: string; url: string; slug: string; domain: string }>;
+      };
     };
     assert.equal(itemBody.data.items.length, 1);
     assert.equal(itemBody.data.items[0]?.url, "https://example.com/ada");
+    assert.equal(itemBody.data.items[0]?.domain, "inkbyte.app");
 
     const publicPage = await app.request("/api/v1/public/bio/ada");
     assert.equal(publicPage.status, 200);
@@ -627,10 +696,7 @@ describe("link-in-bio pages", () => {
       { headers: { "user-agent": "Mozilla/5.0 (Windows NT 10.0)" } },
     );
     assert.equal(redirect.status, 302);
-    assert.equal(
-      redirect.headers.get("location"),
-      "https://example.com/ada",
-    );
+    assert.equal(redirect.headers.get("location"), "https://example.com/ada");
   });
 
   it("rejects a handle owned by another account", async () => {
@@ -664,12 +730,18 @@ describe("link-in-bio pages", () => {
     const { auth: authHeader } = await signUp();
     await app.request("/api/v1/bio", {
       method: "PUT",
-      headers: { authorization: authHeader, "content-type": "application/json" },
+      headers: {
+        authorization: authHeader,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({ handle: "remover" }),
     });
     const item = await app.request("/api/v1/bio/items", {
       method: "POST",
-      headers: { authorization: authHeader, "content-type": "application/json" },
+      headers: {
+        authorization: authHeader,
+        "content-type": "application/json",
+      },
       body: JSON.stringify({ label: "Go", url: "https://example.com" }),
     });
     const itemBody = (await item.json()) as {
@@ -690,6 +762,32 @@ describe("link-in-bio pages", () => {
 });
 
 describe("analytics", () => {
+  it("distinguishes organic search traffic from direct visits", async () => {
+    const { auth: authorization } = await signUp();
+    await createLink(authorization, {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "search-traffic",
+    });
+    for (const referer of [
+      "https://www.google.com/search?q=private",
+      "https://www.bing.com/search?q=private",
+    ]) {
+      await app.request("/r/search-traffic?domain=inkbyte.app", {
+        headers: { referer, "user-agent": "Mozilla/5.0" },
+      });
+    }
+    await app.request("/r/search-traffic?domain=inkbyte.app", {
+      headers: { "user-agent": "Mozilla/5.0" },
+    });
+    const response = await app.request("/api/v1/analytics/overview", {
+      headers: { authorization },
+    });
+    const result = (await response.json()) as {
+      data: { overview: { organicViews: number } };
+    };
+    assert.equal(result.data.overview.organicViews, 2);
+  });
   it("counts organic views, devices and cities", async () => {
     const { auth: authHeader } = await signUp();
     const created = await createLink(authHeader, {
@@ -729,7 +827,7 @@ describe("analytics", () => {
       };
     };
     assert.equal(overviewBody.data.overview.totalViews, 2);
-    assert.equal(overviewBody.data.overview.organicViews, 1);
+    assert.equal(overviewBody.data.overview.organicViews, 0);
     assert.equal(overviewBody.data.overview.countries[0]?.country, "CA");
     assert.equal(overviewBody.data.overview.cities[0]?.city, "Calgary");
     assert.equal(overviewBody.data.overview.cities[0]?.views, 1);
@@ -750,7 +848,7 @@ describe("analytics", () => {
     const detailBody = (await detail.json()) as {
       data: { analytics: { organicViews: number; devices: unknown[] } };
     };
-    assert.equal(detailBody.data.analytics.organicViews, 1);
+    assert.equal(detailBody.data.analytics.organicViews, 0);
     assert.equal(detailBody.data.analytics.devices.length, 2);
   });
 

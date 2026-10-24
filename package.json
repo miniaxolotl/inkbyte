@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/miniaxolotl/inkbyte.git"
   },
-  "homepage": "https://inkbyte.app",
+  "homepage": "https://inkbyte.ca",
   "engines": {
     "node": ">=24.0.0"
   },
@@ -19,6 +19,7 @@
     "dev": "pnpm --parallel --filter @miniaxolotl/inkbyte-server --filter website dev",
     "dev:api": "pnpm --filter @miniaxolotl/inkbyte-server dev",
     "dev:website": "pnpm --filter website dev",
+    "env:check": "tsx --env-file-if-exists=.env scripts/validate-env.ts",
     "test:website": "pnpm --filter website test",
     "build": "node scripts/build.mjs api && pnpm build:website",
     "build:api": "node scripts/build.mjs api",

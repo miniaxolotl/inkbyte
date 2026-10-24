@@ -2,7 +2,9 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { cors } from "hono/cors";
-import { ZodError } from "zod";
+import { bodyLimit } from "hono/body-limit";
+import { z, ZodError } from "zod";
+import { UserModel } from "@lib/database";
 import type { Knex } from "@lib/database";
 import {
   InkbyteError,
@@ -31,6 +33,8 @@ import {
   resolveGeo,
   resolveVisitor,
   visitorCookieHeader,
+  referrerOrigin,
+  organicReferrerPattern,
 } from "./tracking.ts";
 
 const SLUG_ALPHABET = "abcdefghijkmnopqrstuvwxyz23456789";
@@ -59,6 +63,7 @@ export type AppDependencies = {
   origin: string;
   siteUrl: string;
   defaultDomains: string[];
+  trackingSecret?: string;
   ready: () => Promise<void>;
 };
 
@@ -157,6 +162,7 @@ const toPublicLink = (
 export function createApp(deps: AppDependencies) {
   const app = new Hono<AppEnvironment>();
   const { db } = deps;
+  const trackingSecret = deps.trackingSecret ?? randomBytes(32).toString("hex");
 
   const linkSelect = [
     "links.id",
@@ -206,9 +212,9 @@ export function createApp(deps: AppDependencies) {
    * the Clerk directory otherwise.
    */
   const resolveUser = async (principal: Principal): Promise<string> => {
-    const existing = (await db("users")
-      .where({ clerkSubject: principal.subject })
-      .first("id")) as { id: string } | undefined;
+    const existing = await UserModel.query(db)
+      .findOne({ clerkSubject: principal.subject })
+      .select("id");
     if (existing) return existing.id;
 
     let email = principal.email;
@@ -224,6 +230,12 @@ export function createApp(deps: AppDependencies) {
     const [created] = (await db("users")
       .insert({
         clerkSubject: principal.subject,
+        email: email || "",
+        firstName: firstName || "",
+        lastName: lastName || "",
+      })
+      .onConflict("clerkSubject")
+      .merge({
         email: email || "",
         firstName: firstName || "",
         lastName: lastName || "",
@@ -274,6 +286,24 @@ export function createApp(deps: AppDependencies) {
       allowHeaders: ["Authorization", "Content-Type", "X-Visitor-Id"],
       exposeHeaders: ["WWW-Authenticate", "X-Request-ID"],
       credentials: true,
+    }),
+  );
+  app.use(
+    "/api/*",
+    bodyLimit({
+      maxSize: 64 * 1024,
+      onError: (c) =>
+        c.json(
+          errorResponse(
+            new InkbyteError(
+              "body_too_large",
+              "Request body is too large",
+              413,
+            ),
+            c.get("requestId"),
+          ),
+          413,
+        ),
     }),
   );
 
@@ -402,6 +432,15 @@ export function createApp(deps: AppDependencies) {
     return c.json({ success: true, data: { links } });
   });
 
+  app.use("/api/v1/links/:id", async (c, next) => {
+    z.uuid().parse(c.req.param("id"));
+    await next();
+  });
+  app.use("/api/v1/analytics/links/:id", async (c, next) => {
+    z.uuid().parse(c.req.param("id"));
+    await next();
+  });
+
   app.post("/api/v1/links", async (c) => {
     const principal = await requirePrincipal(c);
     const limited = requireRateLimit(createLimiter, c.req.raw);
@@ -421,12 +460,27 @@ export function createApp(deps: AppDependencies) {
     }
 
     let slug = payload.customSlug ?? generateSlug();
+    let inserted = false;
     for (let attempt = 0; attempt < 5; attempt += 1) {
-      const conflict = (await db("links")
-        .where({ domainId: domain.id, slug })
-        .whereNull("deletedAt")
-        .first("id")) as { id: string } | undefined;
-      if (!conflict) break;
+      const created = await db("links")
+        .insert({
+          slug,
+          domainId: domain.id,
+          userId,
+          longUrl: payload.longUrl,
+          title: payload.title ?? null,
+          isTracking: payload.isTracking,
+          ctaHeading: payload.ctaHeading ?? null,
+          ctaBody: payload.ctaBody ?? null,
+          ctaAction: payload.ctaAction ?? null,
+        })
+        .onConflict(["domainId", "slug"])
+        .ignore()
+        .returning("id");
+      if (created.length) {
+        inserted = true;
+        break;
+      }
       if (payload.customSlug) {
         throw new InkbyteError(
           "slug_taken",
@@ -437,17 +491,12 @@ export function createApp(deps: AppDependencies) {
       slug = generateSlug();
     }
 
-    await db("links").insert({
-      slug,
-      domainId: domain.id,
-      userId,
-      longUrl: payload.longUrl,
-      title: payload.title ?? null,
-      isTracking: payload.isTracking,
-      ctaHeading: payload.ctaHeading ?? null,
-      ctaBody: payload.ctaBody ?? null,
-      ctaAction: payload.ctaAction ?? null,
-    });
+    if (!inserted)
+      throw new InkbyteError(
+        "unavailable",
+        "Could not allocate an alias. Retry shortly.",
+        503,
+      );
 
     const row = await fetchLinkRow(slug, payload.domain);
     return c.json(
@@ -469,7 +518,10 @@ export function createApp(deps: AppDependencies) {
     if (!row) {
       throw new InkbyteError("not_found", "Link not found", 404);
     }
-    return c.json({ success: true, data: { link: toPublicLink(row, protocol) } });
+    return c.json({
+      success: true,
+      data: { link: toPublicLink(row, protocol) },
+    });
   });
 
   app.patch("/api/v1/links/:id", async (c) => {
@@ -480,9 +532,7 @@ export function createApp(deps: AppDependencies) {
     const owned = (await db("links")
       .where({ id: c.req.param("id"), userId })
       .whereNull("deletedAt")
-      .first("id", "domainId")) as
-      | { id: string; domainId: string }
-      | undefined;
+      .first("id", "domainId")) as { id: string; domainId: string } | undefined;
     if (!owned) {
       throw new InkbyteError("not_found", "Link not found", 404);
     }
@@ -495,7 +545,9 @@ export function createApp(deps: AppDependencies) {
         ...(payload.isTracking !== undefined
           ? { isTracking: payload.isTracking }
           : {}),
-        ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
+        ...(payload.isActive !== undefined
+          ? { isActive: payload.isActive }
+          : {}),
         ...(payload.ctaHeading !== undefined
           ? { ctaHeading: payload.ctaHeading }
           : {}),
@@ -506,24 +558,15 @@ export function createApp(deps: AppDependencies) {
         updatedAt: new Date(),
       });
 
-    const domainSlug = (
-      (await db("domains").where({ id: owned.domainId }).first("slug")) as {
-        slug: string;
-      }
-    ).slug;
-    const row = await fetchLinkRow(
-      c.req.param("id"),
-      domainSlug,
-    ).then((found) =>
-      found?.id === owned.id
-        ? found
-        : (db("links")
-            .join("domains", "domains.id", "links.domain_id")
-            .where("links.id", owned.id)
-            .select(linkSelect)
-            .first() as Promise<LinkRow | undefined>),
-    );
-    return c.json({ success: true, data: { link: toPublicLink(row!, protocol) } });
+    const row = (await db("links")
+      .join("domains", "domains.id", "links.domain_id")
+      .where("links.id", owned.id)
+      .select(linkSelect)
+      .first()) as LinkRow | undefined;
+    return c.json({
+      success: true,
+      data: { link: toPublicLink(row!, protocol) },
+    });
   });
 
   app.delete("/api/v1/links/:id", async (c) => {
@@ -576,7 +619,10 @@ export function createApp(deps: AppDependencies) {
     const userAgent = c.req.header("user-agent") ?? null;
 
     if (row.isTracking && !isBot(userAgent)) {
-      const { visitorId, existingCookie } = resolveVisitor(c.req.raw);
+      const { visitorId, existingCookie } = resolveVisitor(
+        c.req.raw,
+        trackingSecret,
+      );
       const geo = resolveGeo(c.req.raw);
       const eventType =
         c.req.query("e") === "cta_click" && row.ctaHeading
@@ -585,7 +631,7 @@ export function createApp(deps: AppDependencies) {
       await db("link_events").insert({
         linkId: row.id,
         visitorId: visitorId.slice(0, 256),
-        referrer: c.req.header("referer")?.slice(0, 1024) ?? null,
+        referrer: referrerOrigin(c.req.header("referer") ?? null),
         userAgent: userAgent?.slice(0, 512) ?? null,
         country: geo.country,
         city: geo.city,
@@ -596,12 +642,25 @@ export function createApp(deps: AppDependencies) {
       if (!existingCookie) {
         c.header(
           "Set-Cookie",
-          visitorCookieHeader(visitorId, isHttps),
+          visitorCookieHeader(visitorId, isHttps, trackingSecret),
         );
       }
     }
 
     c.header("Cache-Control", "no-store");
+    if (c.req.query("format") === "json") {
+      return c.json({
+        success: true,
+        data: {
+          link: {
+            slug: row.slug,
+            domain: domainSlug,
+            longUrl: row.longUrl,
+            cta: linkCta(row),
+          },
+        },
+      });
+    }
     return c.redirect(row.longUrl, 302);
   });
 
@@ -623,9 +682,7 @@ export function createApp(deps: AppDependencies) {
   });
 
   const bioScope = (userId: string) =>
-    db("bio_pages")
-      .where({ userId })
-      .whereNull("deletedAt");
+    db("bio_pages").where({ userId }).whereNull("deletedAt");
 
   const bioItemsFor = async (pageId: string): Promise<PublicBioItem[]> => {
     const rows = (await db("bio_items")
@@ -634,6 +691,8 @@ export function createApp(deps: AppDependencies) {
       .where({ "bio_items.bioPageId": pageId })
       .whereNull("bio_items.deletedAt")
       .where("bio_items.isActive", true)
+      .whereNull("links.deletedAt")
+      .where("links.isActive", true)
       .orderBy("bio_items.position", "asc")
       .select(
         "bio_items.id",
@@ -641,18 +700,21 @@ export function createApp(deps: AppDependencies) {
         "bio_items.position",
         "links.longUrl",
         "links.slug",
+        "domains.slug as domain_slug",
       )) as Array<{
       id: string;
       label: string;
       position: number;
       longUrl: string;
       slug: string;
+      domainSlug: string;
     }>;
     return rows.map((row) => ({
       id: row.id,
       label: row.label,
       url: row.longUrl,
       slug: row.slug,
+      domain: row.domainSlug,
       position: row.position,
     }));
   };
@@ -697,8 +759,7 @@ export function createApp(deps: AppDependencies) {
     }
 
     const existing = (await bioScope(userId).first("id")) as
-      | { id: string }
-      | undefined;
+      { id: string } | undefined;
     if (existing) {
       await db("bio_pages").where({ id: existing.id }).update({
         handle: payload.handle,
@@ -744,9 +805,7 @@ export function createApp(deps: AppDependencies) {
     const userId = await resolveUser(principal);
     const payload = bioItemCreateSchema.parse(await c.req.json());
 
-    const page = (await bioScope(userId).first()) as
-      | { id: string }
-      | undefined;
+    const page = (await bioScope(userId).first()) as { id: string } | undefined;
     if (!page) {
       throw new InkbyteError(
         "bio_missing",
@@ -809,18 +868,23 @@ export function createApp(deps: AppDependencies) {
       .where({ "bio_pages.userId": userId })
       .whereNull("bio_items.deletedAt")
       .first("bio_items.id", "bio_items.linkId")) as
-      | { id: string; linkId: string }
-      | undefined;
+      { id: string; linkId: string } | undefined;
     if (!item) {
       throw new InkbyteError("not_found", "Item not found", 404);
     }
 
-    await db("bio_items").where({ id: item.id }).update({
-      ...(payload.label !== undefined ? { label: payload.label } : {}),
-      ...(payload.position !== undefined ? { position: payload.position } : {}),
-      ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
-      updatedAt: new Date(),
-    });
+    await db("bio_items")
+      .where({ id: item.id })
+      .update({
+        ...(payload.label !== undefined ? { label: payload.label } : {}),
+        ...(payload.position !== undefined
+          ? { position: payload.position }
+          : {}),
+        ...(payload.isActive !== undefined
+          ? { isActive: payload.isActive }
+          : {}),
+        updatedAt: new Date(),
+      });
     if (payload.url) {
       await db("links").where({ id: item.linkId }).update({
         longUrl: payload.url,
@@ -842,8 +906,7 @@ export function createApp(deps: AppDependencies) {
       .where({ "bio_pages.userId": userId })
       .whereNull("bio_items.deletedAt")
       .first("bio_items.id", "bio_items.linkId")) as
-      | { id: string; linkId: string }
-      | undefined;
+      { id: string; linkId: string } | undefined;
     if (!item) {
       throw new InkbyteError("not_found", "Item not found", 404);
     }
@@ -925,7 +988,7 @@ export function createApp(deps: AppDependencies) {
     const organic = (await scope
       .clone()
       .where({ eventType: "view" })
-      .whereNull("link_events.referrer")
+      .whereRaw("link_events.referrer ~ ?", [organicReferrerPattern])
       .count({ organic: "*" })
       .first()) as AggregateRow;
 
@@ -982,10 +1045,9 @@ export function createApp(deps: AppDependencies) {
       .clone()
       .where({ eventType: "view" })
       .groupByRaw("date_trunc('day', link_events.created_at)")
-      .select(
-        db.raw("date_trunc('day', link_events.created_at) as day"),
-        { views: db.raw("count(*)") },
-      )
+      .select(db.raw("date_trunc('day', link_events.created_at) as day"), {
+        views: db.raw("count(*)"),
+      })
       .orderBy("day", "asc")) as unknown as DailyRow[];
 
     const overview: AnalyticsOverview = {
@@ -1055,7 +1117,7 @@ export function createApp(deps: AppDependencies) {
     const organic = (await scope
       .clone()
       .where({ eventType: "view" })
-      .whereNull("link_events.referrer")
+      .whereRaw("link_events.referrer ~ ?", [organicReferrerPattern])
       .count({ organic: "*" })
       .first()) as AggregateRow;
     const ctaClicks = (await scope
@@ -1082,10 +1144,9 @@ export function createApp(deps: AppDependencies) {
       .clone()
       .where({ eventType: "view" })
       .groupByRaw("date_trunc('day', link_events.created_at)")
-      .select(
-        db.raw("date_trunc('day', link_events.created_at) as day"),
-        { views: db.raw("count(*)") },
-      )
+      .select(db.raw("date_trunc('day', link_events.created_at) as day"), {
+        views: db.raw("count(*)"),
+      })
       .orderBy("day", "asc")) as unknown as DailyRow[];
 
     const analytics: LinkAnalytics = {

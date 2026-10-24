@@ -9,6 +9,7 @@
   "include": [
     "lib/*/src/**/*.ts",
     "packages/api/src/**/*.ts",
+    "scripts/validate-env.ts",
     "tests/src/**/*.ts"
   ],
   "exclude": [

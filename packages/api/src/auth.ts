@@ -8,6 +8,22 @@ export interface TokenVerifier {
 const unauthorized = () =>
   new InkbyteError("unauthorized", "Sign in to continue", 401);
 
+export function validateSessionClaims(
+  payload: Record<string, unknown>,
+  siteUrl: string,
+) {
+  if (
+    typeof payload.sub !== "string" ||
+    !payload.sub.startsWith("user_") ||
+    typeof payload.sid !== "string" ||
+    payload.azp !== siteUrl ||
+    payload.sts === "pending" ||
+    typeof payload.iat !== "number" ||
+    payload.iat > Date.now() / 1000 + 5
+  )
+    throw unauthorized();
+}
+
 /**
  * Verifies Clerk session tokens against the instance JWKS. The issuer is
  * fixed by configuration; neither request hosts nor token claims select it.
@@ -16,6 +32,7 @@ export function clerkVerifier(env: {
   CLERK_ISSUER: string;
   CLERK_SECRET_KEY: string;
   CLERK_PUBLISHABLE_KEY: string;
+  SITE_URL: string;
 }): TokenVerifier {
   const jwks = createRemoteJWKSet(
     new URL("/.well-known/jwks.json", env.CLERK_ISSUER),
@@ -29,27 +46,19 @@ export function clerkVerifier(env: {
           issuer: env.CLERK_ISSUER,
           algorithms: ["RS256"],
           clockTolerance: 5,
-          requiredClaims: ["sub", "exp", "iat"],
+          requiredClaims: ["sub", "exp", "iat", "sid", "azp"],
         });
 
-        if (
-          typeof payload.sub !== "string" ||
-          !payload.sub.startsWith("user_") ||
-          typeof payload.iat !== "number" ||
-          payload.iat > Date.now() / 1000 + 5
-        ) {
-          throw unauthorized();
-        }
+        validateSessionClaims(payload, env.SITE_URL);
 
         const claims = payload as Record<string, unknown>;
-        const email =
-          typeof claims.email === "string" ? claims.email : "";
+        const email = typeof claims.email === "string" ? claims.email : "";
         const firstName =
           typeof claims.first_name === "string" ? claims.first_name : "";
         const lastName =
           typeof claims.last_name === "string" ? claims.last_name : "";
 
-        return { subject: payload.sub, email, firstName, lastName };
+        return { subject: payload.sub!, email, firstName, lastName };
       } catch (error) {
         if (error instanceof InkbyteError) throw error;
         const status = (error as { status?: number }).status;

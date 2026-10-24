@@ -1,50 +1,71 @@
-import { createHash } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 export const VISITOR_COOKIE = "inkbyte_vid";
 const VISITOR_TTL_SECONDS = 60 * 60 * 24 * 365;
+
+export function referrerOrigin(value: string | null): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return ["https:", "http:"].includes(url.protocol) ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Match search origins only, not arbitrary hosts containing a provider name. */
+export const organicReferrerPattern =
+  "^https?://(www\\.)?(google\\.[a-z.]+|bing\\.com|duckduckgo\\.com|search\\.yahoo\\.com|search\\.brave\\.com)$";
 
 /**
  * Resolves the visitor identity for a redirect.
  *
  * The cookie is authoritative when present: it is HttpOnly, set only by the
- * API, and stable across visits. When it is absent a per-day digest of the
- * client address and user agent is used, so repeat visitors from the same
- * network still collapse to one identity without storing a raw address.
- * Client-supplied visitor headers are never trusted; they are trivially
- * spoofable and would inflate unique-visitor counts.
+ * API, signed with a server-only key, and stable across visits. A missing or
+ * forged cookie gets a random identity rather than a fingerprint of an IP.
+ * Client-supplied visitor headers are never trusted. Visitors who clear their
+ * cookies appear as new visitors; these are approximate browser counts.
  */
-export function resolveVisitor(request: Request): {
+export function resolveVisitor(
+  request: Request,
+  secret: string,
+): {
   visitorId: string;
   existingCookie: string | null;
 } {
   const cookie = request.headers.get("cookie") ?? "";
   const match = cookie.match(
-    new RegExp(`(?:^|;\\s*)${VISITOR_COOKIE}=([A-Za-z0-9_-]{16,64})`),
+    new RegExp(
+      `(?:^|;\\s*)${VISITOR_COOKIE}=([A-Za-z0-9_-]{32})\\.([A-Za-z0-9_-]{43})(?:;|$)`,
+    ),
   );
-  if (match?.[1]) {
+  const signature = match?.[1] ? sign(match[1], secret) : null;
+  if (
+    match?.[1] &&
+    match[2] &&
+    signature &&
+    timingSafeEqual(Buffer.from(signature), Buffer.from(match[2]))
+  ) {
     return { visitorId: match[1], existingCookie: match[1] };
   }
 
-  const address =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "";
-  const userAgent = request.headers.get("user-agent") ?? "";
-  const day = new Date().toISOString().slice(0, 10);
-  const digest = createHash("sha256")
-    .update(`${day}|${address}|${userAgent}`)
-    .digest("base64url")
-    .slice(0, 32);
-  return { visitorId: digest, existingCookie: null };
+  return {
+    visitorId: randomBytes(24).toString("base64url"),
+    existingCookie: null,
+  };
 }
+
+const sign = (value: string, secret: string) =>
+  createHmac("sha256", secret).update(value).digest("base64url");
 
 /** Builds the Set-Cookie header that carries the visitor identity. */
 export function visitorCookieHeader(
   visitorId: string,
   isHttps: boolean,
+  secret: string,
 ): string {
   const parts = [
-    `${VISITOR_COOKIE}=${visitorId}`,
+    `${VISITOR_COOKIE}=${visitorId}.${sign(visitorId, secret)}`,
     "Path=/",
     `Max-Age=${VISITOR_TTL_SECONDS}`,
     "SameSite=Lax",
@@ -90,8 +111,7 @@ export function parseDevice(userAgent: string | null): Device {
   if (/Mobi|iPhone|Android.*Mobile|Windows Phone/i.test(userAgent))
     return "mobile";
   if (/Android/i.test(userAgent)) return "tablet";
-  if (/Windows|Macintosh|Mac OS X|Linux|X11/i.test(userAgent))
-    return "desktop";
+  if (/Windows|Macintosh|Mac OS X|Linux|X11/i.test(userAgent)) return "desktop";
   return "other";
 }
 

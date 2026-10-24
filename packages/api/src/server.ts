@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import type { Server } from "node:http";
 import { pathToFileURL } from "node:url";
+import { createClerkClient } from "@clerk/backend";
 import { closeDatabase, createDatabase, probeDatabase } from "@lib/database";
 import { readServerEnvironment } from "@lib/config";
 import { createApp } from "./app.ts";
@@ -21,6 +22,21 @@ export async function startServer() {
     origin: env.API_ORIGIN,
     siteUrl: env.SITE_URL,
     defaultDomains: env.DEFAULT_DOMAINS,
+    trackingSecret: env.TRACKING_SECRET,
+    directory: {
+      async getUser(subject) {
+        const clerk = createClerkClient({ secretKey: env.CLERK_SECRET_KEY });
+        const user = await clerk.users.getUser(subject);
+        return {
+          email:
+            user.emailAddresses.find(
+              (email) => email.id === user.primaryEmailAddressId,
+            )?.emailAddress ?? "",
+          firstName: user.firstName ?? "",
+          lastName: user.lastName ?? "",
+        };
+      },
+    },
     ready: async () => {
       await probeDatabase(db);
     },

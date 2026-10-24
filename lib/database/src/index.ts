@@ -15,11 +15,7 @@ export type DatabaseOptions = {
   applicationName?: string;
 };
 
-/**
- * Neon and other hosted Postgres providers require TLS. `rejectUnauthorized`
- * is disabled by default because Neon presents a certificate that is not
- * chained to a public root for pooled endpoints.
- */
+/** Hosted PostgreSQL connections must authenticate the server certificate. */
 export function createDatabase(
   url: string,
   options: DatabaseOptions = {},
@@ -28,7 +24,7 @@ export function createDatabase(
     client: "pg",
     connection: {
       connectionString: url,
-      ssl: options.ssl ? { rejectUnauthorized: false } : undefined,
+      ssl: options.ssl ? { rejectUnauthorized: true } : undefined,
       connectionTimeoutMillis: options.acquireTimeoutMs ?? 10000,
       statement_timeout: options.statementTimeoutMs ?? 10000,
       application_name: options.applicationName ?? "inkbyte",

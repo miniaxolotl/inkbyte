@@ -158,6 +158,9 @@ importers:
       '@fontsource/secular-one':
         specifier: ~5.3.0
         version: 5.3.0
+      '@lib/config':
+        specifier: workspace:*
+        version: link:../../lib/config
       '@lib/shared':
         specifier: workspace:*
         version: link:../../lib/shared
