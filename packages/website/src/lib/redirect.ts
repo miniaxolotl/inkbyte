@@ -1,5 +1,9 @@
 import "server-only";
 import { fetchDomains } from "./api";
+import {
+  shortLinkNotFoundHtml,
+  shortLinkUnavailableHtml,
+} from "./short-link-error";
 
 type Context = { params: Promise<{ slug: string }> };
 
@@ -9,14 +13,20 @@ export async function resolveShortLink(request: Request, context: Context) {
     "Cache-Control": "private, no-store",
     "X-Robots-Tag": "noindex",
   };
-  const missing = () =>
-    new Response(
-      '<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Link not found | InkByte</title><style>body{margin:0;background:#f2f2f2;color:#262626;font:16px/1.6 system-ui,sans-serif}main{max-width:26rem;min-height:90dvh;margin:auto;padding:2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}h1{font-size:2rem;line-height:1.2}p{color:#55555f}a{display:block;margin-top:1rem;padding:.7rem 1.2rem;border-radius:.5rem;background:#276d8b;color:white;text-decoration:none}a:focus-visible{outline:3px solid #cc637f;outline-offset:4px}</style></head><body><main><img src="/assets/logo/default.svg" alt="InkByte" width="96" height="96"><h1>That link does not exist.</h1><p>Check the address or ask the sender for a new link.</p><a href="/">Back to InkByte</a></main></body></html>',
-      {
-        status: 404,
-        headers: { ...headers, "Content-Type": "text/html; charset=utf-8" },
+  const unavailable = () =>
+    new Response(shortLinkUnavailableHtml, {
+      status: 503,
+      headers: {
+        ...headers,
+        "Content-Type": "text/html; charset=utf-8",
+        "Retry-After": "30",
       },
-    );
+    });
+  const missing = () =>
+    new Response(shortLinkNotFoundHtml, {
+      status: 404,
+      headers: { ...headers, "Content-Type": "text/html; charset=utf-8" },
+    });
   // Link prefetches must never become clicks.
   if (
     request.headers.get("purpose") === "prefetch" ||
@@ -26,8 +36,7 @@ export async function resolveShortLink(request: Request, context: Context) {
   }
   const { slug } = await context.params;
   const apiOrigin = process.env.INKBYTE_API_URL;
-  if (!apiOrigin)
-    return new Response("InkByte is not configured", { status: 503, headers });
+  if (!apiOrigin) return unavailable();
   const url = new URL(request.url);
   try {
     const domains = await fetchDomains();
@@ -81,11 +90,7 @@ export async function resolveShortLink(request: Request, context: Context) {
       signal: AbortSignal.any([request.signal, AbortSignal.timeout(15000)]),
     });
     if (upstream.status === 404) return missing();
-    if (!upstream.ok)
-      return new Response("InkByte is temporarily unavailable", {
-        status: 503,
-        headers,
-      });
+    if (!upstream.ok) return unavailable();
     const payload = (await upstream.json()) as {
       data: { link: { longUrl: string; cta: unknown } };
     };
@@ -110,9 +115,6 @@ export async function resolveShortLink(request: Request, context: Context) {
       headers: outgoing,
     });
   } catch {
-    return new Response(
-      "InkByte is temporarily unavailable. Try again shortly.",
-      { status: 503, headers },
-    );
+    return unavailable();
   }
 }

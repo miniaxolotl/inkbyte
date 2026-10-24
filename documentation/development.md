@@ -89,6 +89,10 @@ pnpm format         # Prettier
 
 Workflow files are checked with the checksum-verified actionlint launcher:
 
+Install ShellCheck first (`brew install shellcheck`, or your Linux distribution's
+`shellcheck` package). The launcher refuses to run without it rather than
+silently producing a weaker result than CI.
+
 ```bash
 bash scripts/ci/run-actionlint.sh
 ```
@@ -143,3 +147,18 @@ The browser suite stubs collector scripts instead of sending test data to Vercel
 It checks no script loads before consent, that private bio routes stay excluded,
 and that GPC overrides a saved opt-in. The positive opt-in test is skipped when
 the optional build flag is intentionally disabled.
+
+The website suite also checks page titles/descriptions, canonical and noindex
+boundaries, share cards, icon dimensions, malformed history and branded outage
+pages. Axe checks cover the public routes and privacy dialog against core WCAG
+2 A/AA and 2.1 AA rules; they supplement, not replace, manual keyboard/device
+testing and authenticated acceptance.
+
+Regenerate the committed browser/home-screen icons and 1200 × 630 social card:
+
+```bash
+pnpm --filter @script/screenshots brand
+```
+
+This uses the original squid SVG, local fonts, Sharp and a local Chromium render;
+no image provider or hosted visitor data is involved.

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { cache } from "react";
+import { pageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -12,23 +14,38 @@ type BioPage = {
   items: Array<{ id: string; label: string; slug: string; domain: string }>;
 };
 
-export default async function BioPage({ params }: PageProps) {
-  const { handle } = await params;
+const getBioPage = cache(async (handle: string): Promise<BioPage | null> => {
   const apiOrigin = process.env.INKBYTE_API_URL;
-  if (!apiOrigin) notFound();
-
-  let page: BioPage | null = null;
+  if (!apiOrigin) return null;
   try {
     const response = await fetch(
       `${apiOrigin}/api/v1/public/bio/${encodeURIComponent(handle)}`,
       { cache: "no-store", signal: AbortSignal.timeout(10_000) },
     );
-    if (!response.ok) notFound();
+    if (!response.ok) return null;
     const payload = (await response.json()) as { data: { bio: BioPage } };
-    page = payload.data.bio;
+    return payload.data.bio;
   } catch {
-    notFound();
+    return null;
   }
+});
+
+export async function generateMetadata({ params }: PageProps) {
+  const page = await getBioPage((await params).handle);
+  return page
+    ? pageMetadata(
+        "Link in bio",
+        "Explore the links shared on this InkByte bio page. Choose a link to visit its destination.",
+      )
+    : pageMetadata(
+        "Page not found",
+        "This bio page could not be found. Check the address or ask its owner for an updated InkByte link.",
+      );
+}
+
+export default async function BioPage({ params }: PageProps) {
+  const { handle } = await params;
+  const page = await getBioPage(handle);
   if (!page) notFound();
 
   const domain = process.env.SITE_URL

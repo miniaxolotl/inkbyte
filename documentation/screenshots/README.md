@@ -11,6 +11,7 @@ layout and static footer wave.
 | [Landing phone](landing-mobile.png)        | `/`, 390px                    |
 | [Feature details](features-desktop.png)    | `/`, details expanded         |
 | [Help](help-desktop.png)                   | `/help`                       |
+| [Privacy](privacy-desktop.png)             | `/privacy`                    |
 | [Sign-in setup state](sign-in-desktop.png) | `/sign-in`, Clerk unavailable |
 | [Missing page](not-found-desktop.png)      | `/visit/does-not-exist`       |
 | [Bio page](bio-desktop.png)                | `/b/inkbyte-demo`             |

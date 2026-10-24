@@ -97,6 +97,8 @@ before the API starts.
   private operator copies and outstanding setup requirements.
 - [UI refinements](documentation/ui.md) — page behaviour, screenshots and
   authenticated-verification limits.
+- [Security verification](documentation/security.md) — test-fixture findings,
+  metadata/privacy boundaries and production acceptance limits.
 
 ## Features
 

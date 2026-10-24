@@ -4,6 +4,12 @@ import { redirect } from "next/navigation";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { BioManager } from "@/components/bio-manager";
 import { fetchBio } from "@/lib/api";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata(
+  "Edit your bio page",
+  "Manage your InkByte bio page, choose its handle and organize the links you share.",
+);
 
 export const dynamic = "force-dynamic";
 

@@ -187,7 +187,9 @@ export default async function DashboardPage() {
 
             <div className="grid gap-8 lg:grid-cols-2">
               <section className="ink-card p-5">
-                <h2 className="font-display text-lg text-rose">Top Links</h2>
+                <h2 className="font-display text-lg text-rose-deep">
+                  Top Links
+                </h2>
                 <ul className="mt-4 flex flex-col gap-2 text-sm">
                   {topLinks.length === 0 ? (
                     <li className="text-ink-soft">No clicks yet.</li>
@@ -210,7 +212,7 @@ export default async function DashboardPage() {
               </section>
 
               <section className="ink-card p-5">
-                <h2 className="font-display text-lg text-rose">
+                <h2 className="font-display text-lg text-rose-deep">
                   Top Referrers
                 </h2>
                 <ul className="mt-4 flex flex-col gap-2 text-sm">
@@ -235,7 +237,7 @@ export default async function DashboardPage() {
               </section>
 
               <section className="ink-card p-5">
-                <h2 className="font-display text-lg text-rose">
+                <h2 className="font-display text-lg text-rose-deep">
                   Top Countries
                 </h2>
                 <ul className="mt-4 flex flex-col gap-2 text-sm">
@@ -260,7 +262,9 @@ export default async function DashboardPage() {
               </section>
 
               <section className="ink-card p-5">
-                <h2 className="font-display text-lg text-rose">Top Cities</h2>
+                <h2 className="font-display text-lg text-rose-deep">
+                  Top Cities
+                </h2>
                 <ul className="mt-4 flex flex-col gap-2 text-sm">
                   {cities.length === 0 ? (
                     <li className="text-ink-soft">No cities yet.</li>
@@ -285,7 +289,7 @@ export default async function DashboardPage() {
 
             {devices.length > 0 ? (
               <section className="ink-card p-5">
-                <h2 className="font-display text-lg text-rose">Devices</h2>
+                <h2 className="font-display text-lg text-rose-deep">Devices</h2>
                 <ul className="mt-4 flex flex-wrap gap-4 text-sm">
                   {devices.map((entry) => (
                     <li key={entry.device} className="text-ink-soft">

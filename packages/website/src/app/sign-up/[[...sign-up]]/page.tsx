@@ -3,6 +3,12 @@ import Link from "next/link";
 import { SignUp } from "@clerk/nextjs";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { AccountUnavailable } from "@/components/account-unavailable";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata(
+  "Create an account",
+  "Create your InkByte account to keep your short links, QR codes, bio page and click reports together.",
+);
 
 export default function SignUpPage() {
   const configured = Boolean(

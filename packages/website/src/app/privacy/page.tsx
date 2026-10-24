@@ -1,6 +1,11 @@
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Privacy | InkByte" };
+import { pageMetadata } from "@/lib/metadata";
+export const metadata = pageMetadata(
+  "Privacy",
+  "Learn how InkByte handles account data, click reports, browser history and your choice of optional website analytics.",
+  "/privacy",
+);
 
 export default function PrivacyPage() {
   return (

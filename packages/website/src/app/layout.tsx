@@ -6,18 +6,18 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { WebsiteInsights } from "@/components/website-insights";
 import { site } from "@/lib/site";
+import { pageMetadata } from "@/lib/metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  ...pageMetadata(site.title, site.description),
   metadataBase: new URL(site.url),
-  title: site.title,
-  description: site.description,
   applicationName: site.name,
   authors: [{ name: site.creator }],
   creator: site.creator,
   publisher: site.creator,
   category: "productivity",
-  icons: { icon: "/assets/logo/default.svg" },
+  manifest: "/manifest.webmanifest",
   keywords: [
     "url shortener",
     "link shortener",
@@ -25,23 +25,6 @@ export const metadata: Metadata = {
     "custom domain",
     "InkByte",
   ],
-  robots: {
-    index: site.indexable,
-    follow: site.indexable,
-    googleBot: { "max-image-preview": "large", "max-snippet": -1 },
-  },
-  openGraph: {
-    type: "website",
-    url: site.url,
-    title: site.title,
-    description: site.description,
-    siteName: site.name,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: site.title,
-    description: site.description,
-  },
 };
 
 export const viewport: Viewport = {

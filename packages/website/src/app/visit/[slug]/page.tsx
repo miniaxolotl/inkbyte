@@ -1,28 +1,44 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/api";
+import { pageMetadata } from "@/lib/metadata";
+import { cache } from "react";
 
 export const dynamic = "force-dynamic";
-export const metadata = { robots: { index: false, follow: false } };
-
-export default async function VisitPage({
-  params,
-  searchParams,
-}: {
+type VisitProps = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ domain?: string }>;
-}) {
-  const { slug } = await params;
-  const { domain } = await searchParams;
-  const result = await api<{
+};
+
+const getVisit = cache((slug: string, domain: string) =>
+  api<{
     link: {
       longUrl: string;
       domain: string;
       cta: { heading: string; body: string; action: string } | null;
     };
   }>(
-    `/api/v1/public/links/${encodeURIComponent(slug)}?domain=${encodeURIComponent(domain ?? "")}`,
-  ).catch(() => null);
+    `/api/v1/public/links/${encodeURIComponent(slug)}?domain=${encodeURIComponent(domain)}`,
+  ).catch(() => null),
+);
+
+export async function generateMetadata({ params, searchParams }: VisitProps) {
+  const [{ slug }, { domain }] = await Promise.all([params, searchParams]);
+  const result = await getVisit(slug, domain ?? "");
+  return result
+    ? pageMetadata(
+        "Continue to your link",
+        "Review this message before continuing to the destination shared with you through InkByte.",
+      )
+    : pageMetadata(
+        "Page not found",
+        "This link could not be found. Check the address or ask the sender for an updated InkByte link.",
+      );
+}
+
+export default async function VisitPage({ params, searchParams }: VisitProps) {
+  const [{ slug }, { domain }] = await Promise.all([params, searchParams]);
+  const result = await getVisit(slug, domain ?? "");
   if (!result) notFound();
   const { link } = result;
   return (

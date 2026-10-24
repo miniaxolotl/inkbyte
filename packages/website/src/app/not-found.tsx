@@ -1,5 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata(
+  "Page not found",
+  "This page could not be found. Check the address or return to InkByte to create and manage your short links.",
+);
 
 export default function NotFound() {
   return (

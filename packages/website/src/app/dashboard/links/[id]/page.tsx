@@ -5,6 +5,12 @@ import { fetchLinkAnalytics } from "@/lib/api";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { LinkEditor } from "@/components/link-editor";
 import { QrButton } from "@/components/qr-button";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata(
+  "Link details",
+  "Edit a short link, download its QR code and review its private click reports in InkByte.",
+);
 
 export const dynamic = "force-dynamic";
 

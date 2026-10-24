@@ -25,7 +25,35 @@ function readHistory(): CreatedLink[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(HISTORY_KEY);
-    return raw ? (JSON.parse(raw) as CreatedLink[]) : [];
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((value): value is CreatedLink => {
+        if (!value || typeof value !== "object") return false;
+        if (
+          ![value.shortUrl, value.longUrl, value.domain, value.slug].every(
+            (field) => typeof field === "string",
+          )
+        )
+          return false;
+        try {
+          const short = new URL(value.shortUrl);
+          const long = new URL(value.longUrl);
+          return (
+            [short, long].every(
+              (url) =>
+                ["https:", "http:"].includes(url.protocol) &&
+                !url.username &&
+                !url.password,
+            ) &&
+            short.hostname === value.domain &&
+            /^[a-zA-Z0-9_-]{1,64}$/.test(value.slug)
+          );
+        } catch {
+          return false;
+        }
+      })
+      .slice(0, 10);
   } catch {
     return [];
   }
@@ -65,8 +93,10 @@ export const ShortenForm = ({
     }
   };
 
-  const forget = (slug: string) => {
-    const next = history.filter((item) => item.slug !== slug);
+  const forget = (link: CreatedLink) => {
+    const next = history.filter(
+      (item) => item.slug !== link.slug || item.domain !== link.domain,
+    );
     setHistory(next);
     try {
       window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
@@ -296,12 +326,13 @@ export const ShortenForm = ({
             disabled={pending || !domain}
             className="ink-button flex-1"
           >
-            {pending ? "Creating link…" : "Create Link"}
+            {pending ? "Creating link…" : "Create link"}
           </button>
           <button
             type="button"
             className="ink-button ink-button-quiet px-3"
             aria-label={showHistory ? "Hide history" : "Show history"}
+            aria-expanded={showHistory}
             title={showHistory ? "Hide history" : "Show history"}
             onClick={() => setShowHistory((value) => !value)}
           >
@@ -334,7 +365,9 @@ export const ShortenForm = ({
 
         {result ? (
           <div role="status" className="flex flex-col gap-2">
-            <h3 className="font-display text-base text-rose">Created link</h3>
+            <h3 className="font-display text-base text-rose-deep">
+              Created link
+            </h3>
             {createdCard(result)}
           </div>
         ) : null}
@@ -350,15 +383,20 @@ export const ShortenForm = ({
         ) : null}
         {showHistory && history.length > 0 ? (
           <div className="flex flex-col gap-3">
-            <h3 className="font-display text-base text-rose">Link history</h3>
+            <h3 className="font-display text-base text-rose-deep">
+              Link history
+            </h3>
             {history.map((item) => (
-              <div key={item.slug} className="flex flex-col gap-1">
+              <div
+                key={`${item.domain}/${item.slug}`}
+                className="flex flex-col gap-1"
+              >
                 {createdCard(item)}
                 <button
                   type="button"
                   className="ink-button ink-button-quiet self-end px-2 py-1 text-xs"
                   aria-label={`Remove ${item.slug} from history`}
-                  onClick={() => forget(item.slug)}
+                  onClick={() => forget(item)}
                 >
                   <Trash2 aria-hidden size={14} />
                 </button>

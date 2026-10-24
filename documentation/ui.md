@@ -29,6 +29,25 @@ HEAD/prefetch requests are not counted as clicks.
 
 ## Evidence and limits
 
+### Website finishing pass
+
+- Every page type has a dedicated title and description, Open Graph/Twitter
+  metadata and inherited original-squid icons. ICO contains 16/32/48px frames;
+  Apple and manifest icons are opaque 180/192/512px images. The social card is
+  1200 × 630px and uses the original art, local fonts and footer wave.
+- Only home/help/privacy receive canonical URLs, always from trusted `SITE_URL`.
+  Query strings, destinations and account identifiers never enter metadata.
+  Accounts, dashboards, bio/CTA, not-found and redirect-outage pages are noindex;
+  previews are too.
+- The landing page now states its purpose visibly. Controls use consistent
+  sentence case and 44px minimum button targets. Disclosure affordances remain
+  visible, and readable rose text uses the contrast-safe deeper brand shade.
+- Corrupt/unsafe browser history is discarded; identical slugs on different
+  domains can be removed independently. Redirect outages keep branded HTML,
+  icons, a retry action, HTTP 503 and a bounded Retry-After hint.
+- Automated Axe/keyboard checks cover public routes and the privacy dialog.
+  They do not constitute signed-in acceptance or a complete accessibility audit.
+
 See the [screenshot index](screenshots/README.md). Browser tests cover public
 pages, narrow-phone layout, canonical/legacy redirects, bio domain retention,
 CTA routing, history feedback and Vercel consent/privacy boundaries. Real

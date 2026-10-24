@@ -38,7 +38,7 @@
     cursor: pointer;
   }
   button:disabled {
-    cursor: wait;
+    cursor: not-allowed;
   }
   input,
   textarea,
@@ -108,7 +108,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     border-radius: 0.5rem;
     background: var(--color-cerulean);
     color: white;
@@ -128,11 +128,11 @@
   }
 
   .ink-button-rose {
-    background: var(--color-rose);
+    background: var(--color-rose-deep);
   }
 
   .ink-button-rose:hover {
-    background: var(--color-rose-deep);
+    background: #963c55;
   }
 
   .ink-button-quiet {

@@ -1,6 +1,12 @@
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { pageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
+export const metadata = pageMetadata(
+  "Help",
+  "Find answers about creating short links, QR codes, bio pages, call-to-action pages and privacy-conscious click reports.",
+  "/help",
+);
 
 const topics = [
   {
@@ -16,7 +22,7 @@ const topics = [
   {
     question: "How are clicks counted?",
     answer:
-      "Every redirect records one event. Link previews, crawlers and uptime probes are filtered out so your numbers describe people. Unique visitors are counted with a first-party cookie set by InkByte, never by a header a client could forge.",
+      "When tracking is enabled, a navigation records one event. HEAD requests and known bots are excluded, though bot filtering is approximate. Unique visitors represent browsers recognized by a signed first-party cookie, not individual people.",
   },
   {
     question: "Do you store IP addresses?",
@@ -50,7 +56,7 @@ export default function HelpPage() {
         <div className="mt-8 flex flex-col gap-4">
           {topics.map((topic) => (
             <details key={topic.question} className="ink-card p-5">
-              <summary className="cursor-pointer list-none font-display text-lg text-cerulean [&::-webkit-details-marker]:hidden">
+              <summary className="cursor-pointer font-display text-lg text-cerulean">
                 {topic.question}
               </summary>
               <p className="mt-3 text-sm leading-relaxed text-ink-soft">

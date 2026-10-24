@@ -20,7 +20,7 @@ export const site = {
   name: "InkByte",
   title: "InkByte — short links with real analytics",
   description:
-    "Shorten links, keep your brand, and see exactly who clicks. InkByte is a fast, self-hostable link shortener with privacy-friendly analytics.",
+    "Create short links, download QR codes, share a link-in-bio page and understand your traffic with privacy-conscious click analytics.",
   url: url.origin,
   creator: "Bramble Labs Inc.",
   indexable,

@@ -72,6 +72,11 @@ const server = createServer((request, response) => {
     return send(200, { success: true, data: { link: link(metadata[1]) } });
   const redirect = url.pathname.match(/^\/r\/([^/]+)$/);
   if (request.method === "GET" && redirect) {
+    if (redirect[1] === "unavailable")
+      return send(503, {
+        success: false,
+        error: { code: "unavailable", message: "Fixture outage" },
+      });
     if (["fixture", "campaign"].includes(redirect[1])) {
       if (url.searchParams.get("format") === "json")
         return send(

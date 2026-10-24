@@ -4,8 +4,11 @@ import { ShortenForm } from "@/components/shorten-form";
 import { FeatureList } from "@/components/feature-list";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { fetchDomains } from "@/lib/api";
+import { pageMetadata } from "@/lib/metadata";
+import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
+export const metadata = pageMetadata(site.title, site.description, "/");
 
 export default async function HomePage() {
   const domains = await fetchDomains().catch(() => []);
@@ -32,7 +35,15 @@ export default async function HomePage() {
         />
 
         <div className="flex w-full flex-col gap-3">
-          <h1 className="sr-only">InkByte URL shortener</h1>
+          <div className="mb-4 text-center">
+            <h1 className="font-display text-3xl leading-tight text-ink sm:text-4xl">
+              Short links. Clear insights.
+            </h1>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-ink-soft">
+              Make your next link easier to share. Keep its QR code, destination
+              and click reports in one place.
+            </p>
+          </div>
           <ShortenForm domains={domains} authenticated={authenticated} />
 
           <details className="ink-card group p-4">

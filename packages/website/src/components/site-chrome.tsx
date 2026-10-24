@@ -19,12 +19,12 @@ export const SiteHeader = async () => {
         >
           <Image src="/assets/logo/default.svg" alt="" width={36} height={36} />
           <span>
-            Ink<span className="text-rose">Byte</span>
+            Ink<span className="text-rose-deep">Byte</span>
           </span>
         </Link>
         <nav
           aria-label="Main navigation"
-          className="flex flex-wrap items-center gap-3 text-xs font-semibold text-ink-soft sm:gap-5 sm:text-sm"
+          className="flex flex-wrap items-center gap-3 text-xs font-semibold text-ink-soft sm:gap-5 sm:text-sm [&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"
         >
           <Link className="hover:text-cerulean" href="/help">
             Help
@@ -39,7 +39,7 @@ export const SiteHeader = async () => {
           ) : (
             <>
               <Link className="hover:text-cerulean" href="/sign-in">
-                Login
+                Sign in
               </Link>
               <Link
                 className="ink-button px-3 py-1 text-xs sm:text-sm"
