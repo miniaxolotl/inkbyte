@@ -1,4 +1,5 @@
 import { closeDatabase, createDatabase } from "@lib/database";
+import { assertTestDatabase } from "./safety.ts";
 
 /**
  * Prepares the disposable database used by the integration suite.
@@ -12,13 +13,7 @@ if (!url) {
   throw new Error("TEST_DATABASE_URL is required for the test bootstrap");
 }
 
-const parsed = new URL(url);
-const database = parsed.pathname.replace(/^\//, "");
-if (!database.endsWith("_test")) {
-  throw new Error(
-    `Refusing to prepare "${database}": the test database name must end in _test`,
-  );
-}
+const database = assertTestDatabase(url);
 
 const db = createDatabase(url, {
   ssl: process.env.DATABASE_SSL === "require",

@@ -244,8 +244,8 @@ export function createApp(deps: AppDependencies) {
     return created!.id;
   };
 
-  const requireRateLimit = (limiter: RateLimiter, request: Request) => {
-    const result = limiter.consume(clientKey(request));
+  const requireRateLimit = (limiter: RateLimiter, key: string) => {
+    const result = limiter.consume(key);
     if (!result.allowed) {
       return {
         error: new InkbyteError(
@@ -443,7 +443,7 @@ export function createApp(deps: AppDependencies) {
 
   app.post("/api/v1/links", async (c) => {
     const principal = await requirePrincipal(c);
-    const limited = requireRateLimit(createLimiter, c.req.raw);
+    const limited = requireRateLimit(createLimiter, principal.subject);
     if (limited.error) throw limited.error;
     const payload = linkCreateSchema.parse(await c.req.json());
     const userId = await resolveUser(principal);
@@ -607,7 +607,7 @@ export function createApp(deps: AppDependencies) {
   });
 
   app.get("/r/:slug", async (c) => {
-    const limited = requireRateLimit(redirectLimiter, c.req.raw);
+    const limited = requireRateLimit(redirectLimiter, clientKey(c.req.raw));
     if (limited.error) throw limited.error;
     const domainSlug = c.req.query("domain") ?? deps.defaultDomains[0] ?? "";
     const row = await fetchLinkRow(c.req.param("slug"), domainSlug);
@@ -618,7 +618,7 @@ export function createApp(deps: AppDependencies) {
     const isHttps = c.req.header("x-forwarded-proto") === "https";
     const userAgent = c.req.header("user-agent") ?? null;
 
-    if (row.isTracking && !isBot(userAgent)) {
+    if (c.req.method === "GET" && row.isTracking && !isBot(userAgent)) {
       const { visitorId, existingCookie } = resolveVisitor(
         c.req.raw,
         trackingSecret,

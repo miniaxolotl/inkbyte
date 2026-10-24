@@ -5,14 +5,13 @@ import { createDatabase } from "@lib/database";
 import { createApp } from "@miniaxolotl/inkbyte-server";
 import type { Principal } from "@miniaxolotl/inkbyte-server";
 import { InkbyteError } from "@lib/shared";
+import { assertTestDatabase } from "../../scripts/database/src/safety.ts";
 
 const DATABASE_URL = process.env.TEST_DATABASE_URL;
 if (!DATABASE_URL) {
   throw new Error("TEST_DATABASE_URL is required for the API test suite");
 }
-if (!/_test($|\?)/.test(DATABASE_URL)) {
-  throw new Error("TEST_DATABASE_URL must point at a database ending in _test");
-}
+assertTestDatabase(DATABASE_URL);
 
 const env = {
   API_ORIGIN: "http://localhost:26090",
@@ -54,6 +53,14 @@ const reset = async () => {
     { slug: "inkbyte.app", isDefault: true },
     { slug: "inkbyte.co", isDefault: false },
   ]);
+  app = createApp({
+    db,
+    auth,
+    origin: env.API_ORIGIN,
+    siteUrl: env.SITE_URL,
+    defaultDomains: env.DEFAULT_DOMAINS,
+    ready: async () => {},
+  });
 };
 
 const signUp = async (email = "owner@example.com") => {
@@ -359,6 +366,20 @@ describe("links", () => {
 });
 
 describe("redirects", () => {
+  it("does not count HEAD probes as clicks", async () => {
+    const { auth: authorization } = await signUp();
+    await createLink(authorization, {
+      longUrl: "https://example.com",
+      domain: "inkbyte.app",
+      customSlug: "head-probe",
+    });
+    const response = await app.request("/r/head-probe?domain=inkbyte.app", {
+      method: "HEAD",
+      headers: { "user-agent": "Mozilla/5.0" },
+    });
+    assert.equal(response.status, 302);
+    assert.equal((await db("link_events")).length, 0);
+  });
   it("redirects to the destination and records a click", async () => {
     const { auth: authHeader } = await signUp();
     const created = await createLink(authHeader, {
