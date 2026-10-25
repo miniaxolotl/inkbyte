@@ -82,15 +82,25 @@ Verified during this rebuild:
   Its keys/issuer are stored privately and delivered to the production targets;
   DNS, mail and both domain certificates are verified complete by Clerk.
   See [clerk-production.md](clerk-production.md).
-- DigitalOcean app/persistent deployment credentials are **not configured**.
-  Local preview/development authentication remains intentionally unconfigured.
+- A dedicated DigitalOcean deployment token is stored masked in `inkbyte/prd`
+  and encrypted in GitHub `Production`. It is named
+  `inkbyte-production-ci-20261025`, expires 2027-01-22, and permits
+  `app:create`, `app:read`, `app:update` plus the provider-required
+  `regions:read`, `sizes:read`, `actions:read` dependencies. It has no delete,
+  console, database or billing permissions. The Bramble Labs team was selected;
+  unrelated existing tokens/resources were retained. Rotation is required before
+  expiry. DigitalOcean does not narrow this resource-type token to one app.
+- DigitalOcean app provisioning/ID remain pending. Local preview/development
+  authentication remains intentionally unconfigured.
 - Vercel project `prj_EUrWTWEukjkxx3tANxhxwYFGAvnC` exists in Bramble Labs
   (`team_laf9rnD2nve33edSTfwW5LTQ`), with Next.js, Node 24 and
   `packages/website` configured. Both purchased domains are attached and the
   production website/API origins are set. Project IDs are saved in Doppler.
-  The connected CLI session cannot create a scoped CI token; that credential
-  still requires an owner-authorized token. Expiring CLI OAuth session tokens
-  were deliberately not stored as CI deployment credentials.
+  The exact target is `https://vercel.com/bramble-labs-inc/inkbyte`. The owner
+  browser session can select an InkByte-only token, but creation requires an
+  email-code reauthentication (`challenge_required_email_otp`). Until the owner
+  completes it, `VERCEL_TOKEN` is unconfigured. No account-wide token or expiring
+  CLI OAuth credential was substituted, and no verification gate was bypassed.
 - `stg` currently references Neon's development branch; isolate it before
   treating it as a retained staging environment.
 - Initial Neon connection strings use an owner role. Provision a least-privilege
@@ -110,5 +120,12 @@ build and eligible visits before its dashboard can show real data.
 The GitHub production environment now has the intended Vercel project/team IDs,
 public origins and encrypted direct Neon migration URL. Its prior protection
 rules and any existing values were preserved. Production Clerk keys are now
-configured; persistent deployment tokens and the remaining infrastructure
-requirements are still pending.
+configured. Its public origins and project/team IDs were synchronized again
+from Doppler. The DigitalOcean token is configured; Vercel email verification,
+the app ID and remaining infrastructure requirements are still pending.
+GitHub Production is restricted to the production branch; root database/tracking
+credentials are not copied into website environments.
+
+Vercel readback confirms the intended Bramble Labs project and Git link, with
+automatic Git deployments disabled. An existing ready website deployment was
+preserved; it is not proof of API readiness or a completed coordinated rollout.
