@@ -1,0 +1,22 @@
+FROM node:24-bookworm-slim AS build
+RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
+WORKDIR /app
+COPY . .
+RUN pnpm install --frozen-lockfile
+RUN node scripts/build.mjs api
+RUN pnpm --filter @miniaxolotl/inkbyte-server deploy --prod --legacy /prod
+
+FROM node:24-bookworm-slim AS production
+LABEL org.opencontainers.image.source="https://github.com/miniaxolotl/inkbyte" \
+      org.opencontainers.image.title="InkByte API" \
+      org.opencontainers.image.description="Link shortening and analytics API" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.vendor="Bramble Labs Inc."
+WORKDIR /app
+COPY --from=build --chown=node:node /prod /app
+USER node
+ENV NODE_ENV=production PORT=26090
+EXPOSE 26090
+HEALTHCHECK --interval=20s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT || '26090') + '/health/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+CMD ["node", "dist/server.js"]

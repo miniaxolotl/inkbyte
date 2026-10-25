@@ -1,24 +1,19 @@
-.DS_Store
-.env*
-!.env.local
+node_modules/
+dist/
+.next/
+test-results/
+playwright-report/
+coverage/
+**/dist/
+**/.next/
+**/*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
 !.env*.example
 
-node_modules/
-coverage/
-/**/build/
-/**/dist/
-.rollup.cache/
-
-/.yarn/*
-!/.yarn/patches
-!/.yarn/plugins
-!/.yarn/releases
-!/.yarn/sdks
-
-# /**/rollup.*.cjs
-/.vscode/
-
-# Swap the comments on the following lines if you don't wish to use zero-installs
-# Documentation here: https://yarnpkg.com/features/zero-installs
-# !/.yarn/cache
-/.pnp.*
+.DS_Store
+*.log
+secrets.md
+secres.md
