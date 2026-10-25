@@ -123,9 +123,11 @@ or preview branches. The default Actions token is read-only; release and image
 publication jobs opt into their necessary write permissions. Source Release was
 verified on the protected development branch and opened release PR #2.
 
-Unlike the standalone Bramble Labs marketing site, InkByte's dedicated Vercel
-project is not Git-connected: its current workflow coordinates the API rollout
-before publishing the website. Web Analytics and website-only Doppler syncs are
+Unlike the standalone Bramble Labs marketing site, InkByte's delivery workflow
+coordinates API readiness before publishing the website. The dedicated Vercel
+project has a Git link, but provider-side automatic Git deployments are disabled
+(`gitProviderOptions.createDeployments: disabled`) to avoid a second rollout
+path. Existing website deployments and the link are preserved. Web Analytics and website-only Doppler syncs are
 configured independently of delivery. The exact website target is
 [`bramble-labs-inc/inkbyte`](https://vercel.com/bramble-labs-inc/inkbyte), with
 root directory `packages/website`. A project-scoped Vercel CI token is awaiting

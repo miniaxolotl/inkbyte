@@ -125,3 +125,7 @@ from Doppler. The DigitalOcean token is configured; Vercel email verification,
 the app ID and remaining infrastructure requirements are still pending.
 GitHub Production is restricted to the production branch; root database/tracking
 credentials are not copied into website environments.
+
+Vercel readback confirms the intended Bramble Labs project and Git link, with
+automatic Git deployments disabled. An existing ready website deployment was
+preserved; it is not proof of API readiness or a completed coordinated rollout.
