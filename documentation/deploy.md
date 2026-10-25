@@ -105,18 +105,31 @@ the GHCR image is public or configure a registry credential in App Platform.
 
 - `CI`: frozen pnpm install, lint, types, API/database tests, production web
   build, browser tests, deployment-spec tests, actionlint, both images.
-- `CI Gate`: requires every CI job. Set it as a required branch check.
-- `Source Release`: Release Please on protected `development`.
+- `CI Gate`: requires every CI job. Both `development` and `production` now
+  require an up-to-date GitHub Actions CI Gate and a pull request, including for
+  administrators. Force pushes/deletions are disabled; conversations must be
+  resolved. No additional human approval is imposed on the single-owner repo.
+- `Source Release`: Release Please on protected `development`. Its bot-created
+  or updated release PRs explicitly dispatch CI, because `GITHUB_TOKEN` PR events
+  do not trigger another Actions run. The dispatcher verifies each PR is an open,
+  non-draft, same-repository bot release targeting development before dispatch.
 - `Deploy`: protected `production` only. Waits for exact-source independent
   CI, publishes digest-addressed GHCR images with provenance/SBOM, applies
   forward Neon migrations and the domain seed, rolls DigitalOcean and checks
   readiness, then deploys a prebuilt Vercel website.
 
+GitHub's `Production` environment accepts only the `production` branch, not tags
+or preview branches. The default Actions token is read-only; release and image
+publication jobs opt into their necessary write permissions. Source Release was
+verified on the protected development branch and opened release PR #2.
+
 Unlike the standalone Bramble Labs marketing site, InkByte's dedicated Vercel
 project is not Git-connected: its current workflow coordinates the API rollout
 before publishing the website. Web Analytics and website-only Doppler syncs are
-configured independently of delivery. A persistent authorized Vercel CI token
-is still missing; CLI OAuth credentials are not a substitute. Moving to Git
+configured independently of delivery. The exact website target is
+[`bramble-labs-inc/inkbyte`](https://vercel.com/bramble-labs-inc/inkbyte), with
+root directory `packages/website`. A project-scoped Vercel CI token is awaiting
+the owner's email verification; CLI OAuth credentials are not a substitute. Moving to Git
 delivery requires a deliberate pipeline change, not a second automatic deploy.
 
 Configure the production GitHub environment with the deployment secrets and
