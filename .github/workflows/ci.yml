@@ -24,7 +24,7 @@ permissions:
 jobs:
   changes:
     name: Change Classification
-    runs-on: depot-ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       selection: ${{ steps.classify.outputs.selection }}
@@ -47,7 +47,7 @@ jobs:
     name: Website
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection).website }}
-    runs-on: depot-ubuntu-24.04-4
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       SITE_URL: https://inkbyte.ca
@@ -94,7 +94,7 @@ jobs:
     name: Website Quality
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection)['website-quality'] }}
-    runs-on: depot-ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -113,7 +113,7 @@ jobs:
     name: TypeScript Tests
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection).contracts }}
-    runs-on: depot-ubuntu-24.04-4
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       TEST_DATABASE_URL: postgresql://postgres:inkbyte_test@127.0.0.1:5432/inkbyte_test
@@ -141,7 +141,7 @@ jobs:
     name: TypeScript Quality
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection)['contracts-quality'] }}
-    runs-on: depot-ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -163,7 +163,7 @@ jobs:
     name: API Container Build
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection)['image-api'] }}
-    runs-on: depot-ubuntu-24.04-4
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -182,7 +182,7 @@ jobs:
     name: Website Container Build
     needs: changes
     if: ${{ !cancelled() && needs.changes.result == 'success' && fromJSON(needs.changes.outputs.selection)['image-website'] }}
-    runs-on: depot-ubuntu-24.04-4
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -210,7 +210,7 @@ jobs:
         image-api,
         image-website,
       ]
-    runs-on: depot-ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
