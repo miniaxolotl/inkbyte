@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
+import { URL } from "node:url";
 import { classify, evaluateGate, selectEvent } from "./selection.mjs";
 
 const policy = {
