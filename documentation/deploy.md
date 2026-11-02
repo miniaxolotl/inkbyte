@@ -153,6 +153,12 @@ CI token. Production Branch Tracking must be `production`; reconcile the legacy
 `master` mapping in Settings → Environments → Production before restoring any
 Git-triggered delivery. The ignored-build command keeps that legacy path blocked.
 
+Apply the same ignored-build control to the legacy
+[`mawa-projects/inkbyte`](https://vercel.com/mawa-projects/inkbyte) project through
+that team's settings. Controls on `bramble-labs-inc/inkbyte` do not disable another
+project linked to the repository. Confirm every legacy Git build path is disabled
+before treating coordinated delivery as the only website publication path.
+
 Configure the production GitHub environment with the deployment secrets and
 variables listed in [environment.md](environment.md). Provision and verify the
 App Platform target/`DIGITALOCEAN_APP_ID`, an operational provider account and exact
