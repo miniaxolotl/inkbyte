@@ -18,7 +18,9 @@ managed by Clerk; the database runs on Neon in production.
 - **`lib/eslint-config/`**, **`lib/typescript-config/`** — shared configs.
 - **`scripts/build.mjs`** — esbuild bundle for the API.
 - **`scripts/database/`** — disposable test database bootstrap.
-- **`scripts/ci/`** — checksum-verified actionlint launcher.
+- **`scripts/ci/`** — checksum-verified actionlint launcher plus the shared
+  change-selection policy (`selection.mjs`, `job-policy.json`) that gates CI
+  lanes and backs `CI Gate`.
 - **`tests/`** — `node:test` suites run through `tsx`.
 
 ## Toolchain
