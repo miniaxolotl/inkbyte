@@ -105,41 +105,59 @@ the GHCR image is public or configure a registry credential in App Platform.
 
 - `CI`: frozen pnpm install, lint, types, API/database tests, production web
   build, browser tests, deployment-spec tests, actionlint, both images.
-- `CI Gate`: requires every CI job. Both `development` and `production` now
+- `CI Gate`: requires classification, promotion admission and each selected job;
+  unselected jobs must skip. Production PRs and manual promotion validation run
+  every lane. Both `development` and `production`
   require an up-to-date GitHub Actions CI Gate and a pull request, including for
   administrators. Force pushes/deletions are disabled; conversations must be
   resolved. No additional human approval is imposed on the single-owner repo.
 - `Source Release`: Release Please on protected `development`. Its bot-created
-  or updated release PRs explicitly dispatch CI, because `GITHUB_TOKEN` PR events
-  do not trigger another Actions run. The dispatcher verifies each PR is an open,
+  or updated release PRs explicitly dispatch independent exact-head CI. Native
+  bot-PR runs can require maintainer approval; a manual green run does not clear
+  that approval. The dispatcher verifies each PR is an open,
   non-draft, same-repository bot release targeting development before dispatch.
-- `Deploy`: protected `production` only. Waits for exact-source independent
-  CI, publishes digest-addressed GHCR images with provenance/SBOM, applies
+- `Select Release Candidate`: the operator selects a released immutable `vX.Y.Z`
+  from protected development. It verifies independent source CI and Release Please
+  provenance, freezes `promote/production/vX.Y.Z` with matching trees, and records
+  operator/run/source evidence. Merge that PR with a merge commit.
+- `Deploy`: protected `production` only. Waits for exact-production independent
+  CI and admits the frozen released source. It checks out that source and
+  preflights provider configuration before publication. It reuses source-addressed
+  GHCR digests on retries, rejects conflicting version tags, publishes missing
+  images with provenance/SBOM and promotes verified digests to version/latest tags.
+  The retained manifest binds both image digests to the source/tag. It applies
   forward Neon migrations and the domain seed, rolls DigitalOcean and checks
-  readiness, then deploys a prebuilt Vercel website.
+  readiness, then deploys a prebuilt Vercel website. Website delivery verifies
+  project/source/production metadata, homepage health and public `/release.json`
+  identity, retaining `website-deployment.json`. Current-production checks run
+  before migrations, API rollout and website publication.
 
 GitHub's `Production` environment accepts only the `production` branch, not tags
 or preview branches. The default Actions token is read-only; release and image
-publication jobs opt into their necessary write permissions. Source Release was
-verified on the protected development branch and opened release PR #2.
+publication jobs opt into their necessary permissions. Follow
+[release conventions](release-conventions.md) for patch-first intent, frozen
+admission and immutable artifact recovery. Retry a partial release at the same
+current production ref; conflicting published content requires a new release.
 
 Unlike the standalone Bramble Labs marketing site, InkByte's delivery workflow
 coordinates API readiness before publishing the website. The dedicated Vercel
-project has a Git link, but provider-side automatic Git deployments are disabled
-(`gitProviderOptions.createDeployments: disabled`) to avoid a second rollout
-path. Existing website deployments and the link are preserved. Web Analytics and website-only Doppler syncs are
+project retains its Git link and uses ignored-build command `exit 0` plus
+`packages/website/vercel.json` with `git.deploymentEnabled: false` to block
+independent Git builds. `gitProviderOptions.createDeployments` controls only
+GitHub deployment records. Web Analytics and website-only Doppler syncs are
 configured independently of delivery. The exact website target is
 [`bramble-labs-inc/inkbyte`](https://vercel.com/bramble-labs-inc/inkbyte), with
-root directory `packages/website`. A project-scoped Vercel CI token is awaiting
-the owner's email verification; CLI OAuth credentials are not a substitute. Moving to Git
-delivery requires a deliberate pipeline change, not a second automatic deploy.
+root directory `packages/website`. Provision a Vercel CI access token as
+`VERCEL_TOKEN`, with verified project/team IDs. CLI OAuth credentials are not a
+CI token. Production Branch Tracking must be `production`; reconcile the legacy
+`master` mapping in Settings → Environments → Production before restoring any
+Git-triggered delivery. The ignored-build command keeps that legacy path blocked.
 
 Configure the production GitHub environment with the deployment secrets and
-variables listed in [environment.md](environment.md). Review migrations before
-merging an incompatible rollout. The legacy `mawa-projects` Vercel integration
-must be disconnected or updated to root directory **`packages/website`**;
-its old `packages/web` root no longer exists. No production rollout has been
-performed as part of the source rebuild.
+variables listed in [environment.md](environment.md). Provision and verify the
+App Platform target/`DIGITALOCEAN_APP_ID`, an operational provider account and exact
+DNS targets before the first rollout. Review forward migrations before merging an
+incompatible rollout. Never point an integration at the removed `packages/web` root.
 
 ## Legacy data
 

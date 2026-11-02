@@ -1,0 +1,17 @@
+{
+  "repository": "miniaxolotl/inkbyte",
+  "operator": "miniaxolotl",
+  "label": "enhancement",
+  "branches": ["development", "production"],
+  "ciJobs": [
+    "Change Classification",
+    "Promotion Admission",
+    "Website",
+    "Website Quality",
+    "TypeScript Tests",
+    "TypeScript Quality",
+    "API Container Build",
+    "Website Container Build",
+    "CI Gate"
+  ]
+}

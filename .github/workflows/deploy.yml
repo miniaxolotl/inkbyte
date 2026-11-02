@@ -11,24 +11,55 @@ concurrency:
   group: production-release
   cancel-in-progress: false
 jobs:
+  candidate:
+    if: github.repository == 'miniaxolotl/inkbyte' && github.ref == 'refs/heads/production' && github.ref_protected == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    outputs:
+      sha: ${{ steps.candidate.outputs.sha }}
+      tag: ${{ steps.candidate.outputs.tag }}
+      version: ${{ steps.candidate.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+      - name: Wait for independent exact-production CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release/promotion.mjs wait-ci "$GITHUB_SHA"
+      - id: candidate
+        name: Admit the frozen released source before publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release/promotion.mjs production "$GITHUB_SHA"
+
   publish:
     name: Publish images
+    needs: candidate
     if: github.repository == 'miniaxolotl/inkbyte' && github.ref == 'refs/heads/production' && github.ref_protected == true
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: production
     env:
       GH_TOKEN: ${{ github.token }}
+      RELEASE_SOURCE_SHA: ${{ needs.candidate.outputs.sha }}
+      RELEASE_TAG: ${{ needs.candidate.outputs.tag }}
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
     outputs:
-      api_digest: ${{ steps.api.outputs.digest }}
-      website_digest: ${{ steps.website.outputs.digest }}
+      api_digest: ${{ steps.existing.outputs.api || steps.api.outputs.digest }}
+      website_digest: ${{ steps.existing.outputs.website || steps.website.outputs.digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ needs.candidate.outputs.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Confirm production still points at this commit
@@ -36,8 +67,6 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24.21.0"
-      - name: Wait for independent exact-source CI
-        run: node scripts/ci/wait-ci.mjs
       - name: Validate production configuration before publication
         env:
           DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
@@ -59,6 +88,12 @@ jobs:
           const url = new URL(process.env.MIGRATION_DATABASE_URL);
           if (url.hostname.includes('-pooler.') || url.searchParams.get('sslmode') !== 'verify-full') throw new Error('Migrations require a direct PostgreSQL connection with verified TLS');
           for (const key of ['SITE_URL', 'API_ORIGIN']) { const origin = new URL(process.env[key]); if (origin.protocol !== 'https:' || origin.origin !== process.env[key]) throw new Error(`${key} must be an exact HTTPS origin`); }
+          const app = await fetch(`https://api.digitalocean.com/v2/apps/${process.env.DIGITALOCEAN_APP_ID}`, { headers: { Authorization: `Bearer ${process.env.DIGITALOCEAN_ACCESS_TOKEN}` }, redirect: 'error', signal: AbortSignal.timeout(30000) });
+          if (!app.ok || (await app.json()).app?.spec?.name !== 'inkbyte') throw new Error('Cannot validate the InkByte App Platform target');
+          const projectResponse = await fetch(`https://api.vercel.com/v9/projects/${process.env.VERCEL_PROJECT_ID}?teamId=${process.env.VERCEL_ORG_ID}`, { headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` }, redirect: 'error', signal: AbortSignal.timeout(30000) });
+          if (!projectResponse.ok) throw new Error('Cannot validate the Vercel project');
+          const project = await projectResponse.json();
+          if (project.id !== process.env.VERCEL_PROJECT_ID || project.accountId !== process.env.VERCEL_ORG_ID || project.rootDirectory !== 'packages/website' || project.commandForIgnoringBuildStep !== 'exit 0') throw new Error('Vercel target or independent Git build control mismatch');
           const response = await fetch(`https://api.vercel.com/v10/projects/${process.env.VERCEL_PROJECT_ID}/env?teamId=${process.env.VERCEL_ORG_ID}`, { headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` } });
           if (!response.ok) throw new Error(`Cannot validate Vercel configuration (HTTP ${response.status})`);
           const configured = new Set((await response.json()).envs.filter(item => item.target?.includes('production')).map(item => item.key));
@@ -70,45 +105,104 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
+      - name: Resolve immutable images before building either component
+        id: existing
+        run: |
+          inspect() {
+            local digest
+            if digest="$(docker buildx imagetools inspect "$1" --format '{{.Manifest.Digest}}' 2>image-error)"; then
+              [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]] || return 1
+              printf '%s' "$digest"
+            elif ! grep -Fq "$1: not found" image-error && ! grep -Eqi 'manifest unknown|no such manifest' image-error; then
+              cat image-error >&2
+              return 1
+            fi
+          }
+          for component in api website; do
+            repository="ghcr.io/$GITHUB_REPOSITORY-$component"
+            digest="$(inspect "$repository:sha-$RELEASE_SOURCE_SHA")"
+            tagged="$(inspect "$repository:$RELEASE_TAG")"
+            if [[ -n "$tagged" && "$tagged" != "$digest" ]]; then exit 1; fi
+            if [[ -n "$digest" ]]; then
+              docker pull "$repository@$digest"
+              test "$(docker inspect "$repository@$digest" --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}')" = "$RELEASE_SOURCE_SHA"
+            fi
+            echo "$component=$digest" >> "$GITHUB_OUTPUT"
+          done
       - id: api
+        if: steps.existing.outputs.api == ''
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: Dockerfile.api
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}-api:sha-${{ github.sha }}
-            ghcr.io/${{ github.repository }}-api:latest
+          tags: ghcr.io/${{ github.repository }}-api:sha-${{ needs.candidate.outputs.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ needs.candidate.outputs.sha }}
+            org.opencontainers.image.version=${{ needs.candidate.outputs.version }}
           provenance: mode=max
           sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - id: website
+        if: steps.existing.outputs.website == ''
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           file: Dockerfile.website
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}-website:sha-${{ github.sha }}
-            ghcr.io/${{ github.repository }}-website:latest
+          tags: ghcr.io/${{ github.repository }}-website:sha-${{ needs.candidate.outputs.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ needs.candidate.outputs.sha }}
+            org.opencontainers.image.version=${{ needs.candidate.outputs.version }}
           provenance: mode=max
           sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Promote both verified images and retain release identity
+        env:
+          API_DIGEST: ${{ steps.existing.outputs.api || steps.api.outputs.digest }}
+          WEBSITE_DIGEST: ${{ steps.existing.outputs.website || steps.website.outputs.digest }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/production" --jq .object.sha)" = "$GITHUB_SHA"
+          for component in api website; do
+            digest="$API_DIGEST"
+            if [[ "$component" == website ]]; then digest="$WEBSITE_DIGEST"; fi
+            [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+            repository="ghcr.io/$GITHUB_REPOSITORY-$component"
+            docker pull "$repository@$digest"
+            test "$(docker inspect "$repository@$digest" --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}')" = "$RELEASE_SOURCE_SHA"
+            for tag in "$RELEASE_TAG" latest; do
+              docker buildx imagetools create --prefer-index=false --tag "$repository:$tag" "$repository@$digest"
+              test "$(docker buildx imagetools inspect "$repository:$tag" --format '{{.Manifest.Digest}}')" = "$digest"
+            done
+          done
+          jq -n --arg sha "$RELEASE_SOURCE_SHA" --arg tag "$RELEASE_TAG" --arg api "$API_DIGEST" --arg website "$WEBSITE_DIGEST" \
+            '{sha:$sha,tag:$tag,api:$api,website:$website}' > manifest.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ needs.candidate.outputs.tag }}-${{ github.run_attempt }}
+          path: manifest.json
+          retention-days: 90
+          if-no-files-found: error
+
   deploy:
     name: Deploy services
-    needs: publish
+    needs: [candidate, publish]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: production
     permissions:
       contents: read
       id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SOURCE_SHA: ${{ needs.candidate.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ needs.candidate.outputs.sha }}
           persist-credentials: false
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -116,6 +210,8 @@ jobs:
           node-version: "24.21.0"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Reject a superseded production operation
+        run: test "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/production" --jq .object.sha)" = "$GITHUB_SHA"
       - name: Apply forward-only Neon migrations
         env:
           MIGRATION_DATABASE_URL: ${{ secrets.MIGRATION_DATABASE_URL }}
@@ -135,6 +231,7 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$DIGITALOCEAN_APP_ID"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/production" --jq .object.sha)" = "$GITHUB_SHA"
           node scripts/deploy/src/digitalocean.mjs --app-id "$DIGITALOCEAN_APP_ID" --digest "$INKBYTE_IMAGE_DIGEST" --wait
       - name: Verify API readiness
         env:
@@ -144,7 +241,7 @@ jobs:
           test -n "${API_ORIGIN:-}"
           for attempt in $(seq 1 30); do
             echo "Checking API readiness (attempt ${attempt}/30)"
-            if curl --fail --silent --show-error "${API_ORIGIN}/health/ready" > /dev/null; then
+            if curl --fail --silent --show-error --connect-timeout 5 --max-time 10 "${API_ORIGIN}/health/ready" > /dev/null; then
               echo "API is ready"
               exit 0
             fi
@@ -161,16 +258,10 @@ jobs:
           INKBYTE_API_URL: ${{ vars.API_ORIGIN }}
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-        run: |
-          set -euo pipefail
-          if [ -z "${VERCEL_TOKEN:-}" ] || [ -z "${VERCEL_ORG_ID:-}" ] || [ -z "${VERCEL_PROJECT_ID:-}" ]; then
-            echo "Vercel deployment variables are not configured" >&2
-            exit 1
-          fi
-          npx --yes vercel@65.2.0 pull \
-            --yes --environment=production --token="$VERCEL_TOKEN" \
-            --scope="$VERCEL_ORG_ID"
-          npx --yes vercel@65.2.0 build \
-            --prod --token="$VERCEL_TOKEN" --scope="$VERCEL_ORG_ID"
-          npx --yes vercel@65.2.0 deploy --prebuilt \
-            --yes --prod --token="$VERCEL_TOKEN" --scope="$VERCEL_ORG_ID"
+        run: node scripts/release/website.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: website-${{ needs.candidate.outputs.tag }}-${{ github.run_attempt }}
+          path: website-deployment.json
+          retention-days: 90
+          if-no-files-found: error

@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 
 const executeGh = (args) => execFileSync("gh", args, { encoding: "utf8" });
 
-/** Bot-created PR events do not trigger Actions; dispatch only verified release refs. */
+/** Dispatch independent exact-head CI; native bot-PR workflow approval is separate. */
 export function dispatchReleaseCi(repository, created, execute = executeGh) {
   assert.equal(repository, "miniaxolotl/inkbyte");
   assert(Array.isArray(created), "Release PR output must be an array");

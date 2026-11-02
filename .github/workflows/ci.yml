@@ -43,6 +43,23 @@ jobs:
           PROMOTION_PR: ${{ inputs.promotion_pr }}
         run: node scripts/ci/selection.mjs classify
 
+  promotion:
+    name: Promotion Admission
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release/promotion.mjs admit
+
   website:
     name: Website
     needs: changes
@@ -155,6 +172,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: bash scripts/ci/run-actionlint.sh
+      - run: node --test scripts/ci/*.test.mjs
+      - run: node --test scripts/release/*.test.mjs
       - run: node --test scripts/deploy/*.test.mjs
       - run: node --test scripts/*.test.mjs
       - run: pnpm check-types
@@ -203,6 +222,7 @@ jobs:
     needs:
       [
         changes,
+        promotion,
         website,
         website-quality,
         contracts,
