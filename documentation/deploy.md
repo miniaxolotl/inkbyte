@@ -149,15 +149,14 @@ configured independently of delivery. The exact website target is
 [`bramble-labs-inc/inkbyte`](https://vercel.com/bramble-labs-inc/inkbyte), with
 root directory `packages/website`. Provision a Vercel CI access token as
 `VERCEL_TOKEN`, with verified project/team IDs. CLI OAuth credentials are not a
-CI token. Production Branch Tracking must be `production`; reconcile the legacy
-`master` mapping in Settings → Environments → Production before restoring any
-Git-triggered delivery. The ignored-build command keeps that legacy path blocked.
+CI token. Production Branch Tracking is `production`, verified in the dashboard
+and project API on 2026-11-02. Keep the ignored-build command and source Git
+deployment control enabled so publication remains coordinated by `Deploy`.
 
-Apply the same ignored-build control to the legacy
-[`mawa-projects/inkbyte`](https://vercel.com/mawa-projects/inkbyte) project through
-that team's settings. Controls on `bramble-labs-inc/inkbyte` do not disable another
-project linked to the repository. Confirm every legacy Git build path is disabled
-before treating coordinated delivery as the only website publication path.
+The owner deleted the legacy `mawa-projects/inkbyte` project from its separate
+Vercel account on 2026-11-02. Controls on `bramble-labs-inc/inkbyte` apply only to
+that project; any future project linked to this repository must also block
+independent Git builds before use.
 
 Configure the production GitHub environment with the deployment secrets and
 variables listed in [environment.md](environment.md). Provision and verify the
