@@ -147,11 +147,12 @@ independent Git builds. `gitProviderOptions.createDeployments` controls only
 GitHub deployment records. Web Analytics and website-only Doppler syncs are
 configured independently of delivery. The exact website target is
 [`bramble-labs-inc/inkbyte`](https://vercel.com/bramble-labs-inc/inkbyte), with
-root directory `packages/website`. Provision a Vercel CI access token as
-`VERCEL_TOKEN`, with verified project/team IDs. CLI OAuth credentials are not a
-CI token. Production Branch Tracking is `production`, verified in the dashboard
-and project API on 2026-11-02. Keep the ignored-build command and source Git
-deployment control enabled so publication remains coordinated by `Deploy`.
+root directory `packages/website`. A project-scoped CI access token is configured
+as `VERCEL_TOKEN`, with verified project/team IDs; see
+[environment.md](environment.md) for storage and rotation. Production Branch
+Tracking is `production`, verified in the dashboard and project API on 2026-11-02.
+Keep the ignored-build command and source Git deployment control enabled so
+publication remains coordinated by `Deploy`.
 
 The owner deleted the legacy `mawa-projects/inkbyte` project from its separate
 Vercel account on 2026-11-02. Controls on `bramble-labs-inc/inkbyte` apply only to
