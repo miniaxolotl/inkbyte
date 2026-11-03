@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/miniaxolotl/inkbyte/compare/v0.2.0...v0.2.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* **delivery:** require validated frozen releases and ordered rollout ([b764f02](https://github.com/miniaxolotl/inkbyte/commit/b764f02e70df1f512346d0f45b89de318dea81b9))
+* **delivery:** require validated frozen releases and ordered rollout ([998d2b3](https://github.com/miniaxolotl/inkbyte/commit/998d2b3cbb82c2cde2d3dabfc38a89ddc8c07d50))
+
 ## [0.2.0](https://github.com/miniaxolotl/inkbyte/compare/v0.1.0...v0.2.0) (2026-11-02)
 
 
