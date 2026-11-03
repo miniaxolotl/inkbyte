@@ -1,0 +1,3 @@
+setup:
+  project: inkbyte
+  config: dev

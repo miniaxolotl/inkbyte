@@ -1,0 +1,24 @@
+{
+  "name": "@monorepo/tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "InkByte integration and unit tests",
+  "scripts": {
+    "test": "tsx --test src/*.test.ts",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@lib/config": "workspace:*",
+    "@lib/database": "workspace:*",
+    "@lib/eslint-config": "workspace:*",
+    "@lib/shared": "workspace:*",
+    "@lib/typescript-config": "workspace:*",
+    "@miniaxolotl/inkbyte-server": "workspace:*",
+    "@types/node": "~24.19.2",
+    "knex": "3.3.0",
+    "tsx": "~4.23.15",
+    "typescript": "~6.0.3"
+  }
+}

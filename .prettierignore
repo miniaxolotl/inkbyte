@@ -1,19 +1,15 @@
-/.vscode/
-# /**/ignore_*
+node_modules/
+dist/
+.next/
+coverage/
+*.tsbuildinfo
 
-.DS_Store
-.env*
-!.env.local
+.env
+.env.*
+!.env.example
 !.env*.example
 
-node_modules/
-coverage/
-/**/build/
-/**/dist/
-.rollup.cache/
-
-/.yarn/*
-!/.yarn/patches
-!/.yarn/plugins
-!/.yarn/releases
-!/.yarn/sdks
+.DS_Store
+*.log
+secrets.md
+secres.md
