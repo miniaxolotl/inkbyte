@@ -26,7 +26,10 @@ test("repository policy covers every workflow job and shared dependencies", () =
       .split("\njobs:\n")[1]
       .matchAll(/^ {2}([A-Za-z_][A-Za-z0-9_-]*):$/gm),
   ].map((match) => match[1]);
-  assert.deepEqual(jobs.sort(), ["changes", "ci-gate", ...actual.jobs].sort());
+  assert.deepEqual(
+    jobs.sort(),
+    ["changes", "promotion", "ci-gate", ...actual.jobs].sort(),
+  );
   assert.ok(Object.values(classify(actual, ["pnpm-lock.yaml"])).every(Boolean));
   assert.ok(
     Object.values(classify(actual, [".github/workflows/ci.yml"])).every(
@@ -65,14 +68,14 @@ test("selection is conservative for empty/unknown paths and includes shared depe
     assert.deepEqual(classify(policy, paths), { api: true, site: true });
 });
 
-test("promotion requests allocate no validation jobs", () => {
+test("production requests require full validation even with a promotion input", () => {
   for (const [event, baseRef, promotionPr] of [
     ["pull_request", "production", false],
     ["workflow_dispatch", "", true],
   ])
     assert.deepEqual(
       selectEvent(policy, event, baseRef, promotionPr, ["shared/a"]),
-      { api: false, site: false },
+      { api: true, site: true },
     );
   for (const event of ["push", "workflow_dispatch"])
     assert.deepEqual(
@@ -81,15 +84,41 @@ test("promotion requests allocate no validation jobs", () => {
     );
 });
 
+test("production CI cannot pass with skipped or failing validation", () => {
+  for (const [event, baseRef, promotionPr] of [
+    ["pull_request", "production", false],
+    ["workflow_dispatch", "", true],
+  ]) {
+    const selection = JSON.stringify(
+      selectEvent(policy, event, baseRef, promotionPr, ["documentation/a.md"]),
+    );
+    const needs = {
+      changes: { result: "success", outputs: { selection } },
+      promotion: { result: "success" },
+      api: { result: "skipped" },
+      site: { result: "skipped" },
+    };
+    assert.throws(() => evaluateGate(policy, needs));
+    needs.api.result = "success";
+    needs.site.result = "failure";
+    assert.throws(() => evaluateGate(policy, needs));
+    needs.site.result = "success";
+    assert.equal(evaluateGate(policy, needs), true);
+  }
+});
+
 test("gate requires selected jobs to succeed and unselected jobs to skip", () => {
   const selection = JSON.stringify({ api: true, site: false });
   const passing = {
     changes: { result: "success", outputs: { selection } },
+    promotion: { result: "success" },
     api: { result: "success" },
     site: { result: "skipped" },
   };
   assert.equal(evaluateGate(policy, passing), true);
   for (const needs of [
+    { ...passing, promotion: { result: "skipped" } },
+    { ...passing, promotion: { result: "failure" } },
     { ...passing, changes: { result: "failure", outputs: { selection } } },
     { ...passing, api: { result: "skipped" } },
     { ...passing, site: { result: "success" } },

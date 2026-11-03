@@ -11,7 +11,8 @@ function inventory(policy) {
   assert.ok(
     policy.jobs.every(
       (job) =>
-        /^[a-z][a-z0-9-]*$/.test(job) && !["changes", "ci-gate"].includes(job),
+        /^[a-z][a-z0-9-]*$/.test(job) &&
+        !["changes", "promotion", "ci-gate"].includes(job),
     ),
   );
   assert.ok(Array.isArray(policy.rules));
@@ -61,13 +62,8 @@ export function diffPaths(base, head, run = execFileSync) {
     .split("\0")
     .filter(Boolean);
 }
-export function selectEvent(policy, event, baseRef, promotionPr, paths) {
+export function selectEvent(policy, event, baseRef, _promotionPr, paths) {
   assert.ok(["push", "pull_request", "workflow_dispatch"].includes(event));
-  if (
-    (event === "pull_request" && baseRef === "production") ||
-    (event === "workflow_dispatch" && promotionPr)
-  )
-    return Object.fromEntries(inventory(policy).map((job) => [job, false]));
   return classify(
     policy,
     event === "pull_request" && baseRef === "development" ? paths : [],
@@ -78,10 +74,15 @@ export function evaluateGate(policy, needs) {
   assert.ok(needs && typeof needs === "object" && !Array.isArray(needs));
   assert.deepEqual(
     Object.keys(needs).sort(),
-    ["changes", ...jobs].sort(),
+    ["changes", "promotion", ...jobs].sort(),
     "CI job inventory mismatch",
   );
   assert.equal(needs.changes.result, "success", "Classification must succeed");
+  assert.equal(
+    needs.promotion.result,
+    "success",
+    "Promotion admission must succeed",
+  );
   const selected = JSON.parse(needs.changes.outputs.selection);
   assert.ok(
     selected && typeof selected === "object" && !Array.isArray(selected),

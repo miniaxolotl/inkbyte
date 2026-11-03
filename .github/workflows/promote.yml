@@ -1,0 +1,52 @@
+name: Select Release Candidate
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Released immutable vX.Y.Z to promote
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: select-release-production
+  cancel-in-progress: false
+jobs:
+  select:
+    if: >-
+      ${{ github.repository == 'miniaxolotl/inkbyte' &&
+          github.ref == 'refs/heads/development' && github.ref_protected == true &&
+          github.actor == 'miniaxolotl' && github.actor_id == '23219284' &&
+          github.triggering_actor == 'miniaxolotl' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+      - name: Freeze the released candidate and open a protected PR
+        id: selection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: node scripts/release/promotion.mjs open "$TAG" production
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: selected-candidate-${{ github.run_attempt }}
+          path: selection.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Dispatch CI for the selected frozen PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROMOTION_PR: ${{ steps.selection.outputs.pr }}
+          BRANCH: ${{ steps.selection.outputs.branch }}
+        run: gh workflow run ci.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH" -f "promotion_pr=$PROMOTION_PR"

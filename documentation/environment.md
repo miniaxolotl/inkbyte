@@ -96,11 +96,11 @@ Verified during this rebuild:
   (`team_laf9rnD2nve33edSTfwW5LTQ`), with Next.js, Node 24 and
   `packages/website` configured. Both purchased domains are attached and the
   production website/API origins are set. Project IDs are saved in Doppler.
-  The exact target is `https://vercel.com/bramble-labs-inc/inkbyte`. The owner
-  browser session can select an InkByte-only token, but creation requires an
-  email-code reauthentication (`challenge_required_email_otp`). Until the owner
-  completes it, `VERCEL_TOKEN` is unconfigured. No account-wide token or expiring
-  CLI OAuth credential was substituted, and no verification gate was bypassed.
+  The exact target is `https://vercel.com/bramble-labs-inc/inkbyte`. Following
+  owner email verification, an InkByte-only CI token is stored as `VERCEL_TOKEN`
+  in Doppler `prd` and the GitHub `Production` environment. It expires on
+  2027-01-31; rotate it in both stores before expiry. Authenticated project
+  readback succeeds, and access to Grove's project is denied.
 - `stg` currently references Neon's development branch; isolate it before
   treating it as a retained staging environment.
 - Initial Neon connection strings use an owner role. Provision a least-privilege
@@ -121,7 +121,7 @@ The GitHub production environment now has the intended Vercel project/team IDs,
 public origins and encrypted direct Neon migration URL. Its prior protection
 rules and any existing values were preserved. Production Clerk keys are now
 configured. Its public origins and project/team IDs were synchronized again
-from Doppler. The DigitalOcean token is configured; Vercel email verification,
+from Doppler. DigitalOcean and project-scoped Vercel tokens are configured;
 the app ID and remaining infrastructure requirements are still pending.
 GitHub Production is restricted to the production branch; root database/tracking
 credentials are not copied into website environments.
