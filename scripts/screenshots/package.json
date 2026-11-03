@@ -1,0 +1,17 @@
+{
+  "name": "@script/screenshots",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Capture InkByte website screenshots for the repository",
+  "scripts": {
+    "capture": "tsx src/capture.ts",
+    "brand": "tsx src/branding.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "~1.64.1",
+    "sharp": "0.35.5",
+    "tsx": "~4.23.15",
+    "typescript": "~6.0.3"
+  }
+}

@@ -1,0 +1,17 @@
+# Disposable CI test services for the contracts lane. Never production data;
+# the job tears the project down with --volumes after the run.
+name: inkbyte-ci-test-services
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: inkbyte_test
+      POSTGRES_PASSWORD: inkbyte_test
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d inkbyte_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 20

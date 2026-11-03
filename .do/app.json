@@ -1,0 +1,53 @@
+{
+  "name": "inkbyte",
+  "region": "nyc",
+  "disable_edge_cache": true,
+  "domains": [
+    {
+      "domain": "api.inkbyte.ca",
+      "type": "PRIMARY",
+      "minimum_tls_version": "1.2"
+    }
+  ],
+  "ingress": {
+    "rules": [
+      {
+        "match": { "path": { "prefix": "/" } },
+        "component": { "name": "api", "preserve_path_prefix": true }
+      }
+    ]
+  },
+  "services": [
+    {
+      "name": "api",
+      "image": {
+        "registry_type": "GHCR",
+        "registry": "miniaxolotl",
+        "repository": "inkbyte-api",
+        "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "run_command": "node dist/server.js",
+      "instance_count": 1,
+      "instance_size_slug": "apps-s-1vcpu-1gb-fixed",
+      "http_port": 26090,
+      "health_check": {
+        "http_path": "/health/ready",
+        "initial_delay_seconds": 30,
+        "period_seconds": 10,
+        "timeout_seconds": 5,
+        "success_threshold": 1,
+        "failure_threshold": 9
+      },
+      "liveness_health_check": {
+        "http_path": "/health/live",
+        "port": 26090,
+        "initial_delay_seconds": 30,
+        "period_seconds": 20,
+        "timeout_seconds": 5,
+        "success_threshold": 1,
+        "failure_threshold": 6
+      },
+      "termination": { "drain_seconds": 15, "grace_period_seconds": 60 }
+    }
+  ]
+}

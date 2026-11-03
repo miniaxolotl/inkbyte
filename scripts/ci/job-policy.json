@@ -1,0 +1,50 @@
+{
+  "jobs": [
+    "website",
+    "website-quality",
+    "contracts",
+    "contracts-quality",
+    "image-api",
+    "image-website"
+  ],
+  "rules": [
+    {
+      "prefix": "packages/website/",
+      "jobs": ["website", "website-quality", "image-website"]
+    },
+    {
+      "prefix": "packages/api/",
+      "jobs": ["contracts", "contracts-quality", "image-api"]
+    },
+    {
+      "prefix": "lib/database/",
+      "jobs": ["contracts", "contracts-quality", "image-api"]
+    },
+    {
+      "prefix": "lib/shared/",
+      "jobs": [
+        "website",
+        "website-quality",
+        "contracts",
+        "contracts-quality",
+        "image-api",
+        "image-website"
+      ]
+    },
+    {
+      "prefix": "lib/config/",
+      "jobs": [
+        "website",
+        "website-quality",
+        "contracts",
+        "contracts-quality",
+        "image-api",
+        "image-website"
+      ]
+    },
+    {
+      "prefix": "tests/",
+      "jobs": ["contracts", "contracts-quality"]
+    }
+  ]
+}

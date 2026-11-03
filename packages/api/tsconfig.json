@@ -1,19 +1,7 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@lib/typescript-config/node.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./dist/cjs",
-    "target": "es2022",
-    "module": "commonjs",
-    /* build options */
-    "noEmit": false,
-    "skipLibCheck": true
+    "rootDir": "./src"
   },
-  "include": [
-    "./src/**/*.ts",
-    "./typings/**/*.d.ts",
-    "../../typings/**/*.d.ts",
-    "typings/types"
-  ],
-  "exclude": ["./node_modules/", "./dist/**/*"]
+  "include": ["src/**/*"]
 }

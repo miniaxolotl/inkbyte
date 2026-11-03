@@ -1,0 +1,44 @@
+name: Source Release
+on:
+  push:
+    branches: [development]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-please-development
+  cancel-in-progress: false
+jobs:
+  release-please:
+    if: github.repository == 'miniaxolotl/inkbyte' && github.ref == 'refs/heads/development' && github.ref_protected == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.21.0"
+      - name: Verify patch-first release intent
+        run: node scripts/release/release-intent.mjs
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0; release-please 17.6.0
+        id: release
+        with:
+          token: ${{ github.token }}
+          target-branch: development
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # Independent dispatch does not clear approval-required native bot-PR runs.
+      - name: Dispatch CI for bot release PRs
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_PRS: ${{ steps.release.outputs.prs }}
+        run: node scripts/ci/dispatch-release-ci.mjs
