@@ -15,7 +15,8 @@ Rerun the original selection to refresh evidence, never move a frozen branch.
 
 Production PRs retain full CI validation plus promotion admission. Push/manual
 source CI runs all lanes. `CI Gate` requires classification, admission and every
-selected job; unselected jobs must skip. All core branches require strict CI,
+selected job; unselected jobs must skip. A PR does not need a branch update just
+because its base advanced. All core branches require a passing `CI Gate`,
 resolved conversations and PRs. Auto-merge is enabled without bypass actors;
 rebase is disabled. Automatic feature-head deletion preserves protected core,
 frozen and source-tag refs. Dependabot alerts/security updates and public secret
